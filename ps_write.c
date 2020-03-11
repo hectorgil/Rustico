@@ -776,7 +776,7 @@ if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%d.txt",name_ps_ou
 if(strcmp(file_for_mu,"yes") == 0){fclose(f);}
 
         }
-if(strcmp(file_for_mu,"no") == 0){fclose(f);}
+//if(strcmp(file_for_mu,"no") == 0){fclose(f);}
 
 
 
