@@ -1,0 +1,1 @@
+gcc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positions.c read_linedata.c cubature.c ps_write.c order_algorithm.c -O3   -lm -fopenmp -lfftw3_omp  -lfftw3 -lm -I/home/hector/fftw3_threads/include/ -L/home/hector/fftw3_threads/lib/ -o filev5.out
