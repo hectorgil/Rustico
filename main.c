@@ -697,7 +697,7 @@ if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equ
 if(strcmp(triangle_shapes, "ISO") == 0){fprintf(f,"#Shapes of the triangles: isosceles\n");}
 if(strcmp(triangle_shapes, "SQU") == 0){fprintf(f,"#Shapes of the triangles: squeezed\n");}
 if(strcmp(triangle_shapes, "ALL") == 0){fprintf(f,"#Shapes of the triangles: all\n");}
-fprintf(f,"#k1-centerbin\t k1-eff\t k2-centerbin\t k2-eff\t k3-centerbin\t k3-eff\t Bispectrum-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
+fprintf(f,"#k1-eff\t k1-centerbin\t k2-eff\t k2-centerbin\t k3-eff\t k3-centerbin\t Bispectrum-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
 
 fclose(f);
 }
@@ -733,7 +733,7 @@ if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equ
 if(strcmp(triangle_shapes, "ISO") == 0){fprintf(f,"#Shapes of the triangles: isosceles\n");}
 if(strcmp(triangle_shapes, "SQU") == 0){fprintf(f,"#Shapes of the triangles: squeezed\n");}
 if(strcmp(triangle_shapes, "ALL") == 0){fprintf(f,"#Shapes of the triangles: all\n");}
-fprintf(f,"#k1-centerbin\t k1-eff\t k2-centerbin\t k2-eff\t k3-centerbin\t k3-eff\t Bispectrum002-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
+fprintf(f,"#k1-eff\t k1-centerbin\t k2-eff\t k2-centerbin\t k3-eff\t k3-centerbin\t Bispectrum002-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
 fclose(f);
 ////
 f=fopen(name_bs020_out,"w");
@@ -766,7 +766,7 @@ if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equ
 if(strcmp(triangle_shapes, "ISO") == 0){fprintf(f,"#Shapes of the triangles: isosceles\n");}
 if(strcmp(triangle_shapes, "SQU") == 0){fprintf(f,"#Shapes of the triangles: squeezed\n");}
 if(strcmp(triangle_shapes, "ALL") == 0){fprintf(f,"#Shapes of the triangles: all\n");}
-fprintf(f,"#k1-centerbin\t k1-eff\t k2-centerbin\t k2-eff\t k3-centerbin\t k3-eff\t Bispectrum020-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
+fprintf(f,"#k1-eff\t k1-centerbin\t k2-eff\t k2-centerbin\t k3-eff\t k3-centerbin\t Bispectrum020-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
 fclose(f);
 ///
 f=fopen(name_bs200_out,"w");
@@ -799,7 +799,7 @@ if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equ
 if(strcmp(triangle_shapes, "ISO") == 0){fprintf(f,"#Shapes of the triangles: isosceles\n");}
 if(strcmp(triangle_shapes, "SQU") == 0){fprintf(f,"#Shapes of the triangles: squeezed\n");}
 if(strcmp(triangle_shapes, "ALL") == 0){fprintf(f,"#Shapes of the triangles: all\n");}
-fprintf(f,"#k1-centerbin\t k1-eff\t k2-centerbin\t k2-eff\t k3-centerbin\t k3-eff\t Bispectrum200-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
+fprintf(f,"#k1-eff\t k1-centerbin\t k2-eff\t k2-centerbin\t k3-eff\t k3-centerbin\t Bispectrum200-Bshotnoise\t Bsn\t Q-Qsn\t Qsn\t Number of Triangles\n");
 fclose(f);
 
 }
