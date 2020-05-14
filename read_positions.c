@@ -6,7 +6,9 @@
 #include "cubature.h"
 #include "read_line.h"
 #include "functions.h"
+//#include "structures.h"
 
+/*
 typedef struct {
 	              double OMEGA_M;
 }f_params;
@@ -20,7 +22,7 @@ void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *
      double c=299792.458;//speed of light 
      fval[0]=c/(100.*sqrt(omega*pow(1+z,3)+1.-omega)); 
 }
-
+*/
 long int get_number_used_lines_data(char *filename, double parameter_value[])
 {
 FILE *f;
@@ -737,7 +739,7 @@ free(L);
 
 }
 
-void get_skycuts_randoms(char *path, char *id, char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],char *type_normalization_mode, char *type_normalization_mode2, double *radata, double *decdata, double *zdata, double *wcoldata, double *wsysdata,double *wfkpdata, double *nzdata,long int Ndata, double alpha_true, char *shuffle, char *write_shuffled_randoms)
+void get_skycuts_randoms(char *path, char *id, char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],char *type_normalization_mode, char *type_normalization_mode2, double *radata, double *decdata, double *zdata, double *wcoldata, double *wsysdata,double *wfkpdata, double *nzdata,long int Ndata, double alpha_true, char *shuffle, char *write_shuffled_randoms,char *name_out_randoms)
 {
 
 long int *L;
@@ -748,8 +750,8 @@ long int seed;
 double Omega_m=parameter_value[0];
 double z_min=parameter_value[1];
 double z_max=parameter_value[2];
-char name_out_randoms[200];
-sprintf(name_out_randoms,"%s/Randoms_%s.dat",path,id);
+//char name_out_randoms[200];
+//sprintf(name_out_randoms,"%s/Randoms_%s.dat",path,id);
 
 f_params *function_parameters;
 function_parameters = (f_params *) malloc(sizeof(f_params));

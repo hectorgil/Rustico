@@ -12,14 +12,14 @@
 #Size of the bin for the power spectrum (double):  0.01
 #k-range for computation (double/double): 0 0.33
 #Do anisotropy signal (yes/no): yes
-#Do odd multipoles (yes/no): yes
-#Do mu-binning Power Spectrum (yes/no): no
-#Number of mu-bins (int): 120
+#Do odd multipoles (yes/no): no
+#Do mu-binning Power Spectrum (yes/no): yes
+#Number of mu-bins (int): 50
 #Different files for mu-bin (yes/no): no
 
 #Bispectrum parameters
-#Do Bispectrum (yes/no): yes
-#Do Bispectrum multipoles (yes/no): yes
+#Do Bispectrum (yes/no): no
+#Do Bispectrum multipoles (yes/no): no
 #Do Multigrid (yes/no): no
 #Triangle Shapes (ALL/EQU/ISO/SQU): ALL
 #Size of the bin for the bispectrum (double): 0.015707963
@@ -31,7 +31,7 @@
 #Path of datax2: /DATA/cwagner/newcov/1/snapshot_004
 #Path of randomsx2: none
 #Path of output: ./test
-#Identifier of output: z0_Dk6_run1
+#Identifier of output: z0_mufile_run1
 #Write header: yes
 
 #FFT parameters
@@ -55,7 +55,7 @@
 #Write shuffled randoms (yes/no): no
 
 #Window function paircounts
-#Compute Window Selection function (yes/no): yes
+#Compute Window Selection function (yes/no): no
 #Bin for window normalization (int) 5
 #DeltaS binning (double) 1.0
 #Percentage of randoms selected in % (double) 10.

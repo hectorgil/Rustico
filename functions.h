@@ -1,3 +1,19 @@
+#include "structures.h"
+
+double Leg1(double x);
+
+double Leg2(double x);
+
+double Leg3(double x);
+
+double Leg4(double x);
+
+double Leg6(double x);
+
+double Leg8(double x);
+
+void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *fval);
+
 
 //void reshuffle(double radata[],double decdata[],double wcoldata[],double wsysdata[],long int npar_used,long int seed);//this re-shuffles the indices on angular-data wrt the unchanged radial-data in case of both-shuffling option.
 void reshuffle(double radata[],double decdata[],double wcoldata[],double wsysdata[], long int npar_used,long int seed);

@@ -1,9 +1,9 @@
 #Main parameters
-#Type of code (rustico/rusticoX): rustico
+#Type of code (rustico/rusticoX): rusticoX
 #Type of Box (periodic/cutsky): periodic
-#Type of file (ascii/gadget)x2: gadget
-#Number of gadget files(int)x2: 16
-#RSD distorsion on gadget periodic box (yes/no)x2: yes
+#Type of file (ascii/gadget)x2: ascii ascii
+#Number of gadget files(int)x2: 16 16
+#RSD distorsion on gadget periodic box (yes/no)x2: yes yes
 #Size of the Box (double/double): 0 +2400.
 #Type of Computation (DSE/DSY/FFT): FFT
 
@@ -13,13 +13,13 @@
 #k-range for computation (double/double): 0 0.33
 #Do anisotropy signal (yes/no): yes
 #Do odd multipoles (yes/no): yes
-#Do mu-binning Power Spectrum (yes/no): no
-#Number of mu-bins (int): 120
+#Do mu-binning Power Spectrum (yes/no): yes
+#Number of mu-bins (int): 50
 #Different files for mu-bin (yes/no): no
 
 #Bispectrum parameters
-#Do Bispectrum (yes/no): yes
-#Do Bispectrum multipoles (yes/no): yes
+#Do Bispectrum (yes/no): no
+#Do Bispectrum multipoles (yes/no): no
 #Do Multigrid (yes/no): no
 #Triangle Shapes (ALL/EQU/ISO/SQU): ALL
 #Size of the bin for the bispectrum (double): 0.015707963
@@ -28,10 +28,10 @@
 #Path for triangles in each bin: ./power_spectra/triangles
 
 #Read inout parameters
-#Path of datax2: /DATA/cwagner/newcov/1/snapshot_004
-#Path of randomsx2: none
+#Path of datax2: /DATA/hector/Christian_haloes_5e13/2400Mpc_1_4_AHF_halos /DATA/hector/Christian_haloes_5e13/2400Mpc_2_4_AHF_halos
+#Path of randomsx2: none none
 #Path of output: ./test
-#Identifier of output: z0_Dk6_run1
+#Identifier of output: z0_cross_Halo_X_Halo_mufiles_run1_2
 #Write header: yes
 
 #FFT parameters
@@ -55,7 +55,7 @@
 #Write shuffled randoms (yes/no): no
 
 #Window function paircounts
-#Compute Window Selection function (yes/no): yes
+#Compute Window Selection function (yes/no): no
 #Bin for window normalization (int) 5
 #DeltaS binning (double) 1.0
 #Percentage of randoms selected in % (double) 10.

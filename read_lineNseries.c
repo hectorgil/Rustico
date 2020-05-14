@@ -21,7 +21,7 @@ wsys=1;//systematic/imaging weight.
 //Note that for some surveys, such as BOSS DR12, the catalogues provide the close-pair weight (wcp) and the redshift failure weight (wnoz), and the total collision weight is formed out of these weight as: wcol=(wcp+wnoz-1). In these and similar cases you will need to build the collision weight from the individual pieces, just below the fscanf line. 
 
 if(type==0){//data
-fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz,&wsys,&n_z);wcol=wcp+wnoz-1;
+fscanf(f,"%lf %lf %lf %lf %*f\n",&RA,&dec,&redshift,&wfkp);//wcol=wcp+wnoz-1;
 //wfkp=1;
 //wsys=1;
 //wcp=1;
@@ -30,7 +30,7 @@ fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz
 }
 
 if(type==1){//random
-fscanf(f,"%lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&n_z);
+fscanf(f,"%lf %lf %lf %lf %*f\n",&RA,&dec,&redshift,&wfkp);
 //wfkp=1;
 //wsys=1;
 //wcp=1;
@@ -56,22 +56,17 @@ double x,y,z,vx,vy,vz,weight;
 double scale_factor;
 weight=1;
 
-//strictly necessary only need to provide x,y,z;
+fscanf(f,"%*d %lf %lf %lf %*f %*f %lf %*f %*f\n", &x, &y, &z,&vz);
 
-fscanf(f,"%lf %lf %lf %lf %lf %lf %*s %*d %*d %*d %*d %*f %*f\n",&x,&y,&z,&vx,&vy,&vz);//tinker
-
-        //In case you need to introduce RSD-shifts like, do it here. You need to perform the shifts 'by hand'
-        //scale_factor=1.0;//z=0
+        scale_factor=1.0;//z=0
         //scale_factor=2./3.;//z=0.5
-        //scale_factor=0.5;//z=1.0
+        //  scale_factor=0.5;//z=1.0
         //scale_factor=0.4;//z=1.5
-        //scale_factor=1./3.;//z=4
-        scale_factor=1./1.695; //z=0.695
-        //scale_factor=1./1.865;//z=0.865
-//        z=z+vz*1.0/(100.*scale_factor*sqrt(0.26479*pow(scale_factor,-3)+1.-0.26479));//z-space distortion correction (assuming z direction)
-        z=z+vz/(100.*sqrt(0.26479*pow(scale_factor,-3)+1.-0.26479));
-        if(z>=1000.){z=z-1000.;}
-        if(z<0){z=z+1000.;}
+        //scale_factor=1./3.;//z=2
+          z=z+vz*1.0/(100.*scale_factor*sqrt(0.27*pow(scale_factor,-3)+0.73));//z-space distortion correction (assuming z direction)
+
+if(z>=2400.){z=z-2400.;}
+if(z<0){z=z+2400.;}
         
 
 params[0]=x;

@@ -3,6 +3,61 @@
 #include <math.h>
 #include <string.h>
 #include <omp.h>
+#include "structures.h"
+
+double Leg1(double x)
+{
+double f=x;
+
+return f;
+}
+
+double Leg3(double x)
+{
+double f=0.5*(5.*x*x-3.)*x;
+
+return f;
+}
+
+
+double Leg2(double x)
+{
+double f;
+f=0.5*(3.*x*x-1.);
+return f;
+}
+
+double Leg4(double x)
+{
+double f;
+f=1./8.*(35.*pow(x,4)-30.*pow(x,2)+3.);
+return f;
+}
+
+double Leg6(double x)
+{
+double f;
+f=1./16.*(231.*pow(x,6)-315.*pow(x,4)+105*pow(x,2)-5.);
+return f;
+}
+
+
+double Leg8(double x)
+{
+double f;
+f=1./128.*(6435.*pow(x,8)-12012.*pow(x,6)+6930.*pow(x,4)-1260.*pow(x,2)+35.);
+return f;
+}
+
+void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *fval)
+{
+     f_params params_function = *(f_params *) fdata;//cast from void to f_params
+     double omega= params_function.OMEGA_M;
+     double z=x[0];
+     double c=299792.458;//speed of light
+     fval[0]=c/(100.*sqrt(omega*pow(1+z,3)+1.-omega));
+}
+
 
 void reshuffle(double radata[],double decdata[],double wcoldata[],double wsysdata[], long int npar_used,long int seed)//this re-shuffles the indices on angular-data wrt the unchanged radial-data in case of both-shuffling option.
 {
