@@ -423,16 +423,12 @@ line_test++;
 }
 
 
-//void bispectrum_calculator(double *K1,double **K2, double ***K3, int Nk1, int *Nk2, int **Nk3, double *deltak_re, double *deltak_im,double *deltak2_re, double *deltak2_im,int Ninterlacing, double kmin,double kmax,double L1,double L2, int ngrid, double Deltakbis, double I33,double I22, double IN, double Bsn, double Psn, int n_lines_parallel, char *binning_type, char *name_bs_out,char *name_bs002_out,char *name_bs020_out,char *name_bs200_out, char *triangles_num, char *write_triangles, char *triangles_id, long int *input_bin, char *do_bispectrum2)
-
 void bispectrum_calculator(double *K1,double **K2, double ***K3, int Nk1, int *Nk2, int **Nk3, double *deltak_re, double *deltak_im,double *deltak_reB, double *deltak_imB,double *deltak2_re, double *deltak2_im,int Ninterlacing, double kmin,double kmax,double L1,double L2, int ngrid, double Deltakbis, double I33,double I22, double IN, double Bsn, double Psn,double I33B,double I22B, double INB, double BsnB, double PsnB, int n_lines_parallel, char *binning_type, char *name_bs_out,char *name_bs002_out,char *name_bs020_out,char *name_bs200_out, char *triangles_num, char *write_triangles, char *triangles_id, long int *input_bin, char *do_bispectrum2, char *type_cross)
 {
 //double K1z,K2z,K3z;
 double I33eff;
 double Psn1,Psn2,Psn3;
 double I22_1,I22_2,I22_3;
-double INeff;
-double Bsneff;
 long int bin=input_bin[0];
 int i1,i2,i3;
 int ii1,ii2,ii3;
@@ -486,7 +482,8 @@ char name_triangles_file[1000];
 //double argument1,argument2,argument3;
 if(I33==0 && I22==0 && IN==0 && Bsn==0 && I33B==0 && I22B==0 && INB==0 && BsnB==0){periodic=1;/*periodic case*/}
 else{periodic=0;}
-
+//printf("%lf %lf %lf %lf %lf %lf %lf %lf\n",I33,I22,IN,Bsn,I33B,I22B,INB,BsnB);
+//printf("%d\n",periodic);exit(0);
 ngridtot=pow(ngrid,3);
 ngridr2c=(pow(ngrid,3)/2+pow(ngrid,2));
 
@@ -790,6 +787,11 @@ I33eff=pow(L2-L1,-6);
 I22_1=pow(L2-L1,-3);
 I22_2=pow(L2-L1,-3);
 I22_3=pow(L2-L1,-3);
+
+IN=Psn;
+Bsn=Psn*Psn;
+INB=PsnB;
+BsnB=PsnB*PsnB;
 if(strcmp(type_cross, "XXX") != 0){I22=pow(L2-L1,-3);I22B=pow(L2-L1,-3);}
 
 //INeff=Psn;//check for X
@@ -807,9 +809,6 @@ if(periodic==0)
     if(strcmp(type_cross, "XYX") == 0){I22_1=I22;I22_2=I22B;I22_3=I22;}
     if(strcmp(type_cross, "XYY") == 0){I22_1=I22;I22_2=I22B;I22_3=I22B;}
 
-    
-    //INeff=0;
-    //Bsneff=0;
     
 }
 
@@ -1038,6 +1037,7 @@ Q200=B200/(P1*P2+P1*P3+P2*P3);
 
 
 fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B, B_shot_noise,Q,Q_shot_noise, Number_triangles);
+//fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf, %lf %lf %lf,%lf %lf,%ld %ld %ld, %lf %lf, %d\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B, B_shot_noise,Q,Q_shot_noise, Number_triangles,P1,P2,P3,IN,Bsn,N_eff1,N_eff2,N_eff3,I33eff,I33,periodic);
 
 if( strcmp(do_bispectrum2, "yes") == 0 )
 {
@@ -1052,8 +1052,7 @@ fprintf(f200,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",K_eff1, K1[i1], K_e
 }
 
 bin++;
-
-//printf("aaaaA");
+//exit(0);
 //if(K1[i1]==K2[i1][i2] && K1[i1]==K3[i1][i2][i3])
 //{  
 //printf("%lf %lf %lf %lf %lf %e %lf %lf \n", K_eff1, K_eff2, K_eff3,B,B_shot_noise, Number_triangles,P1,Psn);
@@ -1381,7 +1380,7 @@ double *K1eff,**K2eff,***K3eff;
 long int i1,i2,i3,ll;
 int periodic;
 char type_cross[200];
-    
+//   printf("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",I33,I33B,I22,I22B,IN,INB,Bsn,BsnB,alpha,alphaB); 
         Nktot=count_triangles(kmin,kmax,Deltakbis,triangle_shapes);
         grid= (int *) calloc(Nktot,sizeof(int));
         K1= (double*) calloc(Nktot,sizeof(double));
@@ -1412,7 +1411,13 @@ if(Nktot_i>0)//There are some triangles associated to that gridsize.
         ngridtotr2c=(pow(ngrid_i,3)/2+pow(ngrid_i,2));
         deltak_re = (double*) calloc(ngridtotr2c,sizeof(double));
         deltak_im = (double*) calloc(ngridtotr2c,sizeof(double));
-    
+   
+    if(strcmp(type_of_code,"rusticoX") ==0 ){
+
+        deltak_reB = (double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_imB = (double*) calloc(ngridtotr2c,sizeof(double));
+
+          } 
     
 
 //put particles in a grid cell and forier transform it to get deltak(k)
@@ -1578,42 +1583,42 @@ free(K3sel);
     sprintf(type_cross,"XXX");
 //bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im,  deltak2_re, deltak2_im,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I22, IN, Bsn,P_shot_noise, n_lines_parallel, binning_type, name_bs_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2);
 
-  bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, NULL, NULL, deltak2_re, deltak2_im,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,0,I22,0, IN,0, Bsn,0,P_shot_noise,0, n_lines_parallel, binning_type, name_bs_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+  bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, NULL, NULL, deltak2_re, deltak2_im,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I22,IN, Bsn,P_shot_noise,0,0,0,0,0, n_lines_parallel, binning_type, name_bs_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
     
     if(strcmp(type_of_code,"rusticoX") ==0 ){//can't enter here with do_bispectrum2==yes
         
         //BBB
         sprintf(type_cross,"XXX");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,0,I22B,0, INB,0, BsnB,0,P_shot_noiseB,0, n_lines_parallel, binning_type, name_bsBBB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I22B, INB, BsnB,P_shot_noiseB,0,0,0,0,0, n_lines_parallel, binning_type, name_bsBBB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
         //AAB
         sprintf(type_cross,"XXY");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I33B,I22,I22B, IN,INB, Bsn,BsnB,P_shot_noise,P_shot_noiseB, n_lines_parallel, binning_type, name_bsAAB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I22, IN, Bsn,P_shot_noise,I33B,I22B,INB,BsnB,P_shot_noiseB, n_lines_parallel, binning_type, name_bsAAB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
         //BBA
         sprintf(type_cross,"XXY");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I33,I22B,I22, INB,IN, BsnB,Bsn,P_shot_noiseB,P_shot_noise, n_lines_parallel, binning_type, name_bsBBA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I22B, INB, BsnB,P_shot_noiseB,I33,I22,IN,Bsn,P_shot_noise, n_lines_parallel, binning_type, name_bsBBA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
         //ABA
         sprintf(type_cross,"XYX");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I33B,I22,I22B, IN,INB, Bsn,BsnB,P_shot_noise,P_shot_noiseB, n_lines_parallel, binning_type, name_bsABA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I22,IN,Bsn,P_shot_noise,I33B,I22B,INB,BsnB,P_shot_noiseB, n_lines_parallel, binning_type, name_bsABA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
         //BAB
         sprintf(type_cross,"XYX");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I33,I22B,I22, INB,IN, BsnB,Bsn,P_shot_noiseB,P_shot_noise, n_lines_parallel, binning_type, name_bsBAB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I22B, INB, BsnB,P_shot_noiseB,I33,I22,IN,Bsn,P_shot_noise, n_lines_parallel, binning_type, name_bsBAB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
         //ABB
         sprintf(type_cross,"XYY");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I33B,I22,I22B, IN,INB, Bsn,BsnB,P_shot_noise,P_shot_noiseB, n_lines_parallel, binning_type, name_bsABB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33,I22, IN, Bsn,P_shot_noise,I33B,I22B,INB,BsnB,P_shot_noiseB, n_lines_parallel, binning_type, name_bsABB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
         //BAA
         sprintf(type_cross,"XYY");
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I33,I22B,I22, INB,IN, BsnB,Bsn,P_shot_noiseB,P_shot_noise, n_lines_parallel, binning_type, name_bsBAA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, I33B,I22B,INB,BsnB,P_shot_noiseB,I33,I22,IN,Bsn,P_shot_noise, n_lines_parallel, binning_type, name_bsBAA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
         
     }
     
@@ -1877,48 +1882,48 @@ free(K3sel);
     
     //AAA
     sprintf(type_cross,"XXX");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noise,0, n_lines_parallel, binning_type, name_bs_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0, 0,0,Power_spectrum_shot_noise,0,0,0,0,0, n_lines_parallel, binning_type, name_bs_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
     
     //BBB
     sprintf(type_cross,"XXX");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noiseB,0, n_lines_parallel, binning_type, name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noiseB,0,0,0,0,0, n_lines_parallel, binning_type, name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
     
     //AAB
     sprintf(type_cross,"XXY");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noise,Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsAAB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noise,0,0,0,0,Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsAAB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
     
     //BBA
     sprintf(type_cross,"XXY");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noiseB,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBBA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noiseB,0,0,0,0,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBBA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
     
 
     
     //ABA
     sprintf(type_cross,"XYX");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noise,Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsABA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noise,0,0,0,0,Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsABA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
     
     //BAB
     sprintf(type_cross,"XYX");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noiseB,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBAB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noiseB,0,0,0,0,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBAB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
     
     //ABB
     sprintf(type_cross,"XYY");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noise,Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsABB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, deltak_reB, deltak_imB, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noise,0,0,0,0,Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsABB_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
     
     //BAA
     sprintf(type_cross,"XYY");
-    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0, 0,0, 0,0,Power_spectrum_shot_noiseB,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBAA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+    bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noiseB,0,0,0,0,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBAA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
 
 

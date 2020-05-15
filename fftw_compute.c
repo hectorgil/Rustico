@@ -614,14 +614,14 @@ delta3_sw=0;
 delta4_sw=0;
 
 if(strcmp(Hexadecapole_type, "L2L2") == 0){delta2_sw=1;}
-if(strcmp(Hexadecapole_type, "L4") == 0){delta4_sw=1;delta2_sw=1;}
+if(strcmp(Hexadecapole_type, "L0L4") == 0){delta4_sw=1;delta2_sw=1;}
 if(strcmp(Hexadecapole_type, "L1L3") == 0){delta1_sw=1;delta3_sw=1;}
 
-if(strcmp(Quadrupole_type, "L2") == 0){delta2_sw=1;}
+if(strcmp(Quadrupole_type, "L0L2") == 0){delta2_sw=1;}
 if(strcmp(Quadrupole_type, "L1L1") == 0){delta1_sw=1;}
 
 if(strcmp(do_odd_multipoles,"yes") == 0){
-if(strcmp(Octopole_type, "L3") == 0){delta3_sw=1;delta1_sw=1;}
+if(strcmp(Octopole_type, "L0L3") == 0){delta3_sw=1;delta1_sw=1;}
 if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
