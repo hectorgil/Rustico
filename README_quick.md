@@ -19,13 +19,15 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 
 ====Parameter file options====
 
+#Type of code (rustico/rusticoX): rustico option for auto-statistics, rusticoX option for cross statistics.
+
 #Type of Box (periodic/cutsky): 'periodic' for periodic boxes with boundary conditions. 'cutsky' for actual observations or mocks which include sky mask
 
-#Type of file (ascii/gadget): 'ascii' is the option required for 'cutsky'. 'periodic' option allows 'ascii' files or 'gadget' files. Gadget units assumed kpc/h. See 'ascii file structure' below for the format of the file
+#Type of file (ascii/gadget)x2: 'ascii' is the option required for 'cutsky'. 'periodic' option allows 'ascii' files or 'gadget' files. Gadget units assumed kpc/h. See 'ascii file structure' below for the format of the file. In case of rusticoX option is selected 2 inputs are required, for the 2 object-field to cross-correlate. 
 
-#Number of gadget files(int): In case the gadget boxes are split in more than 1 gadget file
+#Number of gadget files(int)x2: In case the gadget boxes are split in more than 1 gadget file. For rusticox two inputs are required, each for each input path above. 
 
-#RSD distorsion on gadget periodic box (yes/no): yes. For gadget boxes allow this option to distort particles along the z-axis for redshift space distortions. The values of redhisft and Omega matter, will be taken from the header of the gadget file.
+#RSD distorsion on gadget periodic box (yes/no)x2: yes. For gadget boxes allow this option to distort particles along the z-axis for redshift space distortions. The values of redhisft and Omega matter, will be taken from the header of the gadget file. For rusticox two inputs are required, each for each input path above. 
 
 #Size of the Box (double/double): Low and Upper limits, respectively, of the cubic box where the galaxies are placed.
 
@@ -37,8 +39,14 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 
 #k-range for computation (double/double): Low and Upper limits, respectively, of the k-values choosen for printing the power spectrum.
 
-#Do Bispectrum (yes/no): Whether the bispectrum should be computed by the code
+#Do anisotropy signal (yes/no): Whether only the monopole or higher multipoles are computed (quadrupole and hexadecapole)
+#Do odd multipoles (yes/no): Whether Dipole and octoploe are computed
+#Do mu-binning Power Spectrum (yes/no): no Bin P(k,mu), only available for periodic boxes. 
+#Number of mu-bins (int): 120 Number of mu bins between 0 and 1
+#Different files for mu-bin (yes/no): no Whether the mu bins are all writen in the same or different output files. 
 
+#Do Bispectrum (yes/no): Whether the bispectrum should be computed by the code
+#Do Bispectrum multipoles (yes/no): Whether the bispectrum quadrupole is computed (not available for rusticoX). 
 Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bispectrum triangles will be split according to their k-values and associated to different grid-sizes for a more optimal computation (large scale modes do not requires small grid cell ressolution). However, each grid-size computation will requires to re-associate the particles to the grid cells, which a potential lose of optimality. We recomend enable such option when many triangle shapes are required and when the datasets do not consists of many particles. In practice, each specific case will requires testing for determing the best performance option. When the multigrid option is enable, we require the interlacing option to be also enabled (see below), with at least 2 interlacing steps.
 
 #Triangle Shapes (ALL/EQU/ISO/SQU). Triangle shapes to be computed. All (ALL), equilateral (EQU), Isosceles (ISO), squeezed (SQU). We define the squeezed triangles as those |k2-k3|<=k1 and K1<=0.1 K2; where by definition K1<=K2<=K3. Note that this condition is applied to the center of bin k-values and not to the effective k-values.
@@ -51,9 +59,9 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 
 #Path for triangles in each bin: Determines the path for writting the above triangles
 
-#Path of data: path of data file
+#Path of datax2: path of data file. Two inputs required in case of rusticoX
 
-#Path of randoms: path for the random file. If periodic box enabled, write 'nothing'
+#Path of randomsx2: path for the random file. If periodic box enabled, write 'none'. Two inputs required in case of rusticoX
 
 #Path of output: path were the output files will be written
 
@@ -71,13 +79,15 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 
 #Do Grid Correction? (yes/no): Grid correction option. (Jing et al 2005)
 
-#Redshift Range (double/double): Low and Upper limits, respectively, for the redshift cuts in the skycut option
+#Redshift Range (double/double)x2: Low and Upper limits, respectively, for the redshift cuts in the skycut option. Two pairs of inputs required in case of rusticoX
 
 #Omega matter value (double): Omega matter value used for converting redshifts to comoving distances in the skycut option.
 
-#Area effective value in deg^2 (double): Value of the area used for the normalization and of the power spectrum and bispectrum in the skycut option
+#Area effective value in deg^2 (double)x2: Value of the area used for the normalization and of the power spectrum and bispectrum in the skycut option. Two inputs required in case of rusticoX
 
-#Hexadecapole as (L4/L2L2): Hexadecapole type of computation for the skycut option. L4 refers to Eq. xxx of Bianchi et al. 2015 and L2L2 to Eq. xxx of Scoccimarro et al. 2015.
+#Quadrupole as (L0L2/L1L1): Options for projecting the line-of-sight for the quadrupole. (see pdf for more details)
+#Octopole as (L0L3/L1L2): Options for projecting the line-of-sight for the octopole. (see pdf for more details)
+#Hexadecapole as (L0L4/L2L2/L1L3): Options for projecting the line-of-sight for the hexadecapole. (see pdf for more details)
 
 #Compute Normalization as (area/density): Compute the normalization of the power spectrum using either the area value of the number density column of the input. Only for skycut option
 
@@ -85,89 +95,18 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 
 #Compute Shot noise as (double): Shot noise factor parameter. See. Gil-Marin et al. 2014 Eq. ..... Only for skycut option
 
-====Ascii File Structure=====
+#Shuffle randoms (no/redshift/radec/both): Whether to create or not a new random catalogue (of the same size of the inputed) using the radec positions of the data and the z of the randoms (redshift); using the redshift positions of the data and the radec of the randoms (radec); usig both radec and redshift from the data (both).
 
-For 'periodic' option: 4-column entry
+#Write shuffled randoms (yes/no): Whether the shuffled random catalogue is written in an output
 
-x-position (double), y-position (double), z-position (double), weight (double)
+#Compute Window Selection function (yes/no): Whether the window function RR counts are computed (for rusticoX 3 different RR couts are performed)
+#Bin for window normalization (int) Bin used to nonrmalize W0=1
+#DeltaS binning (double) 1.0 Size of the bin for the window. 
+#Percentage of randoms selected in % (double) 10. Percentage of randoms selected to perform the RR counts
+#Yamamoto aproximation (yes/no): Whether the LOS yamamoto is used (all LOS-mu weight in one member of the pair). 
 
-For example,
-
-2.234479 8.066518 6.439348 1.0
-
-1.406139 5.003024 3.664719 1.0
-
-9.559097 7.672305 10.529753 1.0
-
-16.126962 1.955036 1.807368 1.0
-
-13.377709 2.506474 2.225270 1.0
-
-11.555976 0.431673 3.149166 1.0
-
-14.122240 16.198794 3.532218 1.0
-
-14.214268 14.341477 4.141918 1.0
-
-For 'skycut' option: data and random entry required
-
-#data. 8-column entry:
-
-Right Ascension (double), declination (double), redshift (double), weight_fkp (double), weight_colision (integer), weight_systematics (double), number_density (double), veto (integer)
-
-For example
-
-1.291761884477e+02 4.894649924515e+01 5.425299000000e-01 1.238355000000e-01 1 1.029931000000e+00 7.075228831797e-04 1
-
-1.174169630420e+02 3.927675925314e+01 3.996815000000e-01 6.395705000000e-01 1 1.020382000000e+00 5.635492881551e-05 1
-
-1.169127239443e+02 3.944331088030e+01 5.377024000000e-01 1.231396000000e-01 1 9.972784000000e-01 7.120864449779e-04 0
-
-1.169501719710e+02 3.949076919700e+01 5.191724000000e-01 1.143980000000e-01 1 1.061827000000e+00 7.741411563139e-04 1
-
-1.175284705313e+02 4.017649329509e+01 5.431913000000e-01 1.246438000000e-01 1 1.022436000000e+00 7.022861947405e-04 1
-
-1.238161587640e+02 4.663678411199e+01 5.896081000000e-01 1.800036000000e-01 1 1.009149000000e+00 4.555444446667e-04 1
-
-1.276012766986e+02 4.977593704841e+01 5.481966000000e-01 1.309460000000e-01 1 1.053429000000e+00 6.636735753669e-04 1
-
-#randoms. 6-column entry:
-
-Right Ascension (double), declination (double), redshift (double), weight_fkp (double), number_density (double), veto (int)
-
-For example
-
-1.350240900000e+02 4.260718600000e+01 6.651101708412e-01 3.819904327393e-01 8.089333060371e-03 1
-
-1.849009090000e+02 5.155070000000e+01 4.627352356911e-01 1.447689384222e-01 2.953779556923e-02 1
-
-2.178783680000e+02 1.166351500000e+01 4.882844388485e-01 1.163647100329e-01 3.796835353765e-02 1
-
-1.413639550000e+02 5.575799200000e+01 5.019413828850e-01 1.094641387463e-01 4.067705969521e-02 0
-
-2.276985360000e+02 1.560757100000e+01 5.646098852158e-01 1.411796659231e-01 3.041586507737e-02 1
-
-====Output Structure====
-
-The power spectrum output have the following format: k-eff, k-centerbin, Monopole-Pshotnoise, Quadrupole, Hexadecapole, number of modes, Pshotnoise
-
-The bispectrum output have the following format: k1-eff, k1-centerbin, k2-eff, k2-centerbin, k3-eff, k3-centerbin, B0-Bshotnoise, Bshotnoise, Reduced Bispectrum, Reduced Bispectrum shot noise, number of triangles
-
-For the skycut option, the code automatically generates two extra file for the number density of objects as a function of redshift for the data and random files with the following format,
-
-#data
-
-#Interval: xxx Mpc/h
-
-#z < nobs > < wc nobs> < wc wfkp nobs>
-
-#random
-
-#Interval: yyy Mpc/h
-
-#alpha< ns > alpha < wfkp ns >
-
-where xxx and yyy are the interval choosen by the code to bin the data and randoms, respectively, < nobs > are the raw number density of observed objects, < wc nobs> is the number density of observed objects weighted by the collision weights, and < wc wfkp nobs> weighted by the collision weights and fkp weights. For the randoms, these number densities are scaled by alpha in order to match the data ones.
+== Reading file==
+in order to adapt the code to the format of your files please remove all the headers and edit the read_line.c file. 
 
 ====Citation====
 
