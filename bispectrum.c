@@ -46,6 +46,8 @@ double Number_triangles_exact(double k1,double k2,double k3,double Dk)
 {
 double triangles;
 triangles=0;//I hope I can do this one day
+printf("Error, option of exact number of triangles not available (%lf,%lf,%lf)...\n",k1,k2,k3);
+exit(0);
 return triangles;
 }
 void FFT_k(int ngrid, double *out_k1, double k_input, double Deltakbis, double kf, long int *L,long int *IJK, long int *Kz,double *deltak_re, double *deltak_im, double keff_out[], long int neff_out[], int mode)
@@ -425,6 +427,8 @@ line_test++;
 
 void bispectrum_calculator(double *K1,double **K2, double ***K3, int Nk1, int *Nk2, int **Nk3, double *deltak_re, double *deltak_im,double *deltak_reB, double *deltak_imB,double *deltak2_re, double *deltak2_im,int Ninterlacing, double kmin,double kmax,double L1,double L2, int ngrid, double Deltakbis, double I33,double I22, double IN, double Bsn, double Psn,double I33B,double I22B, double INB, double BsnB, double PsnB, int n_lines_parallel, char *binning_type, char *name_bs_out,char *name_bs002_out,char *name_bs020_out,char *name_bs200_out, char *triangles_num, char *write_triangles, char *triangles_id, long int *input_bin, char *do_bispectrum2, char *type_cross)
 {
+//printf("%d\n",Nk3[i1][i2]);exit(0);
+//printf("%s\n",do_bispectrum2);exit(0);
 //double K1z,K2z,K3z;
 double I33eff;
 double Psn1,Psn2,Psn3;
@@ -496,6 +500,10 @@ if( strcmp(do_bispectrum2, "yes") == 0 )
 Power002 = (double*)malloc((n_lines_parallel)*sizeof(double));
 Power020 = (double*)malloc((n_lines_parallel)*sizeof(double));
 Power200 = (double*)malloc((n_lines_parallel)*sizeof(double));
+
+Power11 = (double*)malloc((n_lines_parallel)*sizeof(double));
+Power22 = (double*)malloc((n_lines_parallel)*sizeof(double));
+Power33 = (double*)malloc((n_lines_parallel)*sizeof(double));
 }
 
 
@@ -514,12 +522,6 @@ Power3 = (double*)malloc((n_lines_parallel)*sizeof(double));
     Power3cross = (double*)malloc((n_lines_parallel)*sizeof(double));
     }
 
-if( strcmp(do_bispectrum2, "yes") == 0)
-{
-Power11 = (double*)malloc((n_lines_parallel)*sizeof(double));
-Power22 = (double*)malloc((n_lines_parallel)*sizeof(double));
-Power33 = (double*)malloc((n_lines_parallel)*sizeof(double));
-}
 
 sprintf(name_of_order_file,"wisdom%d.dat",ngrid);
 
@@ -549,7 +551,8 @@ Kz = (long int*) malloc(lines_temp_file*sizeof(long int));
        fscanf(f,"%ld %ld %ld\n",&L[l],&IJK[l],&Kz[l]);
     }
 fclose(f);
-
+//exit(0);
+if(Nk1<=0){printf("Error in bispectrum calculator, Nk1=0. Exiting now...\n");exit(0);}
 for(i1=0;i1<Nk1;i1++)
 {
    out_k1=(double *) malloc(sizeof(double)*ngridtot);
@@ -565,7 +568,6 @@ if( strcmp(do_bispectrum2, "yes") == 0){out_k1_2=(double *) malloc(sizeof(double
    N_eff1_unique=neff_out[1];
   if( strcmp(do_bispectrum2, "yes") == 0 && periodic == 0){FFT_k(ngrid,out_k1_2,K1[i1],Deltakbis, kf, L,IJK,Kz,deltak2_re,deltak2_im, keff_out, neff_out,0);}
   if( strcmp(do_bispectrum2, "yes") == 0 && periodic == 1){FFT_k(ngrid,out_k1_2,K1[i1],Deltakbis, kf, L,IJK,Kz,deltak_re,deltak_im, keff_out, neff_out,2);}
-
 
 //Alternative option (less RAM memory, more time)
 //            FFT_k(ngrid,out_k1,K1[i1],Deltakbis, kf, L,IJK,Kz,deltak_re,deltak_im, keff_out, neff_out);
@@ -616,6 +618,7 @@ f020=fopen(name_bs020_out,"a");
 f200=fopen(name_bs200_out,"a");
 }
 
+if(Nk2[i1]<=0){printf("Error in bispectrum calculator, Nk2=0 for i1=%d. Exiting now...\n",i1);exit(0);}
 for(i2=0;i2<Nk2[i1];i2++)
 {
    out_k2=(double *) malloc(sizeof(double)*ngridtot);
@@ -671,18 +674,23 @@ if( strcmp(do_bispectrum2, "yes") == 0){ out_k2_2=(double *) malloc(sizeof(doubl
       if(strcmp(type_cross,"XXY") == 0){FFT_k(ngrid,out_k2alt,K2[i1][i2],Deltakbis, kf, L,IJK,Kz,deltak_reB,deltak_imB, keff_out, neff_out,0);}
       if(strcmp(type_cross,"XYX") == 0 || strcmp(type_cross,"XYY") == 0 ){FFT_k(ngrid,out_k2alt,K2[i1][i2],Deltakbis, kf, L,IJK,Kz,deltak_re,deltak_im, keff_out, neff_out,0);}
     }
-  
+  //exit(0);
+if(Nk3[i1][i2]<=0){printf("Error in bispectrum calculator, Nk3=0 for i1=%d,i2=%d. Exiting now...\n",i1,i2);exit(0);}
 for(i3=0;i3<Nk3[i1][i2];i3++)
 {
+//printf("%d %d %d\n",i1,i2,i3);
+//printf("%d\n",Nk3[i1][i2]);
+//exit(0);
    out_k3=(double *) malloc(sizeof(double)*ngridtot);
 if( strcmp(do_bispectrum2, "yes") == 0){ out_k3_2=(double *) malloc(sizeof(double)*ngridtot);}
-
+//printf("%s %ld %d %d\n",do_bispectrum2,ngridtot,i3,Nk3[i1][i2]);
+//exit(0);
    if(strcmp(triangles_num, "FFT") == 0)
-   { 
+   {//exit(0); 
         out_k3_NT=(double*) malloc(sizeof(double)*ngridtot);
        if(strcmp(type_cross,"XYX") == 0 || strcmp(type_cross,"XXX") == 0 ){FFT_kt(ngrid,out_k3,out_k3_NT,K3[i1][i2][i3],Deltakbis, kf, L,IJK,Kz,deltak_re,deltak_im, keff_out, neff_out);}
        if(strcmp(type_cross,"XYY") == 0 || strcmp(type_cross,"XXY") == 0 ){FFT_kt(ngrid,out_k3,out_k3_NT,K3[i1][i2][i3],Deltakbis, kf, L,IJK,Kz,deltak_reB,deltak_imB, keff_out, neff_out);}
-
+//exit(0);
         K_eff3=keff_out[0];
         //K3z=keff_out[1];
         N_eff3=neff_out[0];
@@ -726,7 +734,7 @@ if( strcmp(do_bispectrum2, "yes") == 0){ out_k3_2=(double *) malloc(sizeof(doubl
         if(strcmp(type_cross,"XYY") == 0 || strcmp(type_cross,"XXY") == 0 ){FFT_k(ngrid,out_k3alt,K3[i1][i2][i3],Deltakbis, kf, L,IJK,Kz,deltak_re,deltak_im, keff_out, neff_out,0);}
     }
     
-
+//exit(0);
 B=0;
 B002=0;
 B020=0;
@@ -811,7 +819,7 @@ if(periodic==0)
 
     
 }
-
+//exit(0);
 
 #pragma omp parallel for private(l,tid,i,j,k) shared(ngridtot,Power,Power002,Power020,Power200,Number,out_k1,out_k2,out_k3,out_k1alt,out_k2alt,out_k3alt,out_k1_2,out_k2_2,out_k3_2,I33eff,out_k1_NT,out_k2_NT,out_k3_NT,Ninterlacing,Power1,Power2,Power3,Power11,Power22,Power33,Power1cross,Power2cross,Power3cross,I22,I22B,I22_1,I22_2,I22_3,L2,L1,ngrid,Pi,K_eff1,K_eff2,K_eff3,Deltakbis,kf,do_bispectrum2,periodic,type_cross)
 for(l=0;l<ngridtot;l++)//This needs to go parallel
@@ -859,9 +867,12 @@ Power33[tid]=Power33[tid]+pow(ngrid,-3)*5*out_k3[l]*out_k3_2[l]/(I22_3*Ninterlac
 }
 
 if( strcmp(do_bispectrum2, "yes") == 0 && periodic==0){
-Power11[tid]=Power11[tid]+pow(ngrid,-3)*5*(out_k1[l]*0.5*(3.*out_k1_2[l]-out_k1[l]))/(I22_1*Ninterlacing*Ninterlacing);
-Power22[tid]=Power22[tid]+pow(ngrid,-3)*5*(out_k2[l]*0.5*(3.*out_k2_2[l]-out_k2[l]))/(I22_2*Ninterlacing*Ninterlacing);
-Power33[tid]=Power33[tid]+pow(ngrid,-3)*5*(out_k3[l]*0.5*(3.*out_k3_2[l]-out_k3[l]))/(I22_3*Ninterlacing*Ninterlacing);
+//Power11[tid]=Power11[tid]+pow(ngrid,-3)*5*(out_k1[l]*0.5*(3.*out_k1_2[l]-out_k1[l]))/(I22_1*Ninterlacing*Ninterlacing);
+//Power22[tid]=Power22[tid]+pow(ngrid,-3)*5*(out_k2[l]*0.5*(3.*out_k2_2[l]-out_k2[l]))/(I22_2*Ninterlacing*Ninterlacing);
+//Power33[tid]=Power33[tid]+pow(ngrid,-3)*5*(out_k3[l]*0.5*(3.*out_k3_2[l]-out_k3[l]))/(I22_3*Ninterlacing*Ninterlacing);
+Power11[tid]=Power11[tid]+pow(ngrid,-3)*(out_k1[l]*(out_k1_2[l]))/(I22_1*Ninterlacing*Ninterlacing);
+Power22[tid]=Power22[tid]+pow(ngrid,-3)*(out_k2[l]*(out_k2_2[l]))/(I22_2*Ninterlacing*Ninterlacing);
+Power33[tid]=Power33[tid]+pow(ngrid,-3)*(out_k3[l]*(out_k3_2[l]))/(I22_3*Ninterlacing*Ninterlacing);
 }
 
 
@@ -874,7 +885,7 @@ if(strcmp(write_triangles, "yes") == 0)
 sprintf(name_triangles_file,"%s_bin%ld.txt",triangles_id,bin);
 ftriangles=fopen(name_triangles_file,"w");
 fprintf(ftriangles,"#Effective %.16lf %.16lf %.16lf\n",K_eff1,K_eff2,K_eff3);
-fprintf(ftriangles,"#Centre %.16lf %.16lf %.16lf\n",K1[i1],K2[i1][i2],K3[i1][i2][i3]);
+fprintf(ftriangles,"#Centre %.16lf %.16lf %.16lf\n",K1[i1]+Deltakbis/2.,K2[i1][i2]+Deltakbis/2.,K3[i1][i2][i3]+Deltakbis/2.);
 }
 
 if(strcmp(write_triangles, "yes") == 0 || strcmp(triangles_num, "APR_SUM") == 0 ||  strcmp(triangles_num, "EXA_SUM") == 0)
@@ -903,8 +914,8 @@ if(strcmp(write_triangles, "yes") == 0){fprintf(ftriangles,"%.16lf %.16lf %.16lf
            if( strcmp(triangles_num, "EXA_SUM") == 0)
            {
               
-              Number_triangles+=Number_triangles_exact(k1_bin,k2_bin,k3_bin,Deltakbis)*wtot;
               if(K1[i1]==K3[i1][i2][i3] && K1[i1]==K2[i1][i2]){Number_triangles+=Number_triangles_exact_equi(k1_bin,Deltakbis)*wtot;}
+              else{Number_triangles+=Number_triangles_exact(k1_bin,k2_bin,k3_bin,Deltakbis)*wtot;}
                Number_triangles_norm+=wtot;
 
            }
@@ -925,8 +936,8 @@ if(strcmp(write_triangles, "yes") == 0){fclose(ftriangles);}
            }
            if(strcmp(triangles_num, "EXA_EFF") == 0)
            {
-             Number_triangles=Number_triangles_exact(K_eff1,K_eff2,K_eff3,Deltakbis)*pow(kf,-6);
              if(K1[i1]==K3[i1][i2][i3] && K1[i1]==K2[i1][i2]){Number_triangles=Number_triangles_exact_equi(K_eff1,Deltakbis)*pow(kf,-6);}
+             else{Number_triangles=Number_triangles_exact(K_eff1,K_eff2,K_eff3,Deltakbis)*pow(kf,-6);}
            }
            if(strcmp(triangles_num, "EXA_SUM") == 0)
            {
@@ -1036,19 +1047,18 @@ Q_shot_noise200=B_shot_noise200/(P1*P2+P1*P3+P2*P3);
 Q200=B200/(P1*P2+P1*P3+P2*P3);
 
 
-fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B, B_shot_noise,Q,Q_shot_noise, Number_triangles);
-//fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf, %lf %lf %lf,%lf %lf,%ld %ld %ld, %lf %lf, %d\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B, B_shot_noise,Q,Q_shot_noise, Number_triangles,P1,P2,P3,IN,Bsn,N_eff1,N_eff2,N_eff3,I33eff,I33,periodic);
+fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n", K1[i1]+Deltakbis/2.,K_eff1,  K2[i1][i2]+Deltakbis/2.,K_eff2, K3[i1][i2][i3]+Deltakbis/2.,K_eff3, B, B_shot_noise,Q,Q_shot_noise, Number_triangles);
 
 if( strcmp(do_bispectrum2, "yes") == 0 )
 {
-fprintf(f002,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B002, B_shot_noise002,Q002,Q_shot_noise002, Number_triangles);
+fprintf(f002,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n", K1[i1]+Deltakbis/2., K_eff1,  K2[i1][i2]+Deltakbis/2.,K_eff2, K3[i1][i2][i3]+Deltakbis/2.,K_eff3,B002, B_shot_noise002,Q002,Q_shot_noise002, Number_triangles);
 
 //extra conditions to avoid writing duplicated triangles for 020 and 200
 if(K2[i1][i2]!=K3[i1][i2][i3]){
-fprintf(f020,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B020, B_shot_noise020,Q020,Q_shot_noise020, Number_triangles);}
+fprintf(f020,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n", K1[i1]+Deltakbis/2., K_eff1,  K2[i1][i2]+Deltakbis/2., K_eff2, K3[i1][i2][i3]+Deltakbis/2.,K_eff3,B020, B_shot_noise020,Q020,Q_shot_noise020, Number_triangles);}
 
 if(K1[i1]!=K2[i1][i2] && K1[i1]!=K3[i1][i2][i3]){
-fprintf(f200,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",K_eff1, K1[i1], K_eff2,  K2[i1][i2], K_eff3, K3[i1][i2][i3],B200, B_shot_noise200,Q200,Q_shot_noise200, Number_triangles);}
+fprintf(f200,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n", K1[i1]+Deltakbis/2., K_eff1,  K2[i1][i2]+Deltakbis/2., K_eff2, K3[i1][i2][i3]+Deltakbis/2.,K_eff3,B200, B_shot_noise200,Q200,Q_shot_noise200, Number_triangles);}
 }
 
 bin++;
@@ -1155,13 +1165,13 @@ if(strcmp(triangle_shapes, "ALL") == 0)
 {
  for(i1=0;i1<Nk;i1++)
  {
-   K1=kmin+(i1+1)*Deltak;
+   K1=kmin+(i1+0)*Deltak;
    for(i2=i1;i2<Nk;i2++)
    {
-      K2=kmin+(i2+1)*Deltak;
+      K2=kmin+(i2+0)*Deltak;
       for(i3=i2;i3<Nk;i3++)
       {
-          K3=kmin+(i3+1)*Deltak;
+          K3=kmin+(i3+0)*Deltak;
           if(K3<K2+K1){i++;}
       }
    }
@@ -1173,9 +1183,9 @@ if(strcmp(triangle_shapes, "EQU") == 0)
 {
  for(i1=0;i1<Nk;i1++)
  {
-   K1=kmin+(i1+1)*Deltak;
-   K2=kmin+(i1+1)*Deltak;
-   K3=kmin+(i1+1)*Deltak;
+   K1=kmin+(i1+0)*Deltak;
+   K2=kmin+(i1+0)*Deltak;
+   K3=kmin+(i1+0)*Deltak;
    if(K3<K2+K1){i++;}
 
  }
@@ -1186,11 +1196,11 @@ if(strcmp(triangle_shapes, "ISO") == 0)
 {
  for(i1=0;i1<Nk;i1++)
  {
-   K1=kmin+(i1+1)*Deltak;
+   K1=kmin+(i1+0)*Deltak;
    for(i2=i1;i2<Nk;i2++)
    {
-      K2=kmin+(i2+1)*Deltak;
-      K3=kmin+(i2+1)*Deltak;
+      K2=kmin+(i2+0)*Deltak;
+      K3=kmin+(i2+0)*Deltak;
       if(K3<K2+K1){i++;}
       
    }
@@ -1202,13 +1212,13 @@ if(strcmp(triangle_shapes, "SQU") == 0)
 {
  for(i1=0;i1<Nk;i1++)
  {
-   K1=kmin+(i1+1)*Deltak;
+   K1=kmin+(i1+0)*Deltak;
    for(i2=i1;i2<Nk;i2++)
    {
-      K2=kmin+(i2+1)*Deltak;
+      K2=kmin+(i2+0)*Deltak;
       for(i3=i2;i3<Nk;i3++)
       {
-          K3=kmin+(i3+1)*Deltak;
+          K3=kmin+(i3+0)*Deltak;
           if(K3<K2+K1 && fabs(K3-K2)<=K1 && K1<=squeezed_factor*Minimum(K2,K3) ){i++;}
       }
    }
@@ -1241,15 +1251,19 @@ if(strcmp(triangle_shapes, "ALL") == 0)
 {
    for(i1=0;i1<Nk;i1++)
    {
-     K1=kmin+(i1+1)*Deltak;
+     //K1=kmin+(i1+1)*Deltak;
+     K1=kmin+(i1+0)*Deltak;
      for(i2=i1;i2<Nk;i2++)
      {
-       K2=kmin+(i2+1)*Deltak;
+       //K2=kmin+(i2+1)*Deltak;
+         K2=kmin+(i2+0)*Deltak;
        for(i3=i2;i3<Nk;i3++)
        {
-          K3=kmin+(i3+1)*Deltak;
+//          K3=kmin+(i3+1)*Deltak;
+          K3=kmin+(i3+0)*Deltak;
           if(K3<K2+K1)
           {
+             if(i==Nktot){printf("Error in select_triangles function, not enough memory for storing triangles. Exiting now...\n");exit(0);}
              k1[i]=K1;
              k2[i]=K2;
              k3[i]=K3;
@@ -1264,9 +1278,9 @@ if(strcmp(triangle_shapes, "EQU") == 0)
 {
    for(i1=0;i1<Nk;i1++)
    {
-     K1=kmin+(i1+1)*Deltak;
-     K2=kmin+(i1+1)*Deltak;
-     K3=kmin+(i1+1)*Deltak;
+     K1=kmin+(i1+0)*Deltak;
+     K2=kmin+(i1+0)*Deltak;
+     K3=kmin+(i1+0)*Deltak;
         if(K3<K2+K1)
         {
            k1[i]=K1;
@@ -1281,11 +1295,11 @@ if(strcmp(triangle_shapes, "ISO") == 0)
 {
    for(i1=0;i1<Nk;i1++)
    {
-     K1=kmin+(i1+1)*Deltak;
+     K1=kmin+(i1+0)*Deltak;
      for(i2=i1;i2<Nk;i2++)
      {
-       K2=kmin+(i2+1)*Deltak;
-       K3=kmin+(i2+1)*Deltak;
+       K2=kmin+(i2+0)*Deltak;
+       K3=kmin+(i2+0)*Deltak;
           if(K3<K2+K1)
           {
              k1[i]=K1;
@@ -1304,13 +1318,13 @@ if(strcmp(triangle_shapes, "SQU") == 0)
 
    for(i1=0;i1<Nk;i1++)
    {
-     K1=kmin+(i1+1)*Deltak;
+     K1=kmin+(i1+0)*Deltak;
      for(i2=i1;i2<Nk;i2++)
      {
-       K2=kmin+(i2+1)*Deltak;
+       K2=kmin+(i2+0)*Deltak;
        for(i3=i2;i3<Nk;i3++)
        {
-          K3=kmin+(i3+1)*Deltak;
+          K3=kmin+(i3+0)*Deltak;
           if(K3<K2+K1 && fabs(K3-K2)<=K1 && K1<=squeezed_factor*Minimum(K2,K3) )
           {
              k1[i]=K1;
@@ -1381,7 +1395,7 @@ long int i1,i2,i3,ll;
 int periodic;
 char type_cross[200];
 //   printf("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",I33,I33B,I22,I22B,IN,INB,Bsn,BsnB,alpha,alphaB); 
-        Nktot=count_triangles(kmin,kmax,Deltakbis,triangle_shapes);
+        Nktot=count_triangles(kmin,kmax,Deltakbis,triangle_shapes);//printf("Nktot=%ld\n",Nktot);
         grid= (int *) calloc(Nktot,sizeof(int));
         K1= (double*) calloc(Nktot,sizeof(double));
         K2= (double*) calloc(Nktot,sizeof(double));
@@ -1979,7 +1993,7 @@ void loop_bispectrum_periodic_for_gadget_x_ascii_caller(double kmin,double kmax,
     long int i1,i2,i3,ll;
     double params[1];
     double Power_spectrum_shot_noiseA;
-    char *type_cross;
+    char type_cross[200];
 
        Nktot=count_triangles(kmin,kmax,Deltakbis,triangle_shapes);
             grid= (int *) calloc(Nktot,sizeof(int));
@@ -2141,10 +2155,9 @@ void loop_bispectrum_periodic_for_gadget_x_ascii_caller(double kmin,double kmax,
     free(K1sel);
     free(K2sel);
     free(K3sel);
-
+//exit(0);
     if(reverse==0)
     {
-        
         
         //AAA
         sprintf(type_cross,"XXX");
@@ -2193,7 +2206,7 @@ void loop_bispectrum_periodic_for_gadget_x_ascii_caller(double kmin,double kmax,
         
         sprintf(type_cross,"XXX");
   //  bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0, 0, 0, 0, Power_spectrum_shot_noiseB, n_lines_parallel, binning_type, name_bsAAA_out,triangles_num, write_triangles, triangles_id, input_bin);
-        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im,NULL,NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0, 0, 0, 0, Power_spectrum_shot_noiseB,0, 0, 0, 0, Power_spectrum_shot_noiseA, n_lines_parallel, binning_type, name_bsBBB_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
+        bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im,NULL,NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0, 0, 0, 0, Power_spectrum_shot_noiseB,0, 0, 0, 0, Power_spectrum_shot_noiseA, n_lines_parallel, binning_type, name_bsAAA_out,NULL,NULL,NULL,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross);
 
         
         sprintf(type_cross,"XXY");

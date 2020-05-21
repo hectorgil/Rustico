@@ -3933,7 +3933,7 @@ printf("Ok!\n");
 //void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in ,int gadget_files, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu)
 void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in,char *name_dataB_in ,int gadget_files,int gadget_filesB, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD,char *RSDB, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code)
 {
-  FILE *f;
+  //FILE *f;f=fopen("/DATA/hector/box1.txt","w");
   double *pos_x,*pos_y,*pos_z;
     double *pos_xB,*pos_yB,*pos_zB;
   double weight;
@@ -4024,6 +4024,7 @@ weight=1.0;
     if(strcmp(RSD, "no") == 0){pos_z[c]=P[c].Pos[2]*0.001;}
     if(strcmp(RSD, "yes") == 0){pos_z[c]=(P[c].Pos[2]*0.001)+(P[c].Vel[2])*sqrt(scale_factor)/(100.*scale_factor*sqrt(Omatter*pow(scale_factor,-3)+Olambda));}
 
+//fprintf(f,"%e %e %e\n",pos_x[c],pos_y[c],pos_z[c]);
 
            if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
            if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
@@ -4215,7 +4216,7 @@ P_shot_noise=pow(L2-L1,3)/Ndata;
 
 
 printf("Ok!\n");
-
+//fclose(f);
 }
 
 
@@ -4282,7 +4283,7 @@ Ndata=Ndata+NumPart_file;
  pos_y = (double*) calloc(NumPart_file, sizeof(double));
  pos_z = (double*) calloc(NumPart_file, sizeof(double));
 
-printf("%d\n",NumPart_file);
+//printf("%d\n",NumPart_file);
      for(c=0; c<NumPart_file; c++)
      {
      pos_x[c]=P[c].Pos[0]*0.001; //conversion to Mpc/h (originally in kpc/h)
