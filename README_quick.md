@@ -25,7 +25,7 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 
 #Type of file (ascii/gadget)x2: 'ascii' is the option required for 'cutsky'. 'periodic' option allows 'ascii' files or 'gadget' files. Gadget units assumed kpc/h. See 'ascii file structure' below for the format of the file. In case of rusticoX option is selected 2 inputs are required, for the 2 object-field to cross-correlate. 
 
-#Type of input (density/particles): if the input file contains objects (galaxies, haloes, dark matter) select particles. If contains a density grid in configuration space select density
+#Type of input (density/particles): if the input file contains objects (galaxies, haloes, dark matter) select particles. If contains a density grid in configuration space select density. For periodic box, input is delta(x)= n(x)/nbar -1, for skycuts is the unormalized F-field: F(x)=n_g(x)-alpha*n_s(x)
 
 #Number of gadget files(int)x2: In case the gadget boxes are split in more than 1 gadget file. For rusticox two inputs are required, each for each input path above. 
 
@@ -42,13 +42,19 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 #k-range for computation (double/double): Low and Upper limits, respectively, of the k-values choosen for printing the power spectrum.
 
 #Do anisotropy signal (yes/no): Whether only the monopole or higher multipoles are computed (quadrupole and hexadecapole)
+
 #Do odd multipoles (yes/no): Whether Dipole and octoploe are computed
+
 #Do mu-binning Power Spectrum (yes/no): no Bin P(k,mu), only available for periodic boxes. 
+
 #Number of mu-bins (int): 120 Number of mu bins between 0 and 1
+
 #Different files for mu-bin (yes/no): no Whether the mu bins are all writen in the same or different output files. 
 
 #Do Bispectrum (yes/no): Whether the bispectrum should be computed by the code
+
 #Do Bispectrum multipoles (yes/no): Whether the bispectrum quadrupole is computed (not available for rusticoX). 
+
 Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bispectrum triangles will be split according to their k-values and associated to different grid-sizes for a more optimal computation (large scale modes do not requires small grid cell ressolution). However, each grid-size computation will requires to re-associate the particles to the grid cells, which a potential lose of optimality. We recomend enable such option when many triangle shapes are required and when the datasets do not consists of many particles. In practice, each specific case will requires testing for determing the best performance option. When the multigrid option is enable, we require the interlacing option to be also enabled (see below), with at least 2 interlacing steps.
 
 #Triangle Shapes (ALL/EQU/ISO/SQU). Triangle shapes to be computed. All (ALL), equilateral (EQU), Isosceles (ISO), squeezed (SQU). We define the squeezed triangles as those |k2-k3|<=k1 and K1<=0.1 K2; where by definition K1<=K2<=K3. Note that this condition is applied to the center of bin k-values and not to the effective k-values.
@@ -91,7 +97,9 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 #Area effective value in deg^2 (double)x2: Value of the area used for the normalization and of the power spectrum and bispectrum in the skycut option. Two inputs required in case of rusticoX
 
 #Quadrupole as (L0L2/L1L1): Options for projecting the line-of-sight for the quadrupole. (see pdf for more details)
+
 #Octopole as (L0L3/L1L2): Options for projecting the line-of-sight for the octopole. (see pdf for more details)
+
 #Hexadecapole as (L0L4/L2L2/L1L3): Options for projecting the line-of-sight for the hexadecapole. (see pdf for more details)
 
 #Compute Normalization as (area/density): Compute the normalization of the power spectrum using either the area value of the number density column of the input. Only for skycut option
@@ -105,16 +113,23 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 #Write shuffled randoms (yes/no): Whether the shuffled random catalogue is written in an output
 
 #Compute Window Selection function (yes/no): Whether the window function RR counts are computed (for rusticoX 3 different RR couts are performed)
+
 #Bin for window normalization (int) Bin used to nonrmalize W0=1
+
 #DeltaS binning (double) 1.0 Size of the bin for the window. 
+
 #Percentage of randoms selected in % (double) 10. Percentage of randoms selected to perform the RR counts
+
 #Yamamoto aproximation (yes/no): Whether the LOS yamamoto is used. 
 
-#Density input options
 #Value of Pnoise (double) This is only relevant when input density is selected. Value of shot noise: 1/n for periodic box
+
 #Value of Bnoise1 (double) This is only relevant when input density is selected. Value of 1/n for periodic box
+
 #Value of Bnoise2 (double) This is only relevant when input density is selected. Value of 1/n^2 for periodic box
+
 #I22 normalization (double): This is only relevant when input density is selected & skycut is also selected. Value of normalization I22
+
 #I33 normalization (double): This is only relevant when input density is selected & skycut is also selected. Value of normalization I33
 
 
@@ -127,5 +142,4 @@ If you use this code for your published or unpublished work, please refer it to 
 
 ====Disclaimer====
 
-blah blah blah
-
+The author assumes no responsibility or liability for any errors or omissions in the contentof these scripts.  The information contained in this site is provided on an “asis” basis with no guarantees of completeness, accuracy, usefulness or timeliness.
