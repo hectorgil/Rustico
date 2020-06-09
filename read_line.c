@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-
+#include "structures.h"
 void get_line(FILE *f, double params[],int type)//skycut option
 {
 

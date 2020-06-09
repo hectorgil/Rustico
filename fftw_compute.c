@@ -8,6 +8,7 @@
 #include "functions.h"
 #include "ps_write.h"
 #include "mass_assignment.h"
+//#include "structures.h"
 #define indexGG(n1,n2,Ngal) (n1)*(Ngal)+(n2)
 #define indexGR(ngal,nrand,Nran) (ngal)*(Nran)+(nran)
 
@@ -526,7 +527,8 @@ printf("Writing Power Spectrum output %s...",name_ps_out);
 
 sprintf(type,"DSE");
 
-write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, P0, NULL,P1, NULL, P2, NULL, P3, NULL, P4, NULL, Deltak, ngrid, NGRID, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1);
+//write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, P0, NULL,P1, NULL, P2, NULL, P3, NULL, P4, NULL, Deltak, ngrid, NGRID, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1);
+    write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, P0, NULL,P1, NULL, P2, NULL, P3, NULL, P4, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, Deltak, ngrid, NGRID, L1, L2, I22,0, name_ps_out,NULL,NULL, P_shot_noise,0, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1,NULL);
 
 
 printf("Ok!\n");
@@ -612,14 +614,14 @@ delta3_sw=0;
 delta4_sw=0;
 
 if(strcmp(Hexadecapole_type, "L2L2") == 0){delta2_sw=1;}
-if(strcmp(Hexadecapole_type, "L4") == 0){delta4_sw=1;delta2_sw=1;}
+if(strcmp(Hexadecapole_type, "L0L4") == 0){delta4_sw=1;delta2_sw=1;}
 if(strcmp(Hexadecapole_type, "L1L3") == 0){delta1_sw=1;delta3_sw=1;}
 
-if(strcmp(Quadrupole_type, "L2") == 0){delta2_sw=1;}
+if(strcmp(Quadrupole_type, "L0L2") == 0){delta2_sw=1;}
 if(strcmp(Quadrupole_type, "L1L1") == 0){delta1_sw=1;}
 
 if(strcmp(do_odd_multipoles,"yes") == 0){
-if(strcmp(Octopole_type, "L3") == 0){delta3_sw=1;delta1_sw=1;}
+if(strcmp(Octopole_type, "L0L3") == 0){delta3_sw=1;delta1_sw=1;}
 if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
@@ -1131,7 +1133,8 @@ freeTokens(octopole_imag,NGRID);}
 printf("Writing Power Spectrum output,  %s...",name_ps_out);
 
 sprintf(type,"DSY");
-write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2,deltak_re3, deltak_im3, deltak_re4, deltak_im4, Deltak, ngrid, NGRID, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1);
+//write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2,deltak_re3, deltak_im3, deltak_re4, deltak_im4, Deltak, ngrid, NGRID, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1);
+    write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, Deltak, ngrid, NGRID, L1, L2, I22,0, name_ps_out,NULL,NULL, P_shot_noise,0, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1,NULL);
 
 
 free(deltak_re0);
@@ -1703,8 +1706,9 @@ fftw_cleanup();
 
 
 
-void loop_interlacing_skycut_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid, double alpha, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re0, double *deltak_im0, double *deltak_re2, double *deltak_im2,char *do_bispectrum2)
+void loop_interlacing_skycut_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid, double alpha, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re0, double *deltak_im0, double *deltak_re2, double *deltak_im2,char *do_bispectrum2,char *name_density, char *type_of_input)
 {
+FILE *f;
 long int i,j,k,i_inter;
 long int c;
 double phase_cos,phase_sin;
@@ -1747,6 +1751,9 @@ L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
     delta_data = (double*) calloc(ngridtot, sizeof(double));
+
+if( strcmp(type_of_input,"particles") == 0){
+
     printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
     for(c=0; c<Ndata; c++)
     {
@@ -1777,6 +1784,20 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
                                  delta_data[c]+=alpha*delta_rand[c];
         }
         free(delta_rand);
+
+
+}else{
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now.\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&delta_data[c]);
+        delta_data[c]=delta_data[c]*pow((L2-L1)/ngrid,3);
+     }
+fclose(f);
+
+}
+
 
         if(i_inter==1){
        fftw_yamamoto_skycut(0, delta_data, deltak_re0, deltak_im0, ngrid,L1b,L2b, mode_correction);
@@ -1861,20 +1882,28 @@ free(kx);
 }
 
 
-void loop_interlacing_skycut(double kmin,double kmax,int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid,  double P_shot_noise, double bin_ps, double I22, double alpha, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out, char *type_of_mass_assigment, char *do_bispectrum, int window_function)
+void loop_interlacing_skycut(double kmin,double kmax,int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB,long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB, char *type_of_input)
 {
+FILE *f;
 char type[200];
 long int i,j,k,i_inter;
 long int c;
 double phase_cos,phase_sin;
 double new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re4_b,new_deltak_im4_b;
+double new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re4_bB,new_deltak_im4_bB;
+
 double new_deltak_re1_b,new_deltak_im1_b,new_deltak_re3_b,new_deltak_im3_b;
+double new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re3_bB,new_deltak_im3_bB;
 int i_yama,i_yama2;
 double Sk;
 long int index2;
   //delta(k) pointers
   double* delta_data;
   double* delta_rand;
+    
+  double* delta_dataB;
+  double* delta_randB;
+    
   double* deltak_re0;
   double* deltak_im0;
   double* deltak_re1;
@@ -1885,6 +1914,18 @@ long int index2;
   double* deltak_im3;
   double* deltak_re4;
   double* deltak_im4;
+    
+  double* deltak_re0B;
+  double* deltak_im0B;
+  double* deltak_re1B;
+  double* deltak_im1B;
+  double* deltak_re2B;
+  double* deltak_im2B;
+  double* deltak_re3B;
+  double* deltak_im3B;
+  double* deltak_re4B;
+  double* deltak_im4B;
+    
   double* deltak_re0_b;
   double* deltak_im0_b;
   double* deltak_re1_b;
@@ -1895,6 +1936,18 @@ long int index2;
   double* deltak_im3_b;
   double* deltak_re4_b;
   double* deltak_im4_b;
+    
+    double* deltak_re0_bB;
+    double* deltak_im0_bB;
+    double* deltak_re1_bB;
+    double* deltak_im1_bB;
+    double* deltak_re2_bB;
+    double* deltak_im2_bB;
+    double* deltak_re3_bB;
+    double* deltak_im3_bB;
+    double* deltak_re4_bB;
+    double* deltak_im4_bB;
+    
 long int ngridtot=pow(ngrid,3);
 long int ngridtotr2c=(pow(ngrid,3)/2+pow(ngrid,2));//N*N*(N/2+1)
 
@@ -1905,14 +1958,14 @@ delta3_sw=0;
 delta4_sw=0;
 
 if(strcmp(Hexadecapole_type, "L2L2") == 0){delta2_sw=1;}
-if(strcmp(Hexadecapole_type, "L4") == 0){delta4_sw=1;delta2_sw=1;}
+if(strcmp(Hexadecapole_type, "L0L4") == 0){delta4_sw=1;delta2_sw=1;}
 if(strcmp(Hexadecapole_type, "L1L3") == 0){delta1_sw=1;delta3_sw=1;}
 
-if(strcmp(Quadrupole_type, "L2") == 0){delta2_sw=1;}
+if(strcmp(Quadrupole_type, "L0L2") == 0){delta2_sw=1;}
 if(strcmp(Quadrupole_type, "L1L1") == 0){delta1_sw=1;}
 
 if(strcmp(do_odd_multipoles,"yes") == 0){
-if(strcmp(Octopole_type, "L3") == 0){delta3_sw=1;delta1_sw=1;}
+if(strcmp(Octopole_type, "L0L3") == 0){delta3_sw=1;delta1_sw=1;}
 if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
@@ -1921,7 +1974,8 @@ if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_s
 
 //printf("%ld %ld %ld %ld\n",delta1_sw,delta2_sw,delta3_sw,delta4_sw);
 
- if(window_function==0){alpha=-alpha;}
+alpha=-alpha;
+if(strcmp(type_of_code, "rusticoX") == 0){alphaB=-alphaB;}
 
   double L2b,L1b;
   
@@ -1948,9 +2002,11 @@ L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
      delta_data = (double*) calloc(ngridtot, sizeof(double));   
+
+if( strcmp(type_of_input,"particles") == 0){
+
     printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
 
-    if(window_function==0){
 
     for(c=0; c<Ndata; c++)
     {
@@ -1961,7 +2017,7 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
        if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight[c], L2b, L1b, ngrid);}
        if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight[c], L2b, L1b, ngrid);}
     }
-}
+
        delta_rand = (double*) calloc(ngridtot, sizeof(double));
        for(c=0; c<Nrand; c++)
         {
@@ -1982,29 +2038,139 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
         }
         free(delta_rand);
 
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
+}else{
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now.\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&delta_data[c]);
+        delta_data[c]=delta_data[c]*pow((L2-L1)/ngrid,3);
+     }
+fclose(f);
+
+}
+
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+          delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+           printf("Assigning particles-B to the grid (Iteration %ld) ...", i_inter);
+
+
+           for(c=0; c<NdataB; c++)
+           {
+              if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+           }
+
+              delta_randB = (double*) calloc(ngridtot, sizeof(double));
+              for(c=0; c<NrandB; c++)
+               {
+                       if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c], L2b, L1b, ngrid);}
+                       if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c], L2b, L1b, ngrid);}
+                       if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c], L2b, L1b, ngrid);}
+                       if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c], L2b, L1b, ngrid);}
+                       if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c], L2b, L1b, ngrid);}
+                       if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c], L2b, L1b, ngrid);}
+               }
+           printf("Ok!\n");
+
+           printf("Performing FFTs ...");
+        #pragma omp parallel for private(c) shared(ngrid,ngridtot,alphaB,delta_dataB,delta_randB)
+               for(c=0;c<ngridtot;c++)
+               {
+                                        delta_dataB[c]+=alphaB*delta_randB[c];
+               }
+               free(delta_randB);
+
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
+        
+    }
+    
+    
   if(i_inter==1){
         deltak_re0= (double*) calloc(ngridtotr2c,sizeof(double));
         deltak_im0=(double*) calloc(ngridtotr2c,sizeof(double));
         fftw_yamamoto_skycut(0, delta_data, deltak_re0, deltak_im0, ngrid,L1b,L2b, mode_correction);
+      if(strcmp(type_of_code, "rusticoX") == 0)
+      {
+          deltak_re0B= (double*) calloc(ngridtotr2c,sizeof(double));
+          deltak_im0B=(double*) calloc(ngridtotr2c,sizeof(double));
+          fftw_yamamoto_skycut(0, delta_dataB, deltak_re0B, deltak_im0B, ngrid,L1b,L2b, mode_correction);
+    
+      }
 
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
 if(delta2_sw==1){
          deltak_re2=(double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im2=(double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im2=(double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re2B=(double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im2B=(double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+}
 
 if(delta1_sw==1){
          deltak_re1=(double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im1=(double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im1=(double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re1B=(double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im1B=(double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+    
+}
 
 if(delta3_sw == 1){
          deltak_re3=(double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im3=(double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im3=(double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re3B=(double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im3B=(double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+    
+}
 
 if(delta4_sw==1){
 
          deltak_re4= (double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im4= (double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im4= (double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re4B= (double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im4B= (double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+    
+}
 
 i_yama2=0;
 if(delta2_sw==1){
@@ -2012,6 +2178,11 @@ for(i_yama=1;i_yama<=6;i_yama++)
 {
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data,ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re2, deltak_im2, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB,ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re2B, deltak_im2B, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 }
@@ -2023,6 +2194,11 @@ for(i_yama=7;i_yama<=21;i_yama++)
 
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data, ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re4, deltak_im4, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+    modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB, ngrid,L1,L2);
+    fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re4B, deltak_im4B, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 
@@ -2033,6 +2209,11 @@ for(i_yama=22;i_yama<=24;i_yama++)
 {
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data,ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re1, deltak_im1, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB,ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re1B, deltak_im1B, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 }
@@ -2042,6 +2223,11 @@ for(i_yama=25;i_yama<=34;i_yama++)
 {
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data,ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re3, deltak_im3, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB,ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re3B, deltak_im3B, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 }
@@ -2056,25 +2242,59 @@ i_yama2=i_yama;
         deltak_re0_b= (double*) calloc(ngridtotr2c,sizeof(double));
         deltak_im0_b= (double*) calloc(ngridtotr2c,sizeof(double));
         fftw_yamamoto_skycut(0, delta_data, deltak_re0_b, deltak_im0_b, ngrid,L1b,L2b, mode_correction);
+      if(strcmp(type_of_code, "rusticoX") == 0)
+      {
+          deltak_re0_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+          deltak_im0_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+          fftw_yamamoto_skycut(0, delta_dataB, deltak_re0_bB, deltak_im0_bB, ngrid,L1b,L2b, mode_correction);
+      }
 
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
 if(delta2_sw==1){
          deltak_re2_b=(double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im2_b=(double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im2_b=(double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re2_bB=(double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im2_bB=(double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+}
 
 if(delta1_sw==1){
          deltak_re1_b=(double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im1_b=(double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im1_b=(double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re1_bB=(double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im1_bB=(double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+}
 
 if(delta3_sw==1){
          deltak_re3_b=(double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im3_b=(double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im3_b=(double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re3_bB=(double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im3_bB=(double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+}
 
 if(delta4_sw==1){
 
          deltak_re4_b= (double*) calloc(ngridtotr2c,sizeof(double));
-         deltak_im4_b= (double*) calloc(ngridtotr2c,sizeof(double));}
+         deltak_im4_b= (double*) calloc(ngridtotr2c,sizeof(double));
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        deltak_re4_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+        deltak_im4_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+    }
+    
+}
 
 
 i_yama2=0;
@@ -2083,6 +2303,11 @@ for(i_yama=1;i_yama<=6;i_yama++)
 {
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data,ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re2_b, deltak_im2_b, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB,ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re2_bB, deltak_im2_bB, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 }
@@ -2094,6 +2319,11 @@ for(i_yama=7;i_yama<=21;i_yama++)
 
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data, ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re4_b, deltak_im4_b, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB, ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re4_bB, deltak_im4_bB, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 
@@ -2104,6 +2334,11 @@ for(i_yama=22;i_yama<=24;i_yama++)
 {
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data,ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re1_b, deltak_im1_b, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB,ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re1_bB, deltak_im1_bB, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 }
@@ -2113,6 +2348,11 @@ for(i_yama=25;i_yama<=34;i_yama++)
 {
          modify_input_for_yamamoto(i_yama,i_yama2, delta_data,ngrid,L1,L2);
          fftw_yamamoto_skycut(i_yama, delta_data, deltak_re3_b, deltak_im3_b, ngrid,L1b,L2b, mode_correction);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        modify_input_for_yamamoto(i_yama,i_yama2, delta_dataB,ngrid,L1,L2);
+        fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re3_bB, deltak_im3_bB, ngrid,L1b,L2b, mode_correction);
+    }
 i_yama2=i_yama;
 }
 }
@@ -2120,7 +2360,7 @@ i_yama2=i_yama;
 }//do-aniso
 
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
 i=(int)(index2/(ngrid*ngrid/2+ngrid));
@@ -2137,6 +2377,14 @@ new_deltak_im0_b=deltak_re0_b[index2]*phase_sin+deltak_im0_b[index2]*phase_cos;
 
 deltak_re0[index2]+=new_deltak_re0_b;
 deltak_im0[index2]+=new_deltak_im0_b;
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        new_deltak_re0_bB=deltak_re0_bB[index2]*phase_cos-deltak_im0_bB[index2]*phase_sin;
+        new_deltak_im0_bB=deltak_re0_bB[index2]*phase_sin+deltak_im0_bB[index2]*phase_cos;
+
+        deltak_re0B[index2]+=new_deltak_re0_bB;
+        deltak_im0B[index2]+=new_deltak_im0_bB;
+    }
 
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
@@ -2147,6 +2395,14 @@ new_deltak_im1_b=deltak_re1_b[index2]*phase_sin+deltak_im1_b[index2]*phase_cos;
 
 deltak_re1[index2]+=new_deltak_re1_b;
 deltak_im1[index2]+=new_deltak_im1_b;
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        new_deltak_re1_bB=deltak_re1_bB[index2]*phase_cos-deltak_im1_bB[index2]*phase_sin;
+        new_deltak_im1_bB=deltak_re1_bB[index2]*phase_sin+deltak_im1_bB[index2]*phase_cos;
+
+        deltak_re1B[index2]+=new_deltak_re1_bB;
+        deltak_im1B[index2]+=new_deltak_im1_bB;
+    }
 
 }
 
@@ -2157,6 +2413,14 @@ new_deltak_im2_b=deltak_re2_b[index2]*phase_sin+deltak_im2_b[index2]*phase_cos;
 
 deltak_re2[index2]+=new_deltak_re2_b;
 deltak_im2[index2]+=new_deltak_im2_b;
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        new_deltak_re2_bB=deltak_re2_bB[index2]*phase_cos-deltak_im2_bB[index2]*phase_sin;
+        new_deltak_im2_bB=deltak_re2_bB[index2]*phase_sin+deltak_im2_bB[index2]*phase_cos;
+
+        deltak_re2B[index2]+=new_deltak_re2_bB;
+        deltak_im2B[index2]+=new_deltak_im2_bB;
+    }
 
 }
 
@@ -2167,6 +2431,14 @@ new_deltak_im3_b=deltak_re3_b[index2]*phase_sin+deltak_im3_b[index2]*phase_cos;
 
 deltak_re3[index2]+=new_deltak_re3_b;
 deltak_im3[index2]+=new_deltak_im3_b;
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        new_deltak_re3_bB=deltak_re3_bB[index2]*phase_cos-deltak_im3_bB[index2]*phase_sin;
+        new_deltak_im3_bB=deltak_re3_bB[index2]*phase_sin+deltak_im3_bB[index2]*phase_cos;
+
+        deltak_re3B[index2]+=new_deltak_re3_bB;
+        deltak_im3B[index2]+=new_deltak_im3_bB;
+    }
 
 }
 
@@ -2177,6 +2449,14 @@ new_deltak_im4_b=deltak_re4_b[index2]*phase_sin+deltak_im4_b[index2]*phase_cos;
 
 deltak_re4[index2]+=new_deltak_re4_b;
 deltak_im4[index2]+=new_deltak_im4_b;
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        new_deltak_re4_bB=deltak_re4_bB[index2]*phase_cos-deltak_im4_bB[index2]*phase_sin;
+        new_deltak_im4_bB=deltak_re4_bB[index2]*phase_sin+deltak_im4_bB[index2]*phase_cos;
+
+        deltak_re4B[index2]+=new_deltak_re4_bB;
+        deltak_im4B[index2]+=new_deltak_im4_bB;
+    }
 
 }
 
@@ -2187,34 +2467,73 @@ deltak_im4[index2]+=new_deltak_im4_b;
 
         free(deltak_re0_b);
         free(deltak_im0_b);
+      if(strcmp(type_of_code, "rusticoX") == 0)
+      {
+          free(deltak_re0_bB);
+          free(deltak_im0_bB);
+      }
 
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
 if(delta1_sw==1){
         free(deltak_re1_b);
-        free(deltak_im1_b);}
+        free(deltak_im1_b);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re1_bB);
+        free(deltak_im1_bB);
+    }
+    
+}
 
 if(delta2_sw==1){
         free(deltak_re2_b);
-        free(deltak_im2_b);}
+        free(deltak_im2_b);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re2_bB);
+        free(deltak_im2_bB);
+    }
+    
+}
 
 if(delta3_sw==1){
         free(deltak_re3_b);
-        free(deltak_im3_b);}
+        free(deltak_im3_b);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re3_bB);
+        free(deltak_im3_bB);
+    }
+    
+}
 
 if(delta4_sw==1){
          free(deltak_re4_b);
-         free(deltak_im4_b);}
+         free(deltak_im4_b);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re4_bB);
+        free(deltak_im4_bB);
+    }
+    
+}
 
 }
 
 
 }//else-iteration1
         free(delta_data);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(delta_dataB);
+    }
 printf("Ok!\n");
 
-if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0 && window_function==0)
+if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0)
 {
+if( strcmp(type_of_input,"particles") == 0){
+
 printf("positions freed\n");
 free(pos_x);
 free(pos_y);
@@ -2223,7 +2542,21 @@ free(weight);
 free(pos_x_rand);
 free(pos_y_rand);
 free(pos_z_rand);
-free(weight_rand);
+free(weight_rand);}
+
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+ 
+if( strcmp(type_of_input,"particles") == 0){
+        free(pos_xB);
+        free(pos_yB);
+        free(pos_zB);
+        free(weightB);
+        free(pos_x_randB);
+        free(pos_y_randB);
+        free(pos_z_randB);
+        free(weight_randB);}
+    }
 }
 
 
@@ -2231,54 +2564,87 @@ free(weight_rand);
 
 free(kx);
 
-if(window_function==0)
-{
 
-printf("Writing Power Spectrum output %s...",name_ps_out);
+    if(strcmp(type_of_code, "rustico") == 0){
+        printf("Writing Power Spectrum output %s...",name_ps_out);
+        
+    }
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        printf("Writing Power Spectrum output %s %s %s...",name_ps_out,name_psAB_out,name_psBB_out);
+
+    }
 
 sprintf(type,"FFT");
-write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
+//write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
 
-
-}
-
-
-//if(window_function==1)
-//{
-
-//}
+    write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code);
 
 
 //free deltas
 
 free(deltak_re0);
 free(deltak_im0);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re0B);
+        free(deltak_im0B);
+    }
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
 if(delta2_sw==1){
           free(deltak_re2);
-          free(deltak_im2);}
+          free(deltak_im2);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re2B);
+        free(deltak_im2B);
+    }
+    
+}
 
 if(delta1_sw==1){
           free(deltak_re1);
-          free(deltak_im1);}
+          free(deltak_im1);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re1B);
+        free(deltak_im1B);
+    }
+    
+}
 
 if(delta3_sw==1){
           free(deltak_re3);
-          free(deltak_im3);}
+          free(deltak_im3);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re3B);
+        free(deltak_im3B);
+    }
+    
+}
 
 if(delta4_sw==1){
 
           free(deltak_re4);
-          free(deltak_im4);}
+          free(deltak_im4);
+    if(strcmp(type_of_code, "rusticoX") == 0)
+    {
+        free(deltak_re4B);
+        free(deltak_im4B);
+    }
+    
+}
 }
 
 printf("Ok!\n");
 
 }
 
-void loop_interlacing_skycut2(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand, long int Nrand, double L1, double L2, int ngrid,  double P_shot_noise, double bin_ps, double I22, double alpha, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out, char *type_of_mass_assigment, char *do_bispectrum, int window_function)
+void loop_interlacing_skycut2(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB, long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB)
 {
+FILE *f;
 char type[200];
 long int i,j,k,i_inter;
 long int c;
@@ -2286,6 +2652,7 @@ long int c;
 //i_yama_max;
 double phase_cos,phase_sin;
 double new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re3_b,new_deltak_im3_b;
+    double new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re4_bB,new_deltak_im4_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re3_bB,new_deltak_im3_bB;
 int i_yama;
 
 int delta1_sw=0;
@@ -2294,25 +2661,30 @@ int delta3_sw=0;
 int delta4_sw=0;
 
 if(strcmp(Hexadecapole_type, "L2L2") == 0){delta2_sw=1;}
-if(strcmp(Hexadecapole_type, "L4") == 0){delta4_sw=1;delta2_sw=1;}
+if(strcmp(Hexadecapole_type, "L0L4") == 0){delta4_sw=1;delta2_sw=1;}
 if(strcmp(Hexadecapole_type, "L1L3") == 0){delta1_sw=1;delta3_sw=1;}
 
-if(strcmp(Quadrupole_type, "L2") == 0){delta2_sw=1;}
+if(strcmp(Quadrupole_type, "L0L2") == 0){delta2_sw=1;}
 if(strcmp(Quadrupole_type, "L1L1") == 0){delta1_sw=1;}
 
 if(strcmp(do_odd_multipoles,"yes") == 0){
-if(strcmp(Octopole_type, "L3") == 0){delta3_sw=1;delta1_sw=1;}
+if(strcmp(Octopole_type, "L0L3") == 0){delta3_sw=1;delta1_sw=1;}
 if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
 if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
 
 
- if(window_function==0){alpha=-alpha;}
+alpha=-alpha;
+if(strcmp(type_of_code, "rusticoX") == 0){alphaB=-alphaB;}
 
   //delta(k) pointers
   double* delta_data;
   double* delta_rand;
+    
+  double* delta_dataB;
+  double* delta_randB;
+    
   double* deltak_re0;
   double* deltak_im0;
   double* deltak_re1;
@@ -2323,6 +2695,18 @@ if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_s
   double* deltak_im3;
   double* deltak_re4;
   double* deltak_im4;
+    
+    double* deltak_re0B;
+    double* deltak_im0B;
+    double* deltak_re1B;
+    double* deltak_im1B;
+    double* deltak_re2B;
+    double* deltak_im2B;
+    double* deltak_re3B;
+    double* deltak_im3B;
+    double* deltak_re4B;
+    double* deltak_im4B;
+    
   double* deltak_re0_b;
   double* deltak_im0_b;
   double* deltak_re1_b;
@@ -2333,6 +2717,18 @@ if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_s
   double* deltak_im3_b;
   double* deltak_re4_b;
   double* deltak_im4_b;
+    
+    double* deltak_re0_bB;
+    double* deltak_im0_bB;
+    double* deltak_re1_bB;
+    double* deltak_im1_bB;
+    double* deltak_re2_bB;
+    double* deltak_im2_bB;
+    double* deltak_re3_bB;
+    double* deltak_im3_bB;
+    double* deltak_re4_bB;
+    double* deltak_im4_bB;
+    
 long int ngridtot=pow(ngrid,3);
 long int ngridtotr2c=(pow(ngrid,3)/2+pow(ngrid,2));
 long int index2;
@@ -2382,10 +2778,9 @@ if(i_yama==25 && delta3_sw==0){i_yama=35;}
 
 if(i_yama==35){break;}
 
+            
         delta_data = (double*) calloc(ngridtot, sizeof(double));
 
- if(window_function==0){
-  
         for(c=0; c<Ndata; c++)
         {
 
@@ -2439,7 +2834,7 @@ if(pos_x[c]*pos_x[c]+pos_y[c]*pos_y[c]+pos_z[c]*pos_z[c]==0){weight_pos=0;}
        if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight_pos, L2b, L1b, ngrid);}
        if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight_pos, L2b, L1b, ngrid);}
     } 
-}
+
         delta_rand = (double*) calloc(ngridtot, sizeof(double));
 
       for(c=0;c<Nrand;c++)
@@ -2502,8 +2897,18 @@ if(pos_x_rand[c]*pos_x_rand[c]+pos_y_rand[c]*pos_y_rand[c]+pos_z_rand[c]*pos_z_r
         { 
                                  delta_data[c]+=alpha*delta_rand[c];
         } 
-
         free(delta_rand);
+
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
 
 if(i_yama==0){
         deltak_re0= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -2542,7 +2947,180 @@ if(i_yama>=25 && i_yama<=34){fftw_yamamoto_skycut(i_yama, delta_data, deltak_re3
 
 
         free(delta_data);
+              
+              if(strcmp(type_of_code, "rusticoX") == 0){
+                  
+                          delta_dataB = (double*) calloc(ngridtot, sizeof(double));
 
+                          for(c=0; c<NdataB; c++)
+                          {
+
+                  if(i_yama==0){weight_pos=1;}
+
+                  if(i_yama==1){weight_pos=pos_xB[c]*pos_xB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+                  if(i_yama==2){weight_pos=pos_xB[c]*pos_yB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+                  if(i_yama==3){weight_pos=pos_xB[c]*pos_zB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+                  if(i_yama==4){weight_pos=pos_yB[c]*pos_yB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+                  if(i_yama==5){weight_pos=pos_yB[c]*pos_zB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+                  if(i_yama==6){weight_pos=pos_zB[c]*pos_zB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+
+                  if(i_yama==7){weight_pos=pow(pos_xB[c],2)*pos_xB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==8){weight_pos=pow(pos_yB[c],2)*pos_yB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==9){weight_pos=pow(pos_zB[c],2)*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==10){weight_pos=pow(pos_xB[c],2)*pos_xB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==11){weight_pos=pow(pos_xB[c],2)*pos_xB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==12){weight_pos=pow(pos_yB[c],2)*pos_yB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==13){weight_pos=pow(pos_yB[c],2)*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==14){weight_pos=pow(pos_zB[c],2)*pos_zB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==15){weight_pos=pow(pos_zB[c],2)*pos_zB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==16){weight_pos=pow(pos_xB[c],2)*pos_yB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==17){weight_pos=pow(pos_xB[c],2)*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==18){weight_pos=pow(pos_yB[c],2)*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==19){weight_pos=pow(pos_xB[c],2)*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==20){weight_pos=pow(pos_yB[c],2)*pos_xB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+                  if(i_yama==21){weight_pos=pow(pos_zB[c],2)*pos_xB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+
+                  if(i_yama==22){weight_pos=pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],0.5);}
+                  if(i_yama==23){weight_pos=pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],0.5);}
+                  if(i_yama==24){weight_pos=pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],0.5);}
+                  if(i_yama==25){weight_pos=pos_xB[c]*pos_xB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==26){weight_pos=pos_yB[c]*pos_yB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==27){weight_pos=pos_zB[c]*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==28){weight_pos=pos_xB[c]*pos_xB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==29){weight_pos=pos_xB[c]*pos_xB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==30){weight_pos=pos_yB[c]*pos_yB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==31){weight_pos=pos_yB[c]*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==32){weight_pos=pos_zB[c]*pos_zB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==33){weight_pos=pos_zB[c]*pos_zB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+                  if(i_yama==34){weight_pos=pos_xB[c]*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+
+                  if(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]==0){weight_pos=0;}
+
+                         weight_pos=weight_pos*weightB[c];
+
+                         if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight_pos, L2b, L1b, ngrid);}
+                         if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight_pos, L2b, L1b, ngrid);}
+                         if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight_pos, L2b, L1b, ngrid);}
+                         if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight_pos, L2b, L1b, ngrid);}
+                         if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight_pos, L2b, L1b, ngrid);}
+                         if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight_pos, L2b, L1b, ngrid);}
+                      }
+
+                          delta_randB = (double*) calloc(ngridtot, sizeof(double));
+
+                        for(c=0;c<NrandB;c++)
+                        {
+                  if(i_yama==0){weight_pos=1.;}
+                  if(i_yama==1){weight_pos=pos_x_randB[c]*pos_x_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+                  if(i_yama==2){weight_pos=pos_x_randB[c]*pos_y_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+                  if(i_yama==3){weight_pos=pos_x_randB[c]*pos_z_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+                  if(i_yama==4){weight_pos=pos_y_randB[c]*pos_y_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+                  if(i_yama==5){weight_pos=pos_y_randB[c]*pos_z_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+                  if(i_yama==6){weight_pos=pos_z_randB[c]*pos_z_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+            if(i_yama==7){weight_pos=pow(pos_x_randB[c],2)*pos_x_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);} if(i_yama==8){weight_pos=pow(pos_y_randB[c],2)*pos_y_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                            if(i_yama==9){weight_pos=pow(pos_z_randB[c],2)*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                            if(i_yama==10){weight_pos=pow(pos_x_randB[c],2)*pos_x_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==11){weight_pos=pow(pos_x_randB[c],2)*pos_x_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==12){weight_pos=pow(pos_y_randB[c],2)*pos_y_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==13){weight_pos=pow(pos_y_randB[c],2)*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==14){weight_pos=pow(pos_z_randB[c],2)*pos_z_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==15){weight_pos=pow(pos_z_randB[c],2)*pos_z_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==16){weight_pos=pow(pos_x_randB[c],2)*pos_y_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==17){weight_pos=pow(pos_x_randB[c],2)*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==18){weight_pos=pow(pos_y_randB[c],2)*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==19){weight_pos=pow(pos_x_randB[c],2)*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==20){weight_pos=pow(pos_y_randB[c],2)*pos_x_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==21){weight_pos=pow(pos_z_randB[c],2)*pos_x_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+                                   if(i_yama==22){weight_pos=pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],0.5);}
+                                   if(i_yama==23){weight_pos=pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],0.5);}
+                                   if(i_yama==24){weight_pos=pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],0.5);}
+                                   if(i_yama==25){weight_pos=pos_x_randB[c]*pos_x_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==26){weight_pos=pos_y_randB[c]*pos_y_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==27){weight_pos=pos_z_randB[c]*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==28){weight_pos=pos_x_randB[c]*pos_x_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==29){weight_pos=pos_x_randB[c]*pos_x_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==30){weight_pos=pos_y_randB[c]*pos_y_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==31){weight_pos=pos_y_randB[c]*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==32){weight_pos=pos_z_randB[c]*pos_z_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==33){weight_pos=pos_z_randB[c]*pos_z_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+                                   if(i_yama==34){weight_pos=pos_x_randB[c]*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+
+
+                                   if(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]==0){weight_pos=0;}
+                                         weight_pos=weight_pos*weight_randB[c];
+
+                                     
+                                                   if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_pos, L2b, L1b, ngrid);}
+                                                   if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_pos, L2b, L1b, ngrid);}
+                                                   if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_pos, L2b, L1b, ngrid);}
+                                                   if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_pos, L2b, L1b, ngrid);}
+                                                   if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_pos, L2b, L1b, ngrid);}
+                                                   if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_pos, L2b, L1b, ngrid);}
+
+                                           }
+
+                     
+
+                           
+                          #pragma omp parallel for private(c) shared(ngrid,ngridtot,alphaB,delta_dataB,delta_randB)
+                          for(c=0;c<ngridtot;c++)
+                          {
+                                                   delta_dataB[c]+=alphaB*delta_randB[c];
+                          }
+                          free(delta_randB);
+
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
+
+                  if(i_yama==0){
+                          deltak_re0B= (double*) calloc(ngridtotr2c,sizeof(double));
+                          deltak_im0B= (double*) calloc(ngridtotr2c,sizeof(double));
+                  }
+                  if(i_yama==1)
+                  {
+                          deltak_re2B= (double*) calloc(ngridtotr2c,sizeof(double));
+                          deltak_im2B= (double*) calloc(ngridtotr2c,sizeof(double));
+                  }
+                  if(i_yama==7)
+                  {
+                          deltak_re4B= (double*) calloc(ngridtotr2c,sizeof(double));
+                          deltak_im4B= (double*) calloc(ngridtotr2c,sizeof(double));
+                  }
+
+                  if(i_yama==22)
+                  {
+                          deltak_re1B= (double*) calloc(ngridtotr2c,sizeof(double));
+                          deltak_im1B= (double*) calloc(ngridtotr2c,sizeof(double));
+                  }
+
+                  if(i_yama==25)
+                  {
+                          deltak_re3B= (double*) calloc(ngridtotr2c,sizeof(double));
+                          deltak_im3B= (double*) calloc(ngridtotr2c,sizeof(double));
+
+                  }
+
+
+                  if(i_yama==0){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re0B, deltak_im0B, ngrid,L1b,L2b, mode_correction);}
+                  if(i_yama>=1 && i_yama<=6){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re2B, deltak_im2B, ngrid,L1b,L2b, mode_correction);}
+                  if(i_yama>=7 && i_yama<=21){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re4B, deltak_im4B, ngrid,L1b,L2b, mode_correction);}
+                  if(i_yama>=22 && i_yama<=24){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re1B, deltak_im1B, ngrid,L1b,L2b, mode_correction);}
+                  if(i_yama>=25 && i_yama<=34){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re3B, deltak_im3B, ngrid,L1b,L2b, mode_correction);}
+
+
+                          free(delta_dataB);
+                  
+                  
+              }
+            
 }
 
     printf("Ok!\n");
@@ -2570,7 +3148,6 @@ if(i_yama==35){break;}
 
 
         delta_data = (double*) calloc(ngridtot, sizeof(double));
- if(window_function==0){
         for(c=0; c<Ndata; c++)
         {
 
@@ -2623,7 +3200,7 @@ if(pos_x[c]*pos_x[c]+pos_y[c]*pos_y[c]+pos_z[c]*pos_z[c]==0){weight_pos=0;}
        if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight[c]*weight_pos, L2b, L1b, ngrid);}
        if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight[c]*weight_pos, L2b, L1b, ngrid);}
     }
-}
+
         delta_rand = (double*) calloc(ngridtot, sizeof(double));
        for(c=0; c<Nrand; c++)
         {
@@ -2716,10 +3293,162 @@ if(i_yama>=22 && i_yama<=24){fftw_yamamoto_skycut(i_yama, delta_data, deltak_re1
 if(i_yama>=25 && i_yama<=34){fftw_yamamoto_skycut(i_yama, delta_data, deltak_re3_b, deltak_im3_b, ngrid,L1b,L2b, mode_correction);}
 
 free(delta_data);
+              
+  //B
+              
+if(strcmp(type_of_code, "rusticoX") == 0){
+                      delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+                      for(c=0; c<NdataB; c++)
+                      {
+
+              if(i_yama==0){weight_pos=1;}
+              if(i_yama==1){weight_pos=pos_xB[c]*pos_xB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+              if(i_yama==2){weight_pos=pos_xB[c]*pos_yB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+              if(i_yama==3){weight_pos=pos_xB[c]*pos_zB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+              if(i_yama==4){weight_pos=pos_yB[c]*pos_yB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+              if(i_yama==5){weight_pos=pos_yB[c]*pos_zB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+
+              if(i_yama==6){weight_pos=pos_zB[c]*pos_zB[c]/(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]);}
+              if(i_yama==7){weight_pos=pow(pos_xB[c],2)*pos_xB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==8){weight_pos=pow(pos_yB[c],2)*pos_yB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==9){weight_pos=pow(pos_zB[c],2)*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==10){weight_pos=pow(pos_xB[c],2)*pos_xB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==11){weight_pos=pow(pos_xB[c],2)*pos_xB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==12){weight_pos=pow(pos_yB[c],2)*pos_yB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==13){weight_pos=pow(pos_yB[c],2)*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==14){weight_pos=pow(pos_zB[c],2)*pos_zB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==15){weight_pos=pow(pos_zB[c],2)*pos_zB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==16){weight_pos=pow(pos_xB[c],2)*pos_yB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==17){weight_pos=pow(pos_xB[c],2)*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==18){weight_pos=pow(pos_yB[c],2)*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==19){weight_pos=pow(pos_xB[c],2)*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==20){weight_pos=pow(pos_yB[c],2)*pos_xB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+              if(i_yama==21){weight_pos=pow(pos_zB[c],2)*pos_xB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],2);}
+
+              if(i_yama==22){weight_pos=pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],0.5);}
+              if(i_yama==23){weight_pos=pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],0.5);}
+              if(i_yama==24){weight_pos=pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],0.5);}
+              if(i_yama==25){weight_pos=pos_xB[c]*pos_xB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==26){weight_pos=pos_yB[c]*pos_yB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==27){weight_pos=pos_zB[c]*pos_zB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==28){weight_pos=pos_xB[c]*pos_xB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==29){weight_pos=pos_xB[c]*pos_xB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==30){weight_pos=pos_yB[c]*pos_yB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==31){weight_pos=pos_yB[c]*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==32){weight_pos=pos_zB[c]*pos_zB[c]*pos_xB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==33){weight_pos=pos_zB[c]*pos_zB[c]*pos_yB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+              if(i_yama==34){weight_pos=pos_xB[c]*pos_yB[c]*pos_zB[c]/pow(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c],1.5);}
+
+
+              if(pos_xB[c]*pos_xB[c]+pos_yB[c]*pos_yB[c]+pos_zB[c]*pos_zB[c]==0){weight_pos=0;}
+                    
+
+                     if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c]*weight_pos, L2b, L1b, ngrid);}
+                     if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c]*weight_pos, L2b, L1b, ngrid);}
+                     if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c]*weight_pos, L2b, L1b, ngrid);}
+                     if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c]*weight_pos, L2b, L1b, ngrid);}
+                     if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c]*weight_pos, L2b, L1b, ngrid);}
+                     if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c]*weight_pos, L2b, L1b, ngrid);}
+                  }
+
+                      delta_randB = (double*) calloc(ngridtot, sizeof(double));
+                     for(c=0; c<NrandB; c++)
+                      {
+
+              if(i_yama==0){weight_pos=1;}
+              if(i_yama==1){weight_pos=pos_x_randB[c]*pos_x_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+              if(i_yama==2){weight_pos=pos_x_randB[c]*pos_y_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+              if(i_yama==3){weight_pos=pos_x_randB[c]*pos_z_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+              if(i_yama==4){weight_pos=pos_y_randB[c]*pos_y_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+              if(i_yama==5){weight_pos=pos_y_randB[c]*pos_z_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+              if(i_yama==6){weight_pos=pos_z_randB[c]*pos_z_randB[c]/(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]);}
+              if(i_yama==7){weight_pos=pow(pos_x_randB[c],2)*pos_x_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==8){weight_pos=pow(pos_y_randB[c],2)*pos_y_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==9){weight_pos=pow(pos_z_randB[c],2)*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==10){weight_pos=pow(pos_x_randB[c],2)*pos_x_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==11){weight_pos=pow(pos_x_randB[c],2)*pos_x_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==12){weight_pos=pow(pos_y_randB[c],2)*pos_y_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==13){weight_pos=pow(pos_y_randB[c],2)*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==14){weight_pos=pow(pos_z_randB[c],2)*pos_z_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==15){weight_pos=pow(pos_z_randB[c],2)*pos_z_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==16){weight_pos=pow(pos_x_randB[c],2)*pos_y_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==17){weight_pos=pow(pos_x_randB[c],2)*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==18){weight_pos=pow(pos_y_randB[c],2)*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==19){weight_pos=pow(pos_x_randB[c],2)*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==20){weight_pos=pow(pos_y_randB[c],2)*pos_x_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==21){weight_pos=pow(pos_z_randB[c],2)*pos_x_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],2);}
+              if(i_yama==22){weight_pos=pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],0.5);}
+              if(i_yama==23){weight_pos=pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],0.5);}
+              if(i_yama==24){weight_pos=pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],0.5);}
+              if(i_yama==25){weight_pos=pos_x_randB[c]*pos_x_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==26){weight_pos=pos_y_randB[c]*pos_y_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==27){weight_pos=pos_z_randB[c]*pos_z_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==28){weight_pos=pos_x_randB[c]*pos_x_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==29){weight_pos=pos_x_randB[c]*pos_x_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==30){weight_pos=pos_y_randB[c]*pos_y_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==31){weight_pos=pos_y_randB[c]*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==32){weight_pos=pos_z_randB[c]*pos_z_randB[c]*pos_x_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==33){weight_pos=pos_z_randB[c]*pos_z_randB[c]*pos_y_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+              if(i_yama==34){weight_pos=pos_x_randB[c]*pos_y_randB[c]*pos_z_randB[c]/pow(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c],1.5);}
+
+              if(pos_x_randB[c]*pos_x_randB[c]+pos_y_randB[c]*pos_y_randB[c]+pos_z_randB[c]*pos_z_randB[c]==0){weight_pos=0;}
+
+                            if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c]*weight_pos, L2b, L1b, ngrid);}
+                            if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c]*weight_pos, L2b, L1b, ngrid);}
+                            if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c]*weight_pos, L2b, L1b, ngrid);}
+                            if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c]*weight_pos, L2b, L1b, ngrid);}
+                            if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c]*weight_pos, L2b, L1b, ngrid);}
+                            if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_randB, pos_x_randB[c], pos_y_randB[c], pos_z_randB[c], weight_randB[c]*weight_pos, L2b, L1b, ngrid);}
+                      }
+
+
+                      #pragma omp parallel for private(c) shared(ngrid,ngridtot,alphaB,delta_dataB,delta_randB)
+                      for(c=0;c<ngridtot;c++)
+                      {
+                                               delta_dataB[c]+=alphaB*delta_randB[c];
+                      }
+                      free(delta_randB);
+
+              if(i_yama==0){
+                      deltak_re0_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                      deltak_im0_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+              }
+              if(i_yama==1)
+              {
+                      deltak_re2_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                      deltak_im2_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+              }
+              if(i_yama==7)
+              {
+                      deltak_re4_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                      deltak_im4_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+              }
+              if(i_yama==22)
+              {
+                      deltak_re1_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                      deltak_im1_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+              }
+              if(i_yama==25)
+              {
+                      deltak_re3_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                      deltak_im3_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+              }
+
+
+
+              if(i_yama==0){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re0_bB, deltak_im0_bB, ngrid,L1b,L2b, mode_correction);}
+              if(i_yama>=1 && i_yama<=6){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re2_bB, deltak_im2_bB, ngrid,L1b,L2b, mode_correction);}
+              if(i_yama>=7 && i_yama<=21){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re4_bB, deltak_im4_bB, ngrid,L1b,L2b, mode_correction);}
+              if(i_yama>=22 && i_yama<=24){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re1_bB, deltak_im1_bB, ngrid,L1b,L2b, mode_correction);}
+              if(i_yama>=25 && i_yama<=34){fftw_yamamoto_skycut(i_yama, delta_dataB, deltak_re3_bB, deltak_im3_bB, ngrid,L1b,L2b, mode_correction);}
+
+              free(delta_dataB);
+          }
+              
 }
 
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
 i=(int)(index2/(ngrid*ngrid/2+ngrid));
@@ -2735,6 +3464,14 @@ new_deltak_im0_b=deltak_re0_b[index2]*phase_sin+deltak_im0_b[index2]*phase_cos;
 
 deltak_re0[index2]+=new_deltak_re0_b;
 deltak_im0[index2]+=new_deltak_im0_b;
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        new_deltak_re0_bB=deltak_re0_bB[index2]*phase_cos-deltak_im0_bB[index2]*phase_sin;
+        new_deltak_im0_bB=deltak_re0_bB[index2]*phase_sin+deltak_im0_bB[index2]*phase_cos;
+
+        deltak_re0B[index2]+=new_deltak_re0_bB;
+        deltak_im0B[index2]+=new_deltak_im0_bB;
+
+    }
 
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
@@ -2745,6 +3482,14 @@ new_deltak_im1_b=deltak_re1_b[index2]*phase_sin+deltak_im1_b[index2]*phase_cos;
 
 deltak_re1[index2]+=new_deltak_re1_b;
 deltak_im1[index2]+=new_deltak_im1_b;
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        new_deltak_re1_bB=deltak_re1_bB[index2]*phase_cos-deltak_im1_bB[index2]*phase_sin;
+        new_deltak_im1_bB=deltak_re1_bB[index2]*phase_sin+deltak_im1_bB[index2]*phase_cos;
+
+        deltak_re1B[index2]+=new_deltak_re1_bB;
+        deltak_im1B[index2]+=new_deltak_im1_bB;
+
+    }
 }
 
 if(delta2_sw==1){
@@ -2754,6 +3499,14 @@ new_deltak_im2_b=deltak_re2_b[index2]*phase_sin+deltak_im2_b[index2]*phase_cos;
 
 deltak_re2[index2]+=new_deltak_re2_b;
 deltak_im2[index2]+=new_deltak_im2_b;
+    if(strcmp(type_of_code, "rusticoX") == 0){
+
+        new_deltak_re2_bB=deltak_re2_bB[index2]*phase_cos-deltak_im2_bB[index2]*phase_sin;
+        new_deltak_im2_bB=deltak_re2_bB[index2]*phase_sin+deltak_im2_bB[index2]*phase_cos;
+
+        deltak_re2B[index2]+=new_deltak_re2_bB;
+        deltak_im2B[index2]+=new_deltak_im2_bB;
+    }
 
 }
 
@@ -2764,6 +3517,14 @@ new_deltak_im3_b=deltak_re3_b[index2]*phase_sin+deltak_im3_b[index2]*phase_cos;
 
 deltak_re3[index2]+=new_deltak_re3_b;
 deltak_im3[index2]+=new_deltak_im3_b;
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        new_deltak_re3_bB=deltak_re3_bB[index2]*phase_cos-deltak_im3_bB[index2]*phase_sin;
+        new_deltak_im3_bB=deltak_re3_bB[index2]*phase_sin+deltak_im3_bB[index2]*phase_cos;
+
+        deltak_re3B[index2]+=new_deltak_re3_bB;
+        deltak_im3B[index2]+=new_deltak_im3_bB;
+
+    }
 }
 
 if(delta4_sw==1){
@@ -2773,6 +3534,13 @@ new_deltak_im4_b=deltak_re4_b[index2]*phase_sin+deltak_im4_b[index2]*phase_cos;
 
 deltak_re4[index2]+=new_deltak_re4_b;
 deltak_im4[index2]+=new_deltak_im4_b;
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        new_deltak_re4_bB=deltak_re4_bB[index2]*phase_cos-deltak_im4_bB[index2]*phase_sin;
+        new_deltak_im4_bB=deltak_re4_bB[index2]*phase_sin+deltak_im4_bB[index2]*phase_cos;
+
+        deltak_re4B[index2]+=new_deltak_re4_bB;
+        deltak_im4B[index2]+=new_deltak_im4_bB;
+    }
 }
 
 }
@@ -2781,23 +3549,43 @@ deltak_im4[index2]+=new_deltak_im4_b;
 
         free(deltak_re0_b);
         free(deltak_im0_b);
+      if(strcmp(type_of_code, "rusticoX") == 0){
+          free(deltak_re0_bB);
+          free(deltak_im0_bB);
+      }
 
 if(strcmp(do_anisotropy,"yes") ==0 ){
 if(delta1_sw==1){
         free(deltak_re1_b);
         free(deltak_im1_b);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re1_bB);
+        free(deltak_im1_bB);
+    }
 }
 if(delta2_sw==1){
         free(deltak_re2_b);
         free(deltak_im2_b);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re2_bB);
+        free(deltak_im2_bB);
+    }
 }
 if(delta3_sw==1){
         free(deltak_re3_b);
         free(deltak_im3_b);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re3_bB);
+        free(deltak_im3_bB);
+    }
 }
 if(delta4_sw==1){
         free(deltak_re4_b);
         free(deltak_im4_b);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re4_bB);
+        free(deltak_im4_bB);
+    }
 }
 }
 
@@ -2806,7 +3594,7 @@ printf("Ok!\n");
   }
 
 
-if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0 &&  window_function==0)
+if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0 )
 {
 //printf("positions freed\n");
 free(pos_x);
@@ -2817,46 +3605,92 @@ free(pos_x_rand);
 free(pos_y_rand);
 free(pos_z_rand);
 free(weight_rand);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(pos_xB);
+        free(pos_yB);
+        free(pos_zB);
+        free(weightB);
+        free(pos_x_randB);
+        free(pos_y_randB);
+        free(pos_z_randB);
+        free(weight_randB);
+    }
 
 }
 
 }
 free(kx);
 
- if(window_function==0){
 
-printf("Writing Power Spectrum output %s...",name_ps_out);
-sprintf(type,"FFT");
-write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
+if(strcmp(type_of_code, "rustico") == 0){
+    printf("Writing Power Spectrum output %s...",name_ps_out);
+    
+}
+if(strcmp(type_of_code, "rusticoX") == 0)
+{
+    printf("Writing Power Spectrum output %s %s %s...",name_ps_out,name_psAB_out,name_psBB_out);
 
 }
+sprintf(type,"FFT");
+//write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
 
+    write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code);
 
-// if(window_function==1){
-//}
 
 
 //free deltas
 free(deltak_re0);
 free(deltak_im0);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re0B);
+        free(deltak_im0B);
+    }
 if(strcmp(do_anisotropy,"yes") ==0 ){
 
 if(delta2_sw==1){
           free(deltak_re2);
-          free(deltak_im2);}
+          free(deltak_im2);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re2B);
+        free(deltak_im2B);
+    }
+    
+    
+}
 
 if(delta1_sw==1){
           free(deltak_re1);
-          free(deltak_im1);}
+          free(deltak_im1);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re1B);
+        free(deltak_im1B);
+    }
+    
+    
+}
 
 if(delta3_sw==1){
           free(deltak_re3);
-          free(deltak_im3);}
+          free(deltak_im3);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re3B);
+        free(deltak_im3B);
+    }
+    
+    
+}
 
 if(delta4_sw==1){
 
           free(deltak_re4);
-          free(deltak_im4);}
+          free(deltak_im4);
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        free(deltak_re4B);
+        free(deltak_im4B);
+    }
+    
+    
+}
 }
 
 
@@ -2868,6 +3702,7 @@ printf("Ok!\n");
 
 void loop_interlacing_periodic_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double L1, double L2, int ngrid, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re, double *deltak_im)
 {
+//  FILE *f;
   long int i,j,k,i_inter;
   long int c;
   double phase_cos,phase_sin;
@@ -2920,6 +3755,8 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
 
 
+
+
      printf("Ok!\n");
      printf("Performing FFTs ...");
      if(i_inter==1)
@@ -2963,18 +3800,30 @@ free(kx);
 
 }
 
-void loop_interlacing_periodic(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double L1, double L2, int ngrid, double P_shot_noise, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out, char *type_of_mass_assigment,char *do_odd_multipoles, char *do_anisotropy, char *do_bispectrum,int Nmu,char *file_for_mu)
+void loop_interlacing_periodic(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double L1, double L2, int ngrid, double P_shot_noise,double P_shot_noiseB, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_odd_multipoles,char *do_anisotropy, char *do_bispectrum,int Nmu, char *file_for_mu, char *type_of_code,char  *name_density, char *name_densityB,char *type_of_input)
 {
-  
+  FILE *f;
   long int i,j,k,i_inter;
   long int c;
   double phase_cos,phase_sin; 
   double* deltak_re;
   double* deltak_im;
+  
+  double* deltak_reB;
+  double* deltak_imB;
+
   double* deltak_re_b;
   double* deltak_im_b;
+
+  double* deltak_re_bB;
+  double* deltak_im_bB;
+    
   double new_deltak_re_b,new_deltak_im_b;
+  double new_deltak_re_bB,new_deltak_im_bB;
+    
   double* delta_data;
+  double* delta_dataB;
+
   double L2b,L1b;
   double *kx;
   double Pi=(4.*atan(1.));
@@ -3000,6 +3849,9 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
      delta_data = (double*) calloc(ngridtot, sizeof(double));
+
+    if( strcmp(type_of_input,"particles") == 0){
+
      printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
      for(c=0; c<Ndata; c++)
      {
@@ -3016,10 +3868,65 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
         #pragma omp parallel for private(c) shared(ngrid,ngridtot,Ndata,delta_data)
         for(c=0;c<ngridtot;c++)
         {
-                                 delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);
+                                 delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);//print out delta_data[c]*ngrid^3 which is delta(x) 
+                                 //modify delta inputed by delta/ngrid3 to match the definition from here (norm of FFTW)
         }
-        
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*ngridtot);
+     }
+fclose(f);
+}
 
+}//particles
+else{//density
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now...\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&delta_data[c]);
+        delta_data[c]=delta_data[c]/ngridtot*1.;
+     }
+fclose(f);
+}        
+
+    if(strcmp(type_of_code, "rusticoX") == 0){
+   
+        delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+        printf("Assigning particles-B to the grid (Iteration %ld) ...", i_inter);
+        for(c=0; c<NdataB; c++)
+        {
+          if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+          if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+          if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+          if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+          if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+          if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+
+        }
+
+
+           #pragma omp parallel for private(c) shared(ngrid,ngridtot,NdataB,delta_dataB)
+           for(c=0;c<ngridtot;c++)
+           {
+                                    delta_dataB[c]=delta_dataB[c]/NdataB-pow(ngrid,-3);
+           }
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*ngridtot);
+     }
+fclose(f);
+}
+
+
+        
+    }
 
      printf("Ok!\n");
      printf("Performing FFTs ...");
@@ -3029,6 +3936,16 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
         deltak_im= (double*) calloc(ngridtotr2c,sizeof(double));
         fftw_yamamoto_skycut(0,delta_data, deltak_re, deltak_im, ngrid,L1b,L2b, mode_correction);
         free(delta_data);
+         
+         if(strcmp(type_of_code, "rusticoX") == 0){
+
+             deltak_reB= (double*) calloc(ngridtotr2c,sizeof(double));
+             deltak_imB= (double*) calloc(ngridtotr2c,sizeof(double));
+             fftw_yamamoto_skycut(0,delta_dataB, deltak_reB, deltak_imB, ngrid,L1b,L2b, mode_correction);
+             free(delta_dataB);
+             
+         }
+         
         printf("Ok!\n");
 
      }
@@ -3057,36 +3974,88 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
         free(deltak_re_b);
         free(deltak_im_b);
+         
+         if(strcmp(type_of_code, "rusticoX") == 0){
+             
+                     deltak_re_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                     deltak_im_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                     fftw_yamamoto_skycut(0,delta_dataB, deltak_re_bB, deltak_im_bB, ngrid,L1b,L2b, mode_correction);
+                     free(delta_dataB);
+                   #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_bB,new_deltak_im_bB) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_reB,deltak_imB,deltak_re_bB,deltak_im_bB,i_inter,Ninterlacing,L1,L2)
+                   for(index2=0;index2<ngridtotr2c;index2++)
+                   {
+
+                         i=(int)(index2/(ngrid*ngrid/2+ngrid));
+                         j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                         k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+
+                          phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                          phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                          new_deltak_re_bB=deltak_re_bB[index2]*phase_cos-deltak_im_bB[index2]*phase_sin;
+                          new_deltak_im_bB=deltak_re_bB[index2]*phase_sin+deltak_im_bB[index2]*phase_cos;
+                          deltak_reB[index2]+=new_deltak_re_bB;
+                          deltak_imB[index2]+=new_deltak_im_bB;
+
+             }
+
+                     free(deltak_re_bB);
+                     free(deltak_im_bB);
+             
+         }
         
         printf("Ok!\n");
 
 if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0 )//only free them in the last interation and if no-bispectrum is computed
 {
-//printf("positions freed\n");
+
+    if( strcmp(type_of_input,"particles") == 0){
+printf("positions freed\n");
 free(pos_x);
 free(pos_y);
 free(pos_z);
-free(weight);
+free(weight);}
+    
+    if(strcmp(type_of_code, "rusticoX") == 0){
+        
+    if( strcmp(type_of_input,"particles") == 0){
+        free(pos_xB);
+        free(pos_yB);
+        free(pos_zB);
+        free(weightB);}
+    }
+    
 }
 
 
 }
 
 }//end of itteration loop
+
 free(kx);
-printf("Writing Power Spectrum output %s...",name_ps_out);
-if(Nmu == 1){write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);}
-else{write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);}
+    if(strcmp(type_of_code, "rustico") == 0){printf("Writing Power Spectrum output %s...",name_ps_out);}
+    if(strcmp(type_of_code, "rusticoX") == 0){printf("Writing Power Spectrum output %s %s %s...",name_ps_out,name_psAB_out,name_psBB_out);}
+
+if(Nmu == 1){
+    //write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);
+    write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+
+}
+else{
+   // write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);
+    write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+
+}
 
 printf("Ok!\n");
 
 }
 
 
-void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in ,int gadget_files, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu)
+void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in,char *name_dataB_in ,int gadget_files,int gadget_filesB, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD,char *RSDB, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code, char *name_density,char *name_densityB,char *type_of_input)
 {
   FILE *f;
   double *pos_x,*pos_y,*pos_z;
+    double *pos_xB,*pos_yB,*pos_zB;
   double weight;
   long int i,j,k,i_inter;
   long int c;
@@ -3097,6 +4066,14 @@ void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing,
   double* deltak_im_b;
   double new_deltak_re_b,new_deltak_im_b;
   double* delta_data;
+
+    double* deltak_reB;
+    double* deltak_imB;
+    double* deltak_re_bB;
+    double* deltak_im_bB;
+    double new_deltak_re_bB,new_deltak_im_bB;
+    double* delta_dataB;
+    
   double L2b,L1b;
   double *kx;
   double Pi=(4.*atan(1.));
@@ -3110,6 +4087,15 @@ void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing,
   double P_shot_noise;
   double scale_factor;
   double Omatter,Olambda;
+    
+    char name_gadget_fileB[500];
+    long int NumPart_fileB;
+    long int NdataB;
+    double P_shot_noiseB;
+    double scale_factorB;
+    double OmatterB,OlambdaB;
+
+    
   double params[4];
         kx=malloc(sizeof(double)*(ngrid));
         for(i=0;i<ngrid;i++)
@@ -3125,116 +4111,251 @@ void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing,
         }
 
 weight=1.0;
-for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
-{
-     L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
-     L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
+    for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
+    {
+         L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
+         L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
-     delta_data = (double*) calloc(ngridtot, sizeof(double));
-     printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
+         delta_data = (double*) calloc(ngridtot, sizeof(double));
+         printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
 
-Ndata=0;
-for(snapshot_num=0;snapshot_num<gadget_files;snapshot_num++)
-  {
-
-  sprintf(name_gadget_file, "%s.%d", name_data_in, snapshot_num);
-
-  load_snapshot(name_gadget_file, 1, params);
-NumPart_file=(long int)(params[0]);
-scale_factor=1./(1+params[1]);
-Omatter=params[2];
-Olambda=params[3];
-
-Ndata=Ndata+NumPart_file;
- pos_x = (double*) calloc(NumPart_file, sizeof(double));
- pos_y = (double*) calloc(NumPart_file, sizeof(double));
- pos_z = (double*) calloc(NumPart_file, sizeof(double));
-
-     for(c=0; c<NumPart_file; c++)
-     {
-
-     pos_x[c]=P[c].Pos[0]*0.001;
-     pos_y[c]=P[c].Pos[1]*0.001;
-if(strcmp(RSD, "no") == 0){pos_z[c]=P[c].Pos[2]*0.001;}
-if(strcmp(RSD, "yes") == 0){pos_z[c]=(P[c].Pos[2]*0.001)+(P[c].Vel[2])*sqrt(scale_factor)/(100.*scale_factor*sqrt(Omatter*pow(scale_factor,-3)+Olambda));}
-
-
-       if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
-       if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
-       if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
-       if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
-       if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
-       if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
-
-     }
-free(pos_x);
-free(pos_y);
-free(pos_z);
-
-printf("Ok!\n");
-} 
-
-        #pragma omp parallel for private(c) shared(ngrid,ngridtot,Ndata,delta_data)
-     for(c=0;c<ngridtot;c++)
-        {
-                                 delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);
-        }
-
-
-
-     printf("Ok!\n");
-     printf("Performing FFTs ...");
-   if(i_inter==1)
-     {
-        deltak_re= (double*) calloc(ngridtotr2c,sizeof(double));
-        deltak_im= (double*) calloc(ngridtotr2c,sizeof(double));
-        fftw_yamamoto_skycut(0,delta_data, deltak_re, deltak_im, ngrid,L1b,L2b, mode_correction);
-        free(delta_data);
-        printf("Ok!\n");
-
-     }
-     else
-     {
-        deltak_re_b= (double*) calloc(ngridtotr2c,sizeof(double));
-        deltak_im_b= (double*) calloc(ngridtotr2c,sizeof(double));
-        fftw_yamamoto_skycut(0,delta_data, deltak_re_b, deltak_im_b, ngrid,L1b,L2b, mode_correction);
-        free(delta_data);
-      #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_b,new_deltak_im_b) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_re,deltak_im,deltak_re_b,deltak_im_b,i_inter,Ninterlacing,L1,L2)
-    for(index2=0;index2<ngridtotr2c;index2++)
+    Ndata=0;
+    for(snapshot_num=0;snapshot_num<gadget_files;snapshot_num++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
-            k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+      sprintf(name_gadget_file, "%s.%d", name_data_in, snapshot_num);
 
-             phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
-             phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
-             new_deltak_re_b=deltak_re_b[index2]*phase_cos-deltak_im_b[index2]*phase_sin;
-             new_deltak_im_b=deltak_re_b[index2]*phase_sin+deltak_im_b[index2]*phase_cos;
-             deltak_re[index2]+=new_deltak_re_b;
-             deltak_im[index2]+=new_deltak_im_b;
-} 
+      load_snapshot(name_gadget_file, 1, params);
+    NumPart_file=(long int)(params[0]);
+    scale_factor=1./(1+params[1]);
+    Omatter=params[2];
+    Olambda=params[3];
 
-        free(deltak_re_b);
-        free(deltak_im_b);
+    Ndata=Ndata+NumPart_file;
+     pos_x = (double*) calloc(NumPart_file, sizeof(double));
+     pos_y = (double*) calloc(NumPart_file, sizeof(double));
+     pos_z = (double*) calloc(NumPart_file, sizeof(double));
 
-        printf("Ok!\n");
+         for(c=0; c<NumPart_file; c++)
+         {
+
+         pos_x[c]=P[c].Pos[0]*0.001;
+         pos_y[c]=P[c].Pos[1]*0.001;
+    if(strcmp(RSD, "no") == 0){pos_z[c]=P[c].Pos[2]*0.001;}
+    if(strcmp(RSD, "yes") == 0){pos_z[c]=(P[c].Pos[2]*0.001)+(P[c].Vel[2])*sqrt(scale_factor)/(100.*scale_factor*sqrt(Omatter*pow(scale_factor,-3)+Olambda));}
+
+//fprintf(f,"%e %e %e\n",pos_x[c],pos_y[c],pos_z[c]);
+
+           if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
+           if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
+           if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
+           if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
+           if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
+           if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_data, pos_x[c], pos_y[c], pos_z[c], weight, L2b, L1b, ngrid);}
+
+         }
+    free(pos_x);
+    free(pos_y);
+    free(pos_z);
+
+    printf("Ok!\n");
+    }
+
+            #pragma omp parallel for private(c) shared(ngrid,ngridtot,Ndata,delta_data)
+         for(c=0;c<ngridtot;c++)
+            {
+                                     delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);
+            }
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*ngridtot);
+     }
+fclose(f);
+}
 
 
-} 
 
-}//end of itteration loop
-free(kx);
 
+         printf("Ok!\n");
+         printf("Performing FFTs ...");
+       if(i_inter==1)
+         {
+            deltak_re= (double*) calloc(ngridtotr2c,sizeof(double));
+            deltak_im= (double*) calloc(ngridtotr2c,sizeof(double));
+            fftw_yamamoto_skycut(0,delta_data, deltak_re, deltak_im, ngrid,L1b,L2b, mode_correction);
+            free(delta_data);
+            printf("Ok!\n");
+
+         }
+         else
+         {
+            deltak_re_b= (double*) calloc(ngridtotr2c,sizeof(double));
+            deltak_im_b= (double*) calloc(ngridtotr2c,sizeof(double));
+            fftw_yamamoto_skycut(0,delta_data, deltak_re_b, deltak_im_b, ngrid,L1b,L2b, mode_correction);
+            free(delta_data);
+          #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_b,new_deltak_im_b) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_re,deltak_im,deltak_re_b,deltak_im_b,i_inter,Ninterlacing,L1,L2)
+        for(index2=0;index2<ngridtotr2c;index2++)
+          {
+
+                i=(int)(index2/(ngrid*ngrid/2+ngrid));
+                j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+
+                 phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                 phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                 new_deltak_re_b=deltak_re_b[index2]*phase_cos-deltak_im_b[index2]*phase_sin;
+                 new_deltak_im_b=deltak_re_b[index2]*phase_sin+deltak_im_b[index2]*phase_cos;
+                 deltak_re[index2]+=new_deltak_re_b;
+                 deltak_im[index2]+=new_deltak_im_b;
+    }
+
+            free(deltak_re_b);
+            free(deltak_im_b);
+
+            printf("Ok!\n");
+
+
+    }
+        
+        if(strcmp(type_of_code, "rusticoX") == 0)
+        {
+
+                 delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+                 printf("Assigning particles-B to the grid (Iteration %ld) ...", i_inter);
+
+            NdataB=0;
+            for(snapshot_num=0;snapshot_num<gadget_filesB;snapshot_num++)
+              {
+
+              sprintf(name_gadget_fileB, "%s.%d", name_dataB_in, snapshot_num);
+
+              load_snapshot(name_gadget_fileB, 1, params);
+            NumPart_fileB=(long int)(params[0]);
+            scale_factorB=1./(1+params[1]);
+            OmatterB=params[2];
+            OlambdaB=params[3];
+
+            NdataB=NdataB+NumPart_file;
+             pos_xB = (double*) calloc(NumPart_fileB, sizeof(double));
+             pos_yB = (double*) calloc(NumPart_fileB, sizeof(double));
+             pos_zB = (double*) calloc(NumPart_fileB, sizeof(double));
+
+                 for(c=0; c<NumPart_fileB; c++)
+                 {
+
+                 pos_xB[c]=P[c].Pos[0]*0.001;
+                 pos_yB[c]=P[c].Pos[1]*0.001;
+            if(strcmp(RSDB, "no") == 0){pos_zB[c]=P[c].Pos[2]*0.001;}
+            if(strcmp(RSDB, "yes") == 0){pos_zB[c]=(P[c].Pos[2]*0.001)+(P[c].Vel[2])*sqrt(scale_factorB)/(100.*scale_factorB*sqrt(OmatterB*pow(scale_factorB,-3)+OlambdaB));}
+
+
+                   if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight, L2b, L1b, ngrid);}
+                   if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight, L2b, L1b, ngrid);}
+                   if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight, L2b, L1b, ngrid);}
+                   if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight, L2b, L1b, ngrid);}
+                   if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight, L2b, L1b, ngrid);}
+                   if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weight, L2b, L1b, ngrid);}
+
+                 }
+            free(pos_xB);
+            free(pos_yB);
+            free(pos_zB);
+
+            printf("Ok!\n");
+            }
+
+                    #pragma omp parallel for private(c) shared(ngrid,ngridtot,NdataB,delta_dataB)
+                 for(c=0;c<ngridtot;c++)
+                    {
+                                             delta_dataB[c]=delta_dataB[c]/NdataB-pow(ngrid,-3);
+                    }
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*ngridtot);
+     }
+fclose(f);
+}
+
+
+
+                 printf("Ok!\n");
+                 printf("Performing FFTs ...");
+               if(i_inter==1)
+                 {
+                    deltak_reB= (double*) calloc(ngridtotr2c,sizeof(double));
+                    deltak_imB= (double*) calloc(ngridtotr2c,sizeof(double));
+                    fftw_yamamoto_skycut(0,delta_dataB, deltak_reB, deltak_imB, ngrid,L1b,L2b, mode_correction);
+                    free(delta_dataB);
+                    printf("Ok!\n");
+
+                 }
+                 else
+                 {
+                    deltak_re_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                    deltak_im_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                    fftw_yamamoto_skycut(0,delta_dataB, deltak_re_bB, deltak_im_bB, ngrid,L1b,L2b, mode_correction);
+                    free(delta_dataB);
+                  #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_bB,new_deltak_im_bB) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_reB,deltak_imB,deltak_re_bB,deltak_im_bB,i_inter,Ninterlacing,L1,L2)
+                for(index2=0;index2<ngridtotr2c;index2++)
+                  {
+
+                        i=(int)(index2/(ngrid*ngrid/2+ngrid));
+                        j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                        k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+
+                         phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                         phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                         new_deltak_re_bB=deltak_re_bB[index2]*phase_cos-deltak_im_bB[index2]*phase_sin;
+                         new_deltak_im_bB=deltak_re_bB[index2]*phase_sin+deltak_im_bB[index2]*phase_cos;
+                         deltak_reB[index2]+=new_deltak_re_bB;
+                         deltak_imB[index2]+=new_deltak_im_bB;
+            }
+
+                    free(deltak_re_bB);
+                    free(deltak_im_bB);
+
+                    printf("Ok!\n");
+
+
+            }
+            
+        }
+
+    }//end of itteration loop
+    free(kx);
+
+    if(strcmp(type_of_code, "rustico") == 0){
 printf("Writing Power Spectrum output %s...",name_ps_out);
 P_shot_noise=pow(L2-L1,3)/Ndata;
+    }
+    if(strcmp(type_of_code, "rusticoX") == 0){
 
-if(Nmu == 1){write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);}
-else{write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);}
+    printf("Writing Power Spectrum output %s %s %s...",name_ps_out,name_psAB_out,name_psBB_out);
+    P_shot_noise=pow(L2-L1,3)/Ndata;
+    P_shot_noiseB=pow(L2-L1,3)/NdataB;
+    }
+    
+//if(Nmu == 1){write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);}
+//else{write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);}
+
+    if(Nmu == 1){
+        write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+        
+    }
+    else{
+        write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+        
+    }
 
 
 printf("Ok!\n");
-
+//fclose(f);
 }
 
 
@@ -3301,7 +4422,7 @@ Ndata=Ndata+NumPart_file;
  pos_y = (double*) calloc(NumPart_file, sizeof(double));
  pos_z = (double*) calloc(NumPart_file, sizeof(double));
 
-printf("%d\n",NumPart_file);
+//printf("%d\n",NumPart_file);
      for(c=0; c<NumPart_file; c++)
      {
      pos_x[c]=P[c].Pos[0]*0.001; //conversion to Mpc/h (originally in kpc/h)
@@ -3375,4 +4496,264 @@ free(kx);
 params_input[0]=pow(L2-L1,3)/Ndata;
 
 }
+
+    void loop_interlacing_periodic_gadget_x_ascii(double kmin,double kmax,int Ninterlacing, char *name_dataA_in, int gadget_filesA, double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double L1, double L2, int ngrid, double P_shot_noiseB,  double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_psAA_out,char *name_psAB_out, char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor, char *do_bispectrum, char *RSD,char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code,  char *name_density, char *name_densityB)
+    {
+     
+         FILE *f;
+          double *pos_xA,*pos_yA,*pos_zA;
+
+         double weight;
+          long int i,j,k,i_inter;
+          long int c;
+          double phase_cos,phase_sin;
+          double* deltak_reA;
+          double* deltak_imA;
+          double* deltak_re_bA;
+          double* deltak_im_bA;
+          double new_deltak_re_bA,new_deltak_im_bA;
+          double* delta_dataA;
+
+          double* deltak_reB;
+          double* deltak_imB;
+          double* deltak_re_bB;
+          double* deltak_im_bB;
+          double new_deltak_re_bB,new_deltak_im_bB;
+          double* delta_dataB;
+
+          double L2b,L1b;
+          double *kx;
+          double Pi=(4.*atan(1.));
+          long int ngridtot=pow(ngrid,3);
+          long int ngridtotr2c=pow(ngrid,3)/2+pow(ngrid,2);
+          long int index2;
+          int snapshot_num;
+
+          char name_gadget_fileA[500];
+          long int NumPart_fileA;
+          long int NdataA;
+          double P_shot_noiseA;
+          double scale_factorA;
+          double OmatterA,OlambdaA;
+          double params[4];
+                kx=malloc(sizeof(double)*(ngrid));
+                for(i=0;i<ngrid;i++)
+                {
+                                if(i<ngrid/2+1)
+                                {
+                                        kx[i]=i*1.0*(2.0*Pi/(L2-L1));
+                                }
+                                else
+                                {
+                                        kx[i]=-(ngrid-i)*1.0*(2.0*Pi/(L2-L1));
+                                }
+                }
+        weight=1.0;
+        for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
+        {
+             L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
+             L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
+
+             delta_dataA = (double*) calloc(ngridtot, sizeof(double));
+             printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
+
+        NdataA=0;
+        for(snapshot_num=0;snapshot_num<gadget_filesA;snapshot_num++)
+          {
+
+          sprintf(name_gadget_fileA, "%s.%d", name_dataA_in, snapshot_num);
+
+          load_snapshot(name_gadget_fileA, 1, params);
+        NumPart_fileA=(long int)(params[0]);
+        scale_factorA=1./(1+params[1]);
+        OmatterA=params[2];
+        OlambdaA=params[3];
+        NdataA=NdataA+NumPart_fileA;
+         pos_xA = (double*) calloc(NumPart_fileA, sizeof(double));
+         pos_yA = (double*) calloc(NumPart_fileA, sizeof(double));
+         pos_zA = (double*) calloc(NumPart_fileA, sizeof(double));
+
+             for(c=0; c<NumPart_fileA; c++)
+            {
+
+             pos_xA[c]=P[c].Pos[0]*0.001;
+             pos_yA[c]=P[c].Pos[1]*0.001;
+        if(strcmp(RSD, "no") == 0){pos_zA[c]=P[c].Pos[2]*0.001;}
+        if(strcmp(RSD, "yes") == 0){pos_zA[c]=(P[c].Pos[2]*0.001)+(P[c].Vel[2])*sqrt(scale_factorA)/(100.*scale_factorA*sqrt(OmatterA*pow(scale_factorA,-3)+OlambdaA));}
+
+
+               if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataA, pos_xA[c], pos_yA[c], pos_zA[c], weight, L2b, L1b, ngrid);}
+               if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataA, pos_xA[c], pos_yA[c], pos_zA[c], weight, L2b, L1b, ngrid);}
+               if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataA, pos_xA[c], pos_yA[c], pos_zA[c], weight, L2b, L1b, ngrid);}
+               if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataA, pos_xA[c], pos_yA[c], pos_zA[c], weight, L2b, L1b, ngrid);}
+               if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataA, pos_xA[c], pos_yA[c], pos_zA[c], weight, L2b, L1b, ngrid);}
+               if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataA, pos_xA[c], pos_yA[c], pos_zA[c], weight, L2b, L1b, ngrid);}
+
+             }
+        free(pos_xA);
+        free(pos_yA);
+        free(pos_zA);
+
+        printf("Ok!\n");
+        }
+
+                #pragma omp parallel for private(c) shared(ngrid,ngridtot,NdataA,delta_dataA)
+             for(c=0;c<ngridtot;c++)
+                {
+                                         delta_dataA[c]=delta_dataA[c]/NdataA-pow(ngrid,-3);
+                }
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataA[c]*ngridtot);
+     }
+fclose(f);
+}
+
+           printf("Ok!\n");
+             printf("Performing FFTs ...");
+           if(i_inter==1)
+             {
+                deltak_reA= (double*) calloc(ngridtotr2c,sizeof(double));
+                deltak_imA= (double*) calloc(ngridtotr2c,sizeof(double));
+                fftw_yamamoto_skycut(0,delta_dataA, deltak_reA, deltak_imA, ngrid,L1b,L2b, mode_correction);
+                free(delta_dataA);
+                printf("Ok!\n");
+
+             }
+           else
+             {
+                deltak_re_bA= (double*) calloc(ngridtotr2c,sizeof(double));
+                deltak_im_bA= (double*) calloc(ngridtotr2c,sizeof(double));
+                fftw_yamamoto_skycut(0,delta_dataA, deltak_re_bA, deltak_im_bA, ngrid,L1b,L2b, mode_correction);
+                free(delta_dataA);
+              #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_bA,new_deltak_im_bA) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_reA,deltak_imA,deltak_re_bA,deltak_im_bA,i_inter,Ninterlacing,L1,L2)
+            for(index2=0;index2<ngridtotr2c;index2++)
+              {
+
+                    i=(int)(index2/(ngrid*ngrid/2+ngrid));
+                    j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                    k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+
+                     phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                     phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                     new_deltak_re_bA=deltak_re_bA[index2]*phase_cos-deltak_im_bA[index2]*phase_sin;
+                     new_deltak_im_bA=deltak_re_bA[index2]*phase_sin+deltak_im_bA[index2]*phase_cos;
+                     deltak_reA[index2]+=new_deltak_re_bA;
+                     deltak_imA[index2]+=new_deltak_im_bA;
+        }
+
+                free(deltak_re_bA);
+                free(deltak_im_bA);
+
+                printf("Ok!\n");
+
+
+        }
+        }
+        //B
+
+        for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
+        {
+             L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
+             L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
+            delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+                  printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
+                  for(c=0; c<NdataB; c++)
+              {
+              if(strcmp(type_of_mass_assigment, "NGC") == 0){ngc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "CIC") == 0){cic_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "TSC") == 0){tsc_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "PCS") == 0){pcs_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "P4S") == 0){pq4s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              if(strcmp(type_of_mass_assigment, "P5S") == 0){pq5s_assingment(delta_dataB, pos_xB[c], pos_yB[c], pos_zB[c], weightB[c], L2b, L1b, ngrid);}
+              }
+                         #pragma omp parallel for private(c) shared(ngrid,ngridtot,NdataB,delta_dataB)
+                         for(c=0;c<ngridtot;c++)
+                         {
+                           delta_dataB[c]=delta_dataB[c]/NdataB-pow(ngrid,-3);
+                     }
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*ngridtot);
+     }
+fclose(f);
+}
+
+
+             printf("Ok!\n");
+             printf("Performing FFTs ...");
+             if(i_inter==1)
+             {
+              deltak_reB= (double*) calloc(ngridtotr2c,sizeof(double));
+              deltak_imB= (double*) calloc(ngridtotr2c,sizeof(double));
+              fftw_yamamoto_skycut(0,delta_dataB, deltak_reB, deltak_imB, ngrid,L1b,L2b, mode_correction);
+              free(delta_dataB);
+              printf("Ok!\n");
+           }
+             else
+             {
+                deltak_re_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                deltak_im_bB= (double*) calloc(ngridtotr2c,sizeof(double));
+                fftw_yamamoto_skycut(0,delta_dataB, deltak_re_bB, deltak_im_bB, ngrid,L1b,L2b, mode_correction);
+                free(delta_dataB);
+            #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_bB,new_deltak_im_bB) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_reB,deltak_imB,deltak_re_bB,deltak_im_bB,i_inter,Ninterlacing,L1,L2)
+              for(index2=0;index2<ngridtotr2c;index2++)
+              {
+                   i=(int)(index2/(ngrid*ngrid/2+ngrid));
+                   j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                   k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+
+                   phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                   phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
+                   new_deltak_re_bB=deltak_re_bB[index2]*phase_cos-deltak_im_bB[index2]*phase_sin;
+                   new_deltak_im_bB=deltak_re_bB[index2]*phase_sin+deltak_im_bB[index2]*phase_cos;
+                   deltak_reB[index2]+=new_deltak_re_bB;
+                   deltak_imB[index2]+=new_deltak_im_bB;
+                }
+
+
+               free(deltak_re_bB);
+               free(deltak_im_bB);
+        }
+
+                printf("Ok!\n");
+        if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0 )//only free them in the last interation and if no-bispectrum is computed
+        {
+        free(pos_xB);
+        free(pos_yB);
+        free(pos_zB);
+        free(weightB);
+
+        }
+
+
+        }//end of itteration loop
+
+        
+
+        free(kx);
+
+        printf("Writing Power Spectrum output %s %s %s...",name_psAA_out,name_psAB_out,name_psBB_out);
+        P_shot_noiseA=pow(L2-L1,3)/NdataA;
+        //write_power_spectrum_periodic_cross(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAB_out,0.0,binning_type);
+        //write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,P_shot_noiseA,binning_type);
+        //write_power_spectrum_periodic(kmin,kmax,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psBB_out,P_shot_noiseB,binning_type);
+        if(Nmu == 1){
+            write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+            
+        }
+        else{
+            write_power_spectrum_periodic2D(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+            
+        }
+
+        printf("Ok!\n");
+
+    }
 

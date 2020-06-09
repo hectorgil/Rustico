@@ -6,7 +6,9 @@
 #include "cubature.h"
 #include "read_line.h"
 #include "functions.h"
+//#include "structures.h"
 
+/*
 typedef struct {
 	              double OMEGA_M;
 }f_params;
@@ -20,7 +22,7 @@ void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *
      double c=299792.458;//speed of light 
      fval[0]=c/(100.*sqrt(omega*pow(1+z,3)+1.-omega)); 
 }
-
+*/
 long int get_number_used_lines_data(char *filename, double parameter_value[])
 {
 FILE *f;
@@ -186,7 +188,7 @@ free(function_parameters);
 }
 
 
-void get_skycuts_data(char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[], char *type_normalization_mode, double radata[], double decdata[], double zdata[], double wcoldata[], double wsysdata[],double wfkpdata[], double nzdata[],char *shuffle)
+void get_skycuts_data(char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[], char *type_normalization_mode, double radata[], double decdata[], double zdata[], double wcoldata[], double wsysdata[],double wfkpdata[], double nzdata[],char *shuffle,double Rsmooth)
 {
 double Omega_m=parameter_value[0];
 double z_min=parameter_value[1];
@@ -270,6 +272,7 @@ alpha_data=0;
 
 i_DeltaR++;
 DeltaR=i_DeltaR*0.5;
+if(Rsmooth>0){DeltaR=Rsmooth;}
 
   n_bin_r=(long int)((r_max-r_min)/DeltaR);//printf("\n %lf %d\n",DeltaR,n_bin_r);
   radial_cell = (double*) calloc(n_bin_r, sizeof(double));
@@ -458,9 +461,10 @@ if(IN2<IN2_min){IN2_min=IN2;}
 //printf("%lf %lf %.10lf %lf %lf\n",DeltaR,I22_min,I33_min,IN1_min,IN2_min);
 
 
-}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0);
+}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0 && Rsmooth==0);
 
-if(strcmp(type_normalization_mode, "density") == 0){DeltaR_min=10.;}//Returns a fixed value if normalized by density
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth==0){DeltaR_min=10.;}//Returns a fixed value if normalized by density
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth>0){DeltaR_min=Rsmooth;}//Returns a fixed value if normalized by density
 
 free(function_parameters);
 //Copy needed information 
@@ -737,7 +741,7 @@ free(L);
 
 }
 
-void get_skycuts_randoms(char *path, char *id, char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],char *type_normalization_mode, char *type_normalization_mode2, double *radata, double *decdata, double *zdata, double *wcoldata, double *wsysdata,double *wfkpdata, double *nzdata,long int Ndata, double alpha_true, char *shuffle, char *write_shuffled_randoms)
+void get_skycuts_randoms(char *path, char *id, char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],char *type_normalization_mode, char *type_normalization_mode2, double *radata, double *decdata, double *zdata, double *wcoldata, double *wsysdata,double *wfkpdata, double *nzdata,long int Ndata, double alpha_true, char *shuffle, char *write_shuffled_randoms,char *name_out_randoms,double Rsmooth)
 {
 
 long int *L;
@@ -748,8 +752,8 @@ long int seed;
 double Omega_m=parameter_value[0];
 double z_min=parameter_value[1];
 double z_max=parameter_value[2];
-char name_out_randoms[200];
-sprintf(name_out_randoms,"%s/Randoms_%s.dat",path,id);
+//char name_out_randoms[200];
+//sprintf(name_out_randoms,"%s/Randoms_%s.dat",path,id);
 
 f_params *function_parameters;
 function_parameters = (f_params *) malloc(sizeof(f_params));
@@ -827,7 +831,7 @@ alpha=parameter_value[12];
 
 i_DeltaR++;
 DeltaR=i_DeltaR*0.5;
-
+if(Rsmooth>0){DeltaR=Rsmooth;}
 
   n_bin_r=(long int)((r_max-r_min)/DeltaR);//printf("\n %d\n",n_bin_r);
   radial_cell = (double*) calloc(n_bin_r, sizeof(double));
@@ -1146,9 +1150,11 @@ if(I33_w_randoms<I33_w_randoms_min){I33_w_randoms_min=I33_w_randoms;}
 free(radial_cell);
 free(radial_fkp_cell);
 
-}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0 && strcmp(type_normalization_mode2, "randoms") == 0);
+}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0 && strcmp(type_normalization_mode2, "randoms") == 0 && Rsmooth==0);
 
-if(strcmp(type_normalization_mode, "density") == 0){DeltaR_min=10.;}//If no area is used for normalization, keep deltaR by data
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth==0){DeltaR_min=10.;}//If no area is used for normalization, keep deltaR by data
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth>0){DeltaR_min=Rsmooth;}//If no area is used for normalization, keep deltaR by data
+
 if(strcmp(type_normalization_mode, "area") == 0 && strcmp(type_normalization_mode2, "data") == 0){DeltaR_min=parameter_value[25];}//if no randoms are explored, keep deltaR by data
 
 

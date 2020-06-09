@@ -9,6 +9,17 @@ void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	int  xindex=(int)(ngrid*s_x/(L2-L1));
 	int  yindex=(int)(ngrid*s_y/(L2-L1));
 	int  zindex=(int)(ngrid*s_z/(L2-L1));
+
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
+
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+
+
         long int index;
 	double sx;
 	double sy;
