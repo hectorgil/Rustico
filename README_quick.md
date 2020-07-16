@@ -86,7 +86,9 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 #Area effective value in deg^2 (double)x2: Value of the area used for the normalization and of the power spectrum and bispectrum in the skycut option. Two inputs required in case of rusticoX
 
 #Quadrupole as (L0L2/L1L1): Options for projecting the line-of-sight for the quadrupole. (see pdf for more details)
+
 #Octopole as (L0L3/L1L2): Options for projecting the line-of-sight for the octopole. (see pdf for more details)
+
 #Hexadecapole as (L0L4/L2L2/L1L3): Options for projecting the line-of-sight for the hexadecapole. (see pdf for more details)
 
 #Compute Normalization as (area/density): Compute the normalization of the power spectrum using either the area value of the number density column of the input. Only for skycut option
