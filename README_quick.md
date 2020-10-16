@@ -40,14 +40,20 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 #k-range for computation (double/double): Low and Upper limits, respectively, of the k-values choosen for printing the power spectrum.
 
 #Do anisotropy signal (yes/no): Whether only the monopole or higher multipoles are computed (quadrupole and hexadecapole)
+
 #Do odd multipoles (yes/no): Whether Dipole and octoploe are computed
+
 #Do mu-binning Power Spectrum (yes/no): no Bin P(k,mu), only available for periodic boxes. 
+
 #Number of mu-bins (int): 120 Number of mu bins between 0 and 1
+
 #Different files for mu-bin (yes/no): no Whether the mu bins are all writen in the same or different output files. 
 
 #Do Bispectrum (yes/no): Whether the bispectrum should be computed by the code
+
 #Do Bispectrum multipoles (yes/no): Whether the bispectrum quadrupole is computed (not available for rusticoX). 
-Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bispectrum triangles will be split according to their k-values and associated to different grid-sizes for a more optimal computation (large scale modes do not requires small grid cell ressolution). However, each grid-size computation will requires to re-associate the particles to the grid cells, which a potential lose of optimality. We recomend enable such option when many triangle shapes are required and when the datasets do not consists of many particles. In practice, each specific case will requires testing for determing the best performance option. When the multigrid option is enable, we require the interlacing option to be also enabled (see below), with at least 2 interlacing steps.
+
+#Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bispectrum triangles will be split according to their k-values and associated to different grid-sizes for a more optimal computation (large scale modes do not requires small grid cell ressolution). However, each grid-size computation will requires to re-associate the particles to the grid cells, which a potential lose of optimality. We recomend enable such option when many triangle shapes are required and when the datasets do not consists of many particles. In practice, each specific case will requires testing for determing the best performance option. When the multigrid option is enable, we require the interlacing option to be also enabled (see below), with at least 2 interlacing steps.
 
 #Triangle Shapes (ALL/EQU/ISO/SQU). Triangle shapes to be computed. All (ALL), equilateral (EQU), Isosceles (ISO), squeezed (SQU). We define the squeezed triangles as those |k2-k3|<=k1 and K1<=0.1 K2; where by definition K1<=K2<=K3. Note that this condition is applied to the center of bin k-values and not to the effective k-values.
 
@@ -102,12 +108,17 @@ Do Multigrid (yes/no): Option for the bispectrum computation. If enable, the bis
 #Write shuffled randoms (yes/no): Whether the shuffled random catalogue is written in an output
 
 #Compute Window Selection function (yes/no): Whether the window function RR counts are computed (for rusticoX 3 different RR couts are performed)
+
 #Bin for window normalization (int) Bin used to nonrmalize W0=1
+
 #DeltaS binning (double) 1.0 Size of the bin for the window. 
+
 #Percentage of randoms selected in % (double) 10. Percentage of randoms selected to perform the RR counts
+
 #Yamamoto aproximation (yes/no): Whether the LOS yamamoto is used (all LOS-mu weight in one member of the pair). 
 
 == Reading file==
+
 in order to adapt the code to the format of your files please remove all the headers and edit the read_line.c file. 
 
 ====Citation====
@@ -116,5 +127,4 @@ If you use this code for your published or unpublished work, please refer it to 
 
 ====Disclaimer====
 
-blah blah blah
-
+The author assumes no responsibility or liability for any errors or omissions in the content of this code.  The information contained in this site is provided on an “asis” basis with no guarantees of completeness, accuracy, usefulness or timeliness.
