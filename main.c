@@ -456,12 +456,10 @@ printf("Reading data file %s; %ld lines\n",name_data_in,Ndata);
 
 
        }
-
-
    }
 }
 
-  if(strcmp(type_of_file, "ascii") == 0)
+  if(strcmp(type_of_file, "ascii") == 0)//periodic or cutsky
   {
 
   g=fopen(name_data_in,"r");
@@ -508,7 +506,7 @@ printf("Reading data file %s; %ld lines\n",name_data_in,Ndata);
 
     }
 
-  if(strcmp(type_of_survey, "cutsky") == 0)
+  if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0)
   {
   g=fopen(name_randoms_in,"r");
   if(g==NULL){printf("File %s does not exist. Exiting now...\n",name_randoms_in);return 0;}
@@ -552,9 +550,13 @@ if(  strcmp(type_of_input,"particles") ==0 || strcmp(type_of_input,"density") ==
 if(strcmp(type_of_file, "gadget") != 0 && strcmp(type_of_file, "ascii") != 0){printf("File type must be either 'gadget' or 'ascii'. Entry read %s. Exiting now...\n",type_of_file);return 0;}
 if(strcmp(type_of_code, "rusticoX") == 0){if(strcmp(type_of_fileB, "gadget") != 0 && strcmp(type_of_fileB, "ascii") != 0){printf("File type must be either 'gadget' or 'ascii'. Entry read %s. Exiting now...\n",type_of_fileB);return 0;}}
 
-if( strcmp(type_of_survey, "cutsky") != 0 && strcmp(type_of_survey, "periodic") != 0){printf("Survey type must be either 'cutsky' or 'periodic'. Entry read %s. Exiting now...\n",type_of_survey);return 0;}
+if( strcmp(type_of_survey, "cutsky") != 0 && strcmp(type_of_survey, "periodic") != 0  && strcmp(type_of_survey, "periodicFKP") != 0){printf("Survey type must be either 'cutsky', 'periodic' or 'periodicFKP'. Entry read %s. Exiting now...\n",type_of_survey);return 0;}
 if( strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_file, "gadget") == 0 ){printf("Warning. Cutsky+gadget option not available. Exiting now...\n");return 0;}
-if(strcmp(type_of_code, "rusticoX") == 0){if( strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_fileB, "gadget") == 0 ){printf("Warning. Cutsky+gadget option not available. Exiting now...\n");return 0;}}
+if( strcmp(type_of_survey, "periodicFKP") == 0 && strcmp(type_of_file, "gadget") == 0 ){printf("Warning. Periodicpostrecon + gadget option not available. Exiting now...\n");return 0;}
+if(strcmp(type_of_code, "rusticoX") == 0){
+if( strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_fileB, "gadget") == 0 ){printf("Warning. Cutsky+gadget option not available. Exiting now...\n");return 0;}
+if( strcmp(type_of_survey, "periodicFKP") == 0 && strcmp(type_of_fileB, "gadget") == 0 ){printf("Warning. Periodicpostrecon + gadget option not available. Exiting now...\n");return 0;}
+}
 if(gadget_files<1 && strcmp(type_of_file,"gadget") == 0){printf("Warning. gadget files entry must be >0. Entered value %d. Exiting now...\n",gadget_files);return 0;}
 if(strcmp(type_of_code, "rusticoX") == 0){if(gadget_filesB<1 &&  strcmp(type_of_fileB,"gadget") == 0){printf("Warning. gadget files entry must be >0. Entered value %d. Exiting now...\n",gadget_files);return 0;}}
 if( strcmp(RSD, "yes") != 0 && strcmp(RSD, "no") != 0 ){printf("Warning. RSD option only accepts either 'yes' or 'no' entries. Entry read %s. Exiting now...\n",RSD);return 0;}
@@ -638,6 +640,7 @@ if( strcmp(shuffle, "no") != 0 && NdataB==0 && strcmp(type_of_code,"rusticoX") =
 
     }
 
+}//cutsky
 
 if( strcmp(do_bispectrum, "no") == 0 && strcmp(do_bispectrum2, "yes") == 0 ){printf("Warning. Bispectrum multipoles computation requires a bispectrum calculation. Exiting now...\n");return 0;}
     
@@ -652,7 +655,7 @@ if( strcmp(do_anisotropy, "yes") != 0 &&  strcmp(do_anisotropy, "no") != 0){prin
 
 if( strcmp(do_odd_multipoles, "yes") != 0 &&  strcmp(do_odd_multipoles, "no") != 0){printf("Warning. Odd multipole option only accepts either 'yes' or 'no' entries. Entry read %s. Exiting now...\n",do_odd_multipoles);return 0;}
 
-if( strcmp(do_mu_bins, "yes") == 0 &&  strcmp(type_of_survey, "periodic") != 0){printf("Warning. Mu-binning option only available for non-varying line-of-sight samples. Exiting now...\n");return 0;}
+if( strcmp(do_mu_bins, "yes") == 0 &&  strcmp(type_of_survey, "cutsky") == 0){printf("Warning. Mu-binning option only available for non-varying line-of-sight samples. Exiting now...\n");return 0;}
 
 if(mubin<0){printf("Warning. The numer of mu-bins has to be a positive integer. Exiting now...\n");return 0;}
 
@@ -672,7 +675,7 @@ if( strcmp(type_of_computation, "DSE") ==0 && strcmp(do_anisotropy, "no") == 0){
 
 //if( Ninterlacing !=1 && strcmp(output_density, "yes") == 0){printf("Warning. In order to write out the densities the number of interlacing steps must be 1. Exiting now...\n");exit(0);}
 
-}
+//}//old cutsky
 
 }//particles
 if(  strcmp(type_of_input,"density") ==0 ){
@@ -704,6 +707,8 @@ if( strcmp( shuffle,"no") !=0){printf("Warning, no shuffle option available when
 //window computation set to no
 if( strcmp( window_function, "yes") ==0){printf("Warning, no window computation option available when density-input option is selected. Exiting now...\n");exit(0);}
 }
+
+if( strcmp(type_of_survey,"periodicFKP") == 0 &&  strcmp( shuffle,"no") !=0  ){printf("Warning, no shuffle option for periodic boxes. Exiting now...\n");exit(0);}
 
 //etc strings.....
 
@@ -769,10 +774,28 @@ alpha_data1B=parameter_valueB[12];
     
 }
     
-if(strcmp(type_of_survey, "periodic") == 0)
+if(strcmp(type_of_survey, "periodic") == 0 || strcmp(type_of_survey, "periodicFKP") == 0)
 {
-Ndata2=Ndata;
-if(strcmp(type_of_code, "rusticoX") == 0){Ndata2B=NdataB;}
+
+parameter_value[3]=Ndata;
+Ndata2=get_number_used_lines_periodic(name_data_in, parameter_value,0);
+if(strcmp(type_of_survey, "periodicFKP") == 0)
+{
+parameter_value[3]=Nrand;
+Nrand2=get_number_used_lines_periodic(name_randoms_in, parameter_value,1);
+}
+if(strcmp(type_of_code, "rusticoX") == 0){
+
+parameter_valueB[3]=NdataB;
+Ndata2B=get_number_used_lines_periodic(name_dataB_in, parameter_valueB,0);
+
+if(strcmp(type_of_survey, "periodicFKP") == 0)
+{
+parameter_valueB[3]=NrandB;
+Nrand2B=get_number_used_lines_periodic(name_randomsB_in, parameter_valueB,1);
+}
+
+}
 }
 
 if(strcmp(type_of_file, "ascii") == 0 && Ndata2>0)//these are only kept stored during all the process for ascii files. Gadget files keep the name of the file and read it each time they need
@@ -812,7 +835,7 @@ printf("Reading %s...",name_data_in);
                 wfkpdata = (double*) calloc(Ndata2, sizeof(double));
                 nzdata = (double*) calloc(Ndata2, sizeof(double));
                 
-
+parameter_value[3]=Ndata;
 get_skycuts_data(name_data_in, pos_x, pos_y, pos_z, weight, parameter_value,type_normalization_mode,radata,decdata,zdata,wcoldata,wsysdata,wfkpdata,nzdata,shuffle,Rsmoothing);
 
 
@@ -849,7 +872,6 @@ parameter_value[3]=Ndata;
 if(strcmp(type_of_code, "rustico") == 0){sprintf(name_den_out,"%s/Density_galaxies_%s.txt",name_path_out,name_id); }
 if(strcmp(type_of_code, "rusticoX") == 0){sprintf(name_den_out,"%s/Density_galaxiesA_%s.txt",name_path_out,name_id); }
 get_skycuts_write_density_data(name_data_in, parameter_value,name_den_out);
-parameter_value[3]=Ndata2;
 
 printf("Ok!\n");
 
@@ -963,7 +985,7 @@ printf("Ok!\n\n");
                     wfkpdataB = (double*) calloc(Ndata2B, sizeof(double));
                     nzdataB = (double*) calloc(Ndata2B, sizeof(double));
                     
-
+parameter_valueB[3]=NdataB;
     get_skycuts_data(name_dataB_in, pos_xB, pos_yB, pos_zB, weightB, parameter_valueB,type_normalization_mode,radataB,decdataB,zdataB,wcoldataB,wsysdataB,wfkpdataB,nzdataB,shuffle,Rsmoothing);
 
     Ndata2B=parameter_valueB[3];
@@ -1144,7 +1166,7 @@ if(strcmp(type_of_code, "rusticoX") == 0){
 
     printf("Computing the RR counts using %d processors. This can take a while...\n",n_lines_parallel);
 
- window_mask_function_RRcount(name_wink_out,name_winkBB_out,name_winkAB_out,name_randoms_in,name_randomsB_in,window_norm_bin,deltaS_window,percentage_randoms_window,yamamoto4window,parameter_value,parameter_valueB,header,L2-L1,n_lines_parallel,type_of_code,shuffle,pos_x_rand,pos_y_rand,pos_z_rand,weight_rand,pos_x_randB,pos_y_randB,pos_z_randB,weight_randB,Quadrupole_type,Hexadecapole_type);
+ window_mask_function_RRcount(name_wink_out,name_winkBB_out,name_winkAB_out,name_randoms_in,name_randomsB_in,window_norm_bin,deltaS_window,percentage_randoms_window,yamamoto4window,parameter_value,parameter_valueB,header,L2-L1,n_lines_parallel,type_of_code,shuffle,pos_x_rand,pos_y_rand,pos_z_rand,weight_rand,pos_x_randB,pos_y_randB,pos_z_randB,weight_randB,Quadrupole_type,Hexadecapole_type,type_of_survey);
 
 
         if(strcmp(type_of_code, "rustico") == 0){
@@ -1157,35 +1179,122 @@ if(strcmp(type_of_code, "rusticoX") == 0){
 
         }
 
-    }
+    }//skycut option
 
 
 
 
 
-
-if(strcmp(type_of_survey, "periodic") == 0 && strcmp(type_of_file, "ascii") == 0)
+//Periodic
+if(strcmp(type_of_survey, "periodic") == 0 || strcmp(type_of_survey, "periodicFKP") == 0 )
+{
+if(strcmp(type_of_file, "ascii") == 0)
 {
 printf("Reading %s...",name_data_in);
-get_periodic_data(name_data_in, pos_x, pos_y, pos_z, weight, parameter_value);
-P_shot_noise=pow(L2-L1,3)/Ndata*1.;
+parameter_value[3]=Ndata;
+get_periodic_data(name_data_in, pos_x, pos_y, pos_z, weight, parameter_value,0);
 min=parameter_value[10];
 max=parameter_value[11];
 printf("Ok!\n\n");
+if(strcmp(type_of_survey, "periodic") == 0)
+{
+P_shot_noise=pow(L2-L1,3)/NdataB*1.;
 }
+if(strcmp(type_of_survey, "periodicFKP") == 0)
+{
+alpha_data=parameter_value[12];
+Psn_1a=parameter_value[4];
+Bsn1a=parameter_value[21];
 
+//randoms
+
+        pos_x_rand = (double*) calloc(Nrand2, sizeof(double));
+        pos_y_rand = (double*) calloc(Nrand2, sizeof(double));
+        pos_z_rand = (double*) calloc(Nrand2, sizeof(double));
+        weight_rand = (double*) calloc(Nrand2, sizeof(double));
+
+printf("Reading %s...",name_randoms_in);
+parameter_value[3]=Nrand;
+get_periodic_data(name_randoms_in, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, parameter_value,1);
+if(parameter_value[10]<min){min=parameter_value[10];}
+if(parameter_value[11]>max){max=parameter_value[11];}
+
+alpha_rand=parameter_value[12];
+alpha=alpha_data/alpha_rand;
+
+Psn_2a=parameter_value[4];
+Bsn2a=parameter_value[21];
+
+I22=alpha_data*alpha_data/pow(L2-L1,3);
+I33=alpha_data*alpha_data*alpha_data/pow(L2-L1,6);
+IN=I22/I33;
+P_shot_noise=(Psn_1a+alpha*alpha*Psn_2a)/I22;
+Bsn=(Bsn1a-alpha*alpha*alpha*Bsn2a)/I33;
+
+printf("Ok!\n\n");
+
+}
+}
+}
     
-  if(strcmp(type_of_code, "rusticoX") == 0 && strcmp(type_of_survey, "periodic") == 0 && strcmp(type_of_fileB, "ascii") == 0){
+  if(strcmp(type_of_code, "rusticoX") == 0){
+  if(strcmp(type_of_survey, "periodic") == 0 || strcmp(type_of_survey,"periodicFKP") == 0){ 
+  if( strcmp(type_of_fileB, "ascii") == 0){
    
       printf("Reading %s...",name_dataB_in);
-      get_periodic_data(name_dataB_in, pos_xB, pos_yB, pos_zB, weightB, parameter_valueB);
-      P_shot_noiseB=pow(L2-L1,3)/NdataB*1.;
+parameter_valueB[3]=NdataB;
+      get_periodic_data(name_dataB_in, pos_xB, pos_yB, pos_zB, weightB, parameter_valueB,0);
       minB=parameter_valueB[10];
       maxB=parameter_valueB[11];
       printf("Ok!\n\n");
+
+if(strcmp(type_of_survey, "periodic") == 0)
+{
+      P_shot_noiseB=pow(L2-L1,3)/NdataB*1.;
+}
+if(strcmp(type_of_survey, "periodicFKP") == 0)
+{
+alpha_data1B=parameter_value[12];
+Psn_1aB=parameter_value[4];
+Bsn1aB=parameter_value[21];
+
+//randoms
+        pos_x_randB = (double*) calloc(Nrand2B, sizeof(double));
+        pos_y_randB = (double*) calloc(Nrand2B, sizeof(double));
+        pos_z_randB = (double*) calloc(Nrand2B, sizeof(double));
+        weight_randB = (double*) calloc(Nrand2B, sizeof(double));
+
+printf("Reading %s...",name_randomsB_in);
+parameter_value[3]=NrandB;
+get_periodic_data(name_randomsB_in, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, parameter_valueB,1);
+if(parameter_valueB[10]<minB){minB=parameter_valueB[10];}
+if(parameter_valueB[11]>maxB){maxB=parameter_valueB[11];}
+
+alpha_randB=parameter_valueB[12]; 
+alphaB=alpha_dataB/alpha_randB;
     
-  }
+Psn_2aB=parameter_valueB[4];
+Bsn2aB=parameter_valueB[21];
+
+I22B=alpha_dataB*alpha_dataB/pow(L2-L1,3);
+I33B=alpha_dataB*alpha_dataB*alpha_dataB/pow(L2-L1,6);
+INB=I22B/I33B;
+
+P_shot_noiseB=(Psn_1aB+alphaB*alphaB*Psn_2aB)/I22B;
+BsnB=(Bsn1aB-alphaB*alphaB*alphaB*Bsn2aB)/I33B;
+
+printf("Ok!\n\n");
+
+
+
+}
+
     
+}
+}
+}
+    
+
 
 
 if(max>L2 || min<L1){printf("Warning: Limits of the box are exceeded by the data or random galaxies: data particles found at the limits %lf and %lf. Exiting now...\n",min,max);return 0;}
@@ -1195,6 +1304,27 @@ if(max>L2 || min<L1){printf("Warning: Limits of the box are exceeded by the data
         if(maxB>L2 || minB<L1){printf("Warning: Limits of the box-B are exceeded by the data or random galaxies: data particles found at the limits %lf and %lf. Exiting now...\n",minB,maxB);return 0;}
         
     }
+
+
+/*
+if( strcmp(shuffle, "no") == 0 )
+{
+Nrand2=get_number_used_lines_randoms(name_randoms_in,parameter_value);if(Nrand2<1000){printf("Warning, unusual low value for Nrandoms=%ld\n",Nrand2);if(Nrand2==0){exit(0);}}
+}
+else//shuffle == yes
+{
+Nrand2=get_number_used_lines_randoms(name_randoms_in,parameter_value);if(Nrand2<1000){printf("Warning, unusual low value for Nrandoms=%ld\n",Nrand2);if(Nrand2==0){exit(0);}}
+Nrand2=Nrand;//if shuffle is enabled number of used randoms is the total number of randoms, no matter of the z-cuts (those are applied later if necessary)
+}
+alpha_rand1=parameter_value[12];
+alpha1=alpha_data1/alpha_rand1;
+
+
+        pos_x_rand = (double*) calloc(Nrand2, sizeof(double));
+        pos_y_rand = (double*) calloc(Nrand2, sizeof(double));
+        pos_z_rand = (double*) calloc(Nrand2, sizeof(double));
+        weight_rand = (double*) calloc(Nrand2, sizeof(double));
+*/
 
 
 }//end of particle if
@@ -1286,9 +1416,9 @@ if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_ps_out);return 
 if( strcmp(header, "yes") == 0)
 {
 fprintf(f,"#Data file %s\n",name_data_in);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
 fprintf(f,"#Number of data elements used: %ld\n",Ndata2);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effective);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of random elements weighted by wcol: %lf\n",num_effective_rand);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2);}
@@ -1299,10 +1429,10 @@ if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value f
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_rand);}
 fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I22);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I22);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
 fprintf(f,"#Shot noise value %lf\n",P_shot_noise);
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
@@ -1340,9 +1470,9 @@ fclose(f);
         if( strcmp(header, "yes") == 0)
         {
         fprintf(f,"#Data file %s\n",name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld\n",Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of random elements weighted by wcol: %lf\n",num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2B);}
@@ -1353,10 +1483,10 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I22B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I22B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
         fprintf(f,"#Shot noise value %lf\n",P_shot_noiseB);
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
@@ -1392,9 +1522,9 @@ fclose(f);
         if( strcmp(header, "yes") == 0)
         {
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of random elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1405,10 +1535,10 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf\n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf\n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",sqrt(I22*I22B));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",sqrt(I22*I22B));}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
         fprintf(f,"#Shot noise value %lf\n",P_shot_noiseB);
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
@@ -1445,9 +1575,9 @@ if( strcmp(header, "yes") == 0 && strcmp(do_bispectrum, "yes") == 0)
 f=fopen(name_bs_out,"w");
 if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bs_out);return 0;}
 fprintf(f,"#Data file %s\n",name_data_in);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
 fprintf(f,"#Number of data elements used: %ld\n",Ndata2);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effective);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf\n",num_effective_rand);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2);}
@@ -1456,9 +1586,9 @@ if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value f
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_rand);}
 fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1482,9 +1612,9 @@ fclose(f);
         f=fopen(name_bsBBB_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsBBB_out);return 0;}
         fprintf(f,"#Data file %s\n",name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld\n",Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf\n",num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2B);}
@@ -1493,9 +1623,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I33B);}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1517,9 +1647,9 @@ fclose(f);
         f=fopen(name_bsAAB_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsAAB_out);return 0;}
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1528,9 +1658,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1552,9 +1682,9 @@ fclose(f);
         f=fopen(name_bsABB_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsABB_out);return 0;}
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1563,9 +1693,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33B*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33B*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1587,9 +1717,9 @@ fclose(f);
         f=fopen(name_bsBBA_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsBBA_out);return 0;}
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1598,9 +1728,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33B*I33B*I33));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33B*I33B*I33));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1622,9 +1752,9 @@ fclose(f);
         f=fopen(name_bsABA_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsABA_out);return 0;}
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1633,9 +1763,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1657,9 +1787,9 @@ fclose(f);
         f=fopen(name_bsBAB_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsBAB_out);return 0;}
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1668,9 +1798,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33B*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33B*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1692,9 +1822,9 @@ fclose(f);
         f=fopen(name_bsBAA_out,"w");
         if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bsBAA_out);return 0;}
         fprintf(f,"#Data file %s %s\n",name_data_in,name_dataB_in);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s %s\n",name_randoms_in,name_randomsB_in);}
         fprintf(f,"#Number of data elements used: %ld %ld\n",Ndata2,Ndata2B);
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld %ld\n",Nrand2,Nrand2B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf %lf\n",num_effective,num_effectiveB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf %lf\n",num_effective_rand,num_effective_randB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf %lf\n",num_effective2,num_effective2B);}
@@ -1703,9 +1833,9 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf %lf\n",z_effective_rand,z_effective_randB);}
         fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1734,9 +1864,9 @@ if( strcmp(header, "yes") == 0 && strcmp(do_bispectrum, "yes") == 0 &&  strcmp(d
 f=fopen(name_bs002_out,"w");
 if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bs002_out);return 0;}
 fprintf(f,"#Data file %s\n",name_data_in);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
 fprintf(f,"#Number of data elements used: %ld\n",Ndata2);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effective);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf\n",num_effective_rand);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2);}
@@ -1745,9 +1875,9 @@ if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value f
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_rand);}
 fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1767,9 +1897,9 @@ fclose(f);
 f=fopen(name_bs020_out,"w");
 if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bs020_out);return 0;}
 fprintf(f,"#Data file %s\n",name_data_in);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
 fprintf(f,"#Number of data elements used: %ld\n",Ndata2);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effective);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf\n",num_effective_rand);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2);}
@@ -1778,9 +1908,9 @@ if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value f
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_rand);}
 fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1800,9 +1930,9 @@ fclose(f);
 f=fopen(name_bs200_out,"w");
 if(f==NULL){printf("Could not write %s\n. Exiting now...\n",name_bs200_out);return 0;}
 fprintf(f,"#Data file %s\n",name_data_in);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Random file %s\n",name_randoms_in);}
 fprintf(f,"#Number of data elements used: %ld\n",Ndata2);
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Number of random elements used: %ld\n",Nrand2);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol: %lf\n",num_effective);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of randoms elements weighted by wcol: %lf\n",num_effective_rand);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective number of data elements weighted by wcol*wsys: %lf\n",num_effective2);}
@@ -1811,9 +1941,9 @@ if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value f
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Effective redshift value from randoms %lf\n",z_effective_rand);}
 fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1837,11 +1967,12 @@ printf("== Computing the Power Spectrum ==\n");
 
                                                           
 //Compute and write the Power Spectrum for FFT+Skycut type of survey.
-if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0)
-{
+if(strcmp(type_of_computation, "FFT") == 0){
+
+if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){
 parameter_value[0]=L1;
 parameter_value[1]=L2;
-check_box_for_yamamoto(parameter_value,ngrid);
+if(strcmp(type_of_survey, "cutsky") == 0){check_box_for_yamamoto(parameter_value,ngrid);}
 
 L1=parameter_value[0];
 L2=parameter_value[1];
@@ -1866,7 +1997,7 @@ if(strcmp(type_of_yamamoto, "GridCenter") == 0){
 
 if(strcmp(type_of_input,"density") == 0){strcpy (name_out_density,name_data_in);}
 
-loop_interlacing_skycut(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2,pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,name_out_density,name_out_densityB,type_of_input);
+loop_interlacing_skycut(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2,pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,name_out_density,name_out_densityB,type_of_input,type_of_survey,file_for_mu,mubin);
         
 
 }
@@ -1881,13 +2012,14 @@ if(strcmp(type_of_yamamoto, "GridAverage") == 0){
     //else{kny=kmax;}
     kf=kmin;kny=kmax;//overwrites previous cuts
 
-loop_interlacing_skycut2(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2, pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,name_out_density,name_out_densityB);
+loop_interlacing_skycut2(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2, pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,name_out_density,name_out_densityB,type_of_survey,file_for_mu,mubin);
 
 
 }
 
 }
-                                                          
+}
+                                                         
                                                           
 if(strcmp(type_of_code, "rustico") == 0){
 
@@ -1899,7 +2031,7 @@ if(strcmp(type_of_computation, "DSY") == 0 || strcmp(type_of_computation, "DSE")
      {
          loop_directsum_yamamoto_skycut_caller(kmin,kmax,pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2, L1, L2, P_shot_noise, bin_ps, I22, alpha, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,type_of_computation);         
      }
-     if(strcmp(type_of_survey, "periodic") == 0)
+     if(strcmp(type_of_survey, "periodic") == 0 || strcmp(type_of_survey, "periodicFKP") == 0)
      {
           printf("No Direct Sum for periodic box at the moment. Exiting now...\n");return 0;
      }
@@ -1917,7 +2049,7 @@ if(strcmp(type_of_code, "rusticoX") == 0){
                       printf("No Direct Sum for X-analysis at the moment. Exiting now...\n");return 0;
                                
                  }
-                 if(strcmp(type_of_survey, "periodic") == 0)
+                 if(strcmp(type_of_survey, "periodic") == 0 || strcmp(type_of_survey, "periodicFKP") == 0)
                  {
                       printf("No Direct Sum for periodic box at the moment. Exiting now...\n");return 0;
                  }
@@ -1986,15 +2118,15 @@ return 0;
 
 printf("== Computing the Bispectrum ==\n");
 
-if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0)
-{
+if(strcmp(type_of_computation, "FFT") == 0){
+if(strcmp(type_of_survey,"periodicFKP") == 0 || strcmp(type_of_survey, "cutsky") == 0){
 
-printf("%e %e %e\n",I33,IN,Bsn);
+//printf("%e %e %e\n",I33,IN,Bsn);
     
-  loop_bispectrum_skycut_caller(kf, kny, Ninterlacing,  pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2,pos_xB, pos_yB, pos_zB, weightB, Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, Nrand2B , L1, L2, ngrid, P_shot_noise, P_shot_noiseB, Deltakbis, I33,I33B,I22,I22B, IN, INB, Bsn,BsnB, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment,triangles_num,write_triangles,triangles_id, do_multigrid, triangle_shapes,do_bispectrum2,type_of_code,name_data_in,type_of_input);
+  loop_bispectrum_skycut_caller(kf, kny, Ninterlacing,  pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2,pos_xB, pos_yB, pos_zB, weightB, Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, Nrand2B , L1, L2, ngrid, P_shot_noise, P_shot_noiseB, Deltakbis, I33,I33B,I22,I22B, IN, INB, Bsn,BsnB, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment,triangles_num,write_triangles,triangles_id, do_multigrid, triangle_shapes,do_bispectrum2,type_of_code,name_data_in,type_of_input,type_of_survey);
 
 
-    
+}   
 }
 if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "periodic") == 0)
 {
@@ -2004,13 +2136,13 @@ if(strcmp(type_of_file, "ascii") == 0)
     if(strcmp(type_of_code, "rustico") == 0){
 
     
-    loop_bispectrum_skycut_caller(kf, kny, Ninterlacing,  pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2,pos_xB, pos_yB, pos_zB, weightB, Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, Nrand2B , L1, L2, ngrid, P_shot_noise, P_shot_noiseB, Deltakbis, 0,0,0,0, 0, 0, 0,0, 0,0, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment,triangles_num,write_triangles,triangles_id, do_multigrid, triangle_shapes,do_bispectrum2,type_of_code,name_data_in,type_of_input);
+    loop_bispectrum_skycut_caller(kf, kny, Ninterlacing,  pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2,pos_xB, pos_yB, pos_zB, weightB, Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, Nrand2B , L1, L2, ngrid, P_shot_noise, P_shot_noiseB, Deltakbis, 0,0,0,0, 0, 0, 0,0, 0,0, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment,triangles_num,write_triangles,triangles_id, do_multigrid, triangle_shapes,do_bispectrum2,type_of_code,name_data_in,type_of_input,type_of_survey);
     }
     if(strcmp(type_of_code, "rusticoX") == 0){
     
         if(strcmp(type_of_fileB, "ascii") == 0){
             
-            loop_bispectrum_skycut_caller(kf, kny, Ninterlacing,  pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2,pos_xB, pos_yB, pos_zB, weightB, Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, Nrand2B , L1, L2, ngrid, P_shot_noise, P_shot_noiseB, Deltakbis, 0,0,0,0, 0, 0, 0,0, 0,0, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment,triangles_num,write_triangles,triangles_id, do_multigrid, triangle_shapes,do_bispectrum2,type_of_code,NULL,type_of_input);
+            loop_bispectrum_skycut_caller(kf, kny, Ninterlacing,  pos_x, pos_y, pos_z, weight, Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand, Nrand2,pos_xB, pos_yB, pos_zB, weightB, Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB, Nrand2B , L1, L2, ngrid, P_shot_noise, P_shot_noiseB, Deltakbis, 0,0,0,0, 0, 0, 0,0, 0,0, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment,triangles_num,write_triangles,triangles_id, do_multigrid, triangle_shapes,do_bispectrum2,type_of_code,NULL,type_of_input,type_of_survey);
 
             
         }
@@ -2018,7 +2150,7 @@ if(strcmp(type_of_file, "ascii") == 0)
 
             //cross ascii x gadget
             reverse=1;
-            loop_bispectrum_periodic_for_gadget_x_ascii_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out, name_bsAAB_out, name_bsABA_out, name_bsBAA_out,name_bsABB_out, name_bsBAB_out,name_bsBBA_out, name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_dataB_in, gadget_filesB,  pos_x, pos_y, pos_z, weight, Ndata2, P_shot_noise,do_multigrid, triangle_shapes,RSDB,do_bispectrum2,type_of_code,reverse);
+            loop_bispectrum_periodic_for_gadget_x_ascii_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out, name_bsAAB_out, name_bsABA_out, name_bsBAA_out,name_bsABB_out, name_bsBAB_out,name_bsBBA_out, name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_dataB_in, gadget_filesB,  pos_x, pos_y, pos_z, weight, Ndata2, P_shot_noise,do_multigrid, triangle_shapes,RSDB,do_bispectrum2,type_of_code,reverse,type_of_survey);
                        
         }
 
@@ -2035,7 +2167,7 @@ if(strcmp(type_of_file, "gadget") == 0)
     
     if(strcmp(type_of_code, "rustico") == 0){
 
-loop_bispectrum_periodic_for_gadget_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_data_in,gadget_files,name_dataB_in,gadget_filesB, do_multigrid, triangle_shapes,RSD,RSDB,do_bispectrum2,type_of_code);
+loop_bispectrum_periodic_for_gadget_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_data_in,gadget_files,name_dataB_in,gadget_filesB, do_multigrid, triangle_shapes,RSD,RSDB,do_bispectrum2,type_of_code,type_of_survey);
 
 
     }
@@ -2044,14 +2176,14 @@ loop_bispectrum_periodic_for_gadget_caller(kf,kny,Ninterlacing, L1, L2, ngrid, D
         if(strcmp(type_of_fileB, "gadget") == 0)
         {
             //gadget x gadget
-            loop_bispectrum_periodic_for_gadget_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_data_in,gadget_files,name_dataB_in,gadget_filesB, do_multigrid, triangle_shapes,RSD,RSDB,do_bispectrum2,type_of_code);
+            loop_bispectrum_periodic_for_gadget_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out,name_bsAAB_out,name_bsABA_out,name_bsBAA_out,name_bsABB_out,name_bsBAB_out,name_bsBBA_out,name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_data_in,gadget_files,name_dataB_in,gadget_filesB, do_multigrid, triangle_shapes,RSD,RSDB,do_bispectrum2,type_of_code,type_of_survey);
 
         }
         if(strcmp(type_of_fileB, "ascii") == 0){
          
             //gadget x ascii
             reverse=0;
-            loop_bispectrum_periodic_for_gadget_x_ascii_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out, name_bsAAB_out, name_bsABA_out, name_bsBAA_out,name_bsABB_out, name_bsBAB_out,name_bsBBA_out, name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_data_in, gadget_files,  pos_xB, pos_yB, pos_zB, weightB, Ndata2B, P_shot_noiseB,do_multigrid, triangle_shapes,RSD,do_bispectrum2,type_of_code,reverse);
+            loop_bispectrum_periodic_for_gadget_x_ascii_caller(kf,kny,Ninterlacing, L1, L2, ngrid, Deltakbis, mode_correction, n_lines_parallel, binning_type, name_bs_out, name_bsAAB_out, name_bsABA_out, name_bsBAA_out,name_bsABB_out, name_bsBAB_out,name_bsBBA_out, name_bsBBB_out,name_bs002_out,name_bs020_out,name_bs200_out, type_of_mass_assigment, triangles_num, write_triangles, triangles_id, name_data_in, gadget_files,  pos_xB, pos_yB, pos_zB, weightB, Ndata2B, P_shot_noiseB,do_multigrid, triangle_shapes,RSD,do_bispectrum2,type_of_code,reverse,type_of_survey);
 
             
         }

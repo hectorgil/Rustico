@@ -673,7 +673,7 @@ freeTokensLInt(nmodes,Nk);
 
 //void write_power_spectrum_periodic(double kmin, double kmax, double deltak_re[], double deltak_im[], double Deltak, int  ngrid, double L1, double L2, int Ninterlacing, char *name_ps_out, double P_shot_noise, char *binning_type, char *do_odd_multipoles,char *do_anisotropy)
 
-void write_power_spectrum_periodic(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out, char *name_psAB_out, char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *do_odd_multipoles,char *do_anisotropy,char *type_of_code)
+void write_power_spectrum_periodic(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out, char *name_psAB_out, char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *do_odd_multipoles,char *do_anisotropy,char *type_of_code,double I22,double I22B)
 {
 double Pi=(4.*atan(1.));
 double **K;
@@ -707,6 +707,12 @@ double kmineff;
 double keff;
 long int index2;
 long int ngridtot=pow(ngrid,3);
+int FKP=1;
+//Pure periodic cases
+if(I22==0){I22=pow(L2-L1,-3);FKP=0;}
+if(I22B==0){I22B=pow(L2-L1,-3);}
+
+
 if(strcmp(binning_type, "linear") == 0){bintype_sw=0;}
 if(strcmp(binning_type, "log10") == 0){bintype_sw=1;}
 
@@ -1020,36 +1026,36 @@ nmodes[l][0]+=nmodes[l][tid];
                 if(nmodes[l][0]!=0)
                 {       k_av[l][0]*=1./nmodes[l][0]*1.;
                         K[l][0]*=1./nmodes[l][0]*1.;
-                        Mono[l][0]*=pow(L2-L1,3)/(nmodes[l][0]*1.);
+                        Mono[l][0]*=1.0/(nmodes[l][0]*1.*I22);
                     if(strcmp(type_of_code, "rusticoX") == 0)
                     {
-                        MonoBB[l][0]*=pow(L2-L1,3)/(nmodes[l][0]*1.);
-                        MonoAB[l][0]*=pow(L2-L1,3)/(nmodes[l][0]*1.);
+                        MonoBB[l][0]*=1.0/(nmodes[l][0]*1.*I22B);
+                        MonoAB[l][0]*=1.0/(nmodes[l][0]*1.*sqrt(I22*I22B));
 
                     }
 if(strcmp(do_anisotropy, "yes") == 0){
-                        Quadru[l][0]*=pow(L2-L1,3)*5./(nmodes[l][0]*1.);
-                        Hexadeca[l][0]*=pow(L2-L1,3)*9/(nmodes[l][0]);
+                        Quadru[l][0]*=5./(nmodes[l][0]*1.*I22);
+                        Hexadeca[l][0]*=9./(nmodes[l][0]*1.*I22);
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
-        QuadruBB[l][0]*=pow(L2-L1,3)*5./(nmodes[l][0]*1.);
-        HexadecaBB[l][0]*=pow(L2-L1,3)*9/(nmodes[l][0]);
+        QuadruBB[l][0]*=5./(nmodes[l][0]*1.*I22B);
+        HexadecaBB[l][0]*=9./(nmodes[l][0]*1.*I22B);
         
-        QuadruAB[l][0]*=pow(L2-L1,3)*5./(nmodes[l][0]*1.);
-        HexadecaAB[l][0]*=pow(L2-L1,3)*9/(nmodes[l][0]);
+        QuadruAB[l][0]*=5./(nmodes[l][0]*1.*sqrt(I22*I22B));
+        HexadecaAB[l][0]*=9./(nmodes[l][0]*1.*sqrt(I22*I22B));
     }
     
 }
 if(strcmp(do_odd_multipoles, "yes") == 0){
-                        Di[l][0]*=pow(L2-L1,3)*3./(nmodes[l][0]*1.);
-                        Octo[l][0]*=pow(L2-L1,3)*7/(nmodes[l][0]);
+                        Di[l][0]*=3./(nmodes[l][0]*1.*I22);
+                        Octo[l][0]*=7./(nmodes[l][0]*1.*I22);
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
-        DiBB[l][0]*=pow(L2-L1,3)*3./(nmodes[l][0]*1.);
-        OctoBB[l][0]*=pow(L2-L1,3)*7/(nmodes[l][0]);
+        DiBB[l][0]*=3./(nmodes[l][0]*1.*I22B);
+        OctoBB[l][0]*=7./(nmodes[l][0]*1.*I22B);
         
-        DiAB[l][0]*=pow(L2-L1,3)*3./(nmodes[l][0]*1.);
-        OctoAB[l][0]*=pow(L2-L1,3)*7/(nmodes[l][0]);
+        DiAB[l][0]*=3./(nmodes[l][0]*1.*sqrt(I22*I22B));
+        OctoAB[l][0]*=7./(nmodes[l][0]*1.*sqrt(I22*I22B));
     }
     
 }
@@ -1134,6 +1140,10 @@ freeTokens(Octo,Nk);
 }
 
 freeTokensLInt(nmodes,Nk);
+
+//free these onnly if it's periodic (but not for periodicFKP)
+if(FKP==0){
+
 free(deltak_re);
 free(deltak_im);
     if(strcmp(type_of_code, "rusticoX") == 0)
@@ -1141,6 +1151,8 @@ free(deltak_im);
         free(deltak_reB);
         free(deltak_imB);
     }
+}
+
 free(kx);
 
 }
@@ -1148,7 +1160,7 @@ free(kx);
 
 //void write_power_spectrum_periodic2D(double kmin, double kmax, double deltak_re[], double deltak_im[], double Deltak, int mubin, int  ngrid, double L1, double L2, int Ninterlacing, char *name_ps_out, double P_shot_noise, char *binning_type,char *file_for_mu)
 
-void write_power_spectrum_periodic2D(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak,int mubin, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out,char *name_psAB_out,char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *file_for_mu,char *type_of_code)
+void write_power_spectrum_periodic2D(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak,int mubin, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out,char *name_psAB_out,char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *file_for_mu,char *type_of_code, double I22,double I22B)
 {
 char name_ps_out2[2000];
 char name_psAB_out2[2000];
@@ -1175,6 +1187,10 @@ double kmineff;
 double keff;
 long int index2;
 long int ngridtot=pow(ngrid,3);
+int FKP=1;
+if(I22==0){I22=pow(L2-L1,-3);FKP=0;}
+if(I22B==0){I22B=pow(L2-L1,-3);}
+
 if(strcmp(binning_type, "linear") == 0){bintype_sw=0;}
 if(strcmp(binning_type, "log10") == 0){bintype_sw=1;}
 
@@ -1391,11 +1407,11 @@ if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%d.txt",name_ps_ou
                         mu_av[l][lmu][0]*=1./nmodes[l][lmu][0]*1.;
                         Mu[l][lmu][0]*=1./nmodes[l][lmu][0]*1.;
 
-                        Pk[l][lmu][0]*=pow(L2-L1,3)/(nmodes[l][lmu][0]*1.);
+                        Pk[l][lmu][0]*=1.0/(nmodes[l][lmu][0]*1.*I22);
                     if(strcmp(type_of_code, "rusticoX") == 0)
                     {
-                        PkBB[l][lmu][0]*=pow(L2-L1,3)/(nmodes[l][lmu][0]*1.);
-                        PkAB[l][lmu][0]*=pow(L2-L1,3)/(nmodes[l][lmu][0]*1.);
+                        PkBB[l][lmu][0]*=1.0/(nmodes[l][lmu][0]*1.*I22B);
+                        PkAB[l][lmu][0]*=1.0/(nmodes[l][lmu][0]*1.*sqrt(I22*I22B));
 
                     }
 
@@ -1450,6 +1466,9 @@ freeTokens3(Pk,Nk,mubin);
 
     }
 freeTokensLInt3(nmodes,Nk,mubin);
+
+if(FKP==0){
+
 free(deltak_re);
 free(deltak_im);
     if(strcmp(type_of_code, "rusticoX") == 0)
@@ -1458,6 +1477,8 @@ free(deltak_im);
         free(deltak_imB);
 
     }
+}
+
 free(kx);
 
 }

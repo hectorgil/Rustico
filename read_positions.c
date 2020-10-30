@@ -23,6 +23,31 @@ void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *
      fval[0]=c/(100.*sqrt(omega*pow(1+z,3)+1.-omega)); 
 }
 */
+
+long int get_number_used_lines_periodic(char *filename, double parameter_value[],int type)
+{
+FILE *f;
+long int npar=(long int)(parameter_value[3]);
+long int i;
+double weight;
+int veto;
+long int npar_used=0;
+double params[8];
+f=fopen(filename,"r");
+for(i=0;i<npar;i++)
+{
+
+get_line_periodic(f, params,type);
+weight=params[3];
+veto=(int)(params[7]);
+
+if(weight>0 && veto>0){npar_used++;}
+
+}
+fclose(f);
+return npar_used;
+}
+
 long int get_number_used_lines_data(char *filename, double parameter_value[])
 {
 FILE *f;
@@ -1191,34 +1216,57 @@ free(L);
 }
 
 
-void get_periodic_data(char *filename_data, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[])
+void get_periodic_data(char *filename_data, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],int type)
 {
-long int i,npar;
+long int i,j,npar;
 double max,min;
-double params[4];
-
+double wght,veto;
+double params[8];
+double sumweighted,Psn_1a,Bsn_1a;
 FILE *f;
 npar=(int)(parameter_value[3]);
 f=fopen(filename_data,"r");
+sumweighted=0;
+Psn_1a=0;
+Bsn_1a=0;
+j=0;
 for(i=0;i<npar;i++)
 {
-get_line_periodic(f, params);
-pos_x[i]=params[0];
-pos_y[i]=params[1];
-pos_z[i]=params[2];
-weight[i]=params[3];
+get_line_periodic(f, params,type);
+veto=params[7];
+wght=params[3];
+if(veto>0 && wght>0)
+{
+pos_x[j]=params[0];
+pos_y[j]=params[1];
+pos_z[j]=params[2];
+weight[j]=params[3];
+sumweighted=sumweighted+weight[j];
 
-      if(pos_x[i]>max || i==0){max=pos_x[i];}
-      if(pos_y[i]>max){max=pos_y[i];}
-      if(pos_z[i]>max){max=pos_z[i];}
-      if(pos_x[i]<min || i==0){min=pos_x[i];}
-      if(pos_y[i]<min){min=pos_y[i];}
-      if(pos_z[i]<min){min=pos_z[i];}
+  Psn_1a+=pow(weight[j],2);//false pairs
 
+  Bsn_1a+=pow(weight[j],3);//false pairs
+
+//if(pos_z[i]-pos_z[i]!=0){printf("Error %ld %lf (%lf,%lf)\n",i,pos_z[i],pos_x[i],pos_y[i]);exit(0);}
+//if(pos_z[i]/pos_z[i]!=1){printf("Error %ld %lf (%lf,%lf)\n",i,pos_z[i],pos_x[i],pos_y[i]);exit(0);}
+
+      if(pos_x[j]>max || i==0){max=pos_x[j];}
+      if(pos_y[j]>max){max=pos_y[j];}
+      if(pos_z[j]>max){max=pos_z[j];}
+      if(pos_x[j]<min || i==0){min=pos_x[j];}
+      if(pos_y[j]<min){min=pos_y[j];}
+      if(pos_z[j]<min){min=pos_z[j];}
+
+j++;
+}
 
 }
 fclose(f);
+parameter_value[4]=Psn_1a;
+parameter_value[21]=Bsn_1a;
+
 parameter_value[10]=min;
 parameter_value[11]=max;
+parameter_value[12]=sumweighted;//alpha_data1  alpha_data1B alpha_rand1  alpha_rand1B -> alpha1 alpha1B
 }
 

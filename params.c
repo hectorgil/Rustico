@@ -1,9 +1,9 @@
 #Main parameters
 #Type of code (rustico/rusticoX): rustico
-#Type of Box (periodic/cutsky): periodic
-#Type of file (ascii/gadget)x2: gadget
+#Type of Box (periodic/periodicFKP/cutsky): periodic
+#Type of file (ascii/gadget)x2: ascii
 #Type of input (density/particles): particles
-#Number of gadget files(int)x2: 16
+#Number of gadget files(int)x2: 1
 #RSD distorsion on gadget periodic box (yes/no)x2: yes
 #Size of the Box (double/double): 0 +2400.
 #Type of Computation (DSE/DSY/FFT): FFT
@@ -19,8 +19,8 @@
 #Different files for mu-bin (yes/no): no
 
 #Bispectrum parameters
-#Do Bispectrum (yes/no): no
-#Do Bispectrum multipoles (yes/no): no
+#Do Bispectrum (yes/no): yes
+#Do Bispectrum multipoles (yes/no): yes
 #Do Multigrid (yes/no): no
 #Triangle Shapes (ALL/EQU/ISO/SQU): ALL
 #Size of the bin for the bispectrum (double): 0.015707963
@@ -29,18 +29,18 @@
 #Path for triangles in each bin: ./power_spectra/triangles
 
 #Read inout parameters
-#Path of datax2: /DATA/cwagner/newcov/1/snapshot_004
+#Path of datax2: /DATA/hector/box1p.txt
 #Path of randomsx2: none
 #Path of output: ./test
-#Identifier of output: z0_Dk6_particles_input_run1
+#Identifier of output: box1p_periodic
 #Write header: yes
-#Write density: yes
+#Write density: no
 
 #FFT parameters
 #Number of Grid Cells power (int): 8
 #Type of mass assingment (NGC/CIC/TSC/PCS/P4S/P5S): P5S
 #Type of Yamamoto (GridCenter/GridAverage): GridCenter
-#Number of interlacing steps (int): 1
+#Number of interlacing steps (int): 2
 #Do Grid Correction? (yes/no): yes
 
 #Cutsky parameters

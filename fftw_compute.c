@@ -1706,7 +1706,7 @@ fftw_cleanup();
 
 
 
-void loop_interlacing_skycut_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid, double alpha, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re0, double *deltak_im0, double *deltak_re2, double *deltak_im2,char *do_bispectrum2,char *name_density, char *type_of_input)
+void loop_interlacing_skycut_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid, double alpha, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re0, double *deltak_im0, double *deltak_re2, double *deltak_im2,char *do_bispectrum2,char *name_density, char *type_of_input,char *type_of_survey)
 {
 FILE *f;
 long int i,j,k,i_inter;
@@ -1802,7 +1802,7 @@ fclose(f);
         if(i_inter==1){
        fftw_yamamoto_skycut(0, delta_data, deltak_re0, deltak_im0, ngrid,L1b,L2b, mode_correction);
 
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0 && strcmp(type_of_survey,"cutsky") == 0)
 {
    for(i_yama=1;i_yama<=6;i_yama++)
    {
@@ -1817,7 +1817,7 @@ if(strcmp(do_bispectrum2, "yes") == 0)
         deltak_im0_b= (double*) calloc(ngridtotr2c,sizeof(double));
         fftw_yamamoto_skycut(0, delta_data, deltak_re0_b, deltak_im0_b, ngrid,L1b,L2b, mode_correction);
 
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 {
 
        deltak_re2_b= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -1833,7 +1833,7 @@ if(strcmp(do_bispectrum2, "yes") == 0)
 
 }
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re0_b,deltak_im0_b,deltak_re2,deltak_im2,deltak_re2_b,deltak_im2_b,kx,L2,L1,i_inter,Ninterlacing,do_bispectrum2)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re0_b,deltak_im0_b,deltak_re2,deltak_im2,deltak_re2_b,deltak_im2_b,kx,L2,L1,i_inter,Ninterlacing,do_bispectrum2,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
 i=(int)(index2/(ngrid*ngrid/2+ngrid));
@@ -1850,7 +1850,7 @@ new_deltak_im0_b=deltak_re0_b[index2]*phase_sin+deltak_im0_b[index2]*phase_cos;
 deltak_re0[index2]+=new_deltak_re0_b;
 deltak_im0[index2]+=new_deltak_im0_b;
 
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 {
 new_deltak_re2_b=deltak_re2_b[index2]*phase_cos-deltak_im2_b[index2]*phase_sin;
 new_deltak_im2_b=deltak_re2_b[index2]*phase_sin+deltak_im2_b[index2]*phase_cos;
@@ -1864,7 +1864,7 @@ deltak_im2[index2]+=new_deltak_im2_b;
 
         free(deltak_re0_b);
         free(deltak_im0_b);
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 {
         free(deltak_re2_b);
         free(deltak_im2_b);
@@ -1882,7 +1882,7 @@ free(kx);
 }
 
 
-void loop_interlacing_skycut(double kmin,double kmax,int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB,long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB, char *type_of_input)
+void loop_interlacing_skycut(double kmin,double kmax,int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB,long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB, char *type_of_input,char *type_of_survey,char *file_for_mu,int Nmu)
 {
 FILE *f;
 char type[200];
@@ -1970,7 +1970,7 @@ if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
 
-if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
+if(strcmp(do_anisotropy,"no") == 0 || strcmp(type_of_survey,"periodicFKP") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
 
 //printf("%ld %ld %ld %ld\n",delta1_sw,delta2_sw,delta3_sw,delta4_sw);
 
@@ -2122,7 +2122,7 @@ fclose(f);
     
       }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0 ){
 
 if(delta2_sw==1){
          deltak_re2=(double*) calloc(ngridtotr2c,sizeof(double));
@@ -2249,7 +2249,7 @@ i_yama2=i_yama;
           fftw_yamamoto_skycut(0, delta_dataB, deltak_re0_bB, deltak_im0_bB, ngrid,L1b,L2b, mode_correction);
       }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0){
 
 if(delta2_sw==1){
          deltak_re2_b=(double*) calloc(ngridtotr2c,sizeof(double));
@@ -2360,7 +2360,7 @@ i_yama2=i_yama;
 }//do-aniso
 
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
 i=(int)(index2/(ngrid*ngrid/2+ngrid));
@@ -2386,7 +2386,7 @@ deltak_im0[index2]+=new_deltak_im0_b;
         deltak_im0B[index2]+=new_deltak_im0_bB;
     }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0){
 
 if(delta1_sw==1){
 
@@ -2473,7 +2473,7 @@ deltak_im4[index2]+=new_deltak_im4_b;
           free(deltak_im0_bB);
       }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"periodicFKP") == 0){
 
 if(delta1_sw==1){
         free(deltak_re1_b);
@@ -2578,8 +2578,19 @@ free(kx);
 sprintf(type,"FFT");
 //write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
 
+if(strcmp(type_of_survey,"cutsky") == 0){
     write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code);
+}
+if(strcmp(type_of_survey,"periodicFKP") == 0){
 
+if(Nmu==1){
+write_power_spectrum_periodic(kmin,kmax,deltak_re0, deltak_im0, deltak_re0B,deltak_im0B,bin_ps, ngrid, L1, L2, Ninterlacing, name_ps_out, name_psAB_out, name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,I22,I22B);
+}
+if(Nmu>1){
+write_power_spectrum_periodic2D(kmin,kmax,deltak_re0,deltak_im0,deltak_re0B,deltak_im0B,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code,I22,I22B);
+}
+
+}
 
 //free deltas
 
@@ -2590,7 +2601,7 @@ free(deltak_im0);
         free(deltak_re0B);
         free(deltak_im0B);
     }
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0){
 
 if(delta2_sw==1){
           free(deltak_re2);
@@ -2642,7 +2653,7 @@ printf("Ok!\n");
 
 }
 
-void loop_interlacing_skycut2(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB, long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB)
+void loop_interlacing_skycut2(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB, long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB, char *type_of_survey, char *file_for_mu, int Nmu)
 {
 FILE *f;
 char type[200];
@@ -2672,7 +2683,7 @@ if(strcmp(Octopole_type, "L0L3") == 0){delta3_sw=1;delta1_sw=1;}
 if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
-if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
+if(strcmp(do_anisotropy,"no") == 0 || strcmp(type_of_survey,"periodicFKP") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
 
 
 alpha=-alpha;
@@ -2767,6 +2778,8 @@ if(i_inter==1)
           {
 
 if(strcmp(do_anisotropy,"no") == 0 && i_yama==1){break;}
+
+if(strcmp(type_of_survey,"periodicFKP") == 0 && i_yama==1){break;}
 
 if(i_yama==1 && delta2_sw==0){i_yama=7;}
  
@@ -3135,6 +3148,8 @@ fclose(f);
 
 if(strcmp(do_anisotropy,"no") == 0 && i_yama==1){break;}
 
+if(strcmp(type_of_survey,"periodicFKP") == 0 && i_yama==1){break;}
+
 if(i_yama==1 && delta2_sw==0){i_yama=7;}
 
 if(i_yama==7 && delta4_sw==0){i_yama=22;}
@@ -3448,7 +3463,7 @@ if(strcmp(type_of_code, "rusticoX") == 0){
 }
 
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
 i=(int)(index2/(ngrid*ngrid/2+ngrid));
@@ -3634,8 +3649,21 @@ if(strcmp(type_of_code, "rusticoX") == 0)
 sprintf(type,"FFT");
 //write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
 
+if( strcmp(type_of_survey,"cutsky") == 0){
     write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code);
+}
 
+if( strcmp(type_of_survey,"periodicFKP") == 0){
+
+if(Nmu == 1){
+
+}
+if(Nmu > 1){
+
+
+}
+
+}
 
 
 //free deltas
@@ -3851,7 +3879,7 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      delta_data = (double*) calloc(ngridtot, sizeof(double));
 
     if( strcmp(type_of_input,"particles") == 0){
-
+//printf("%lf, %lf\n",L1b,L2b);
      printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
      for(c=0; c<Ndata; c++)
      {
@@ -3864,7 +3892,7 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
      }
 
-
+//exit(0);
         #pragma omp parallel for private(c) shared(ngrid,ngridtot,Ndata,delta_data)
         for(c=0;c<ngridtot;c++)
         {
@@ -4037,12 +4065,12 @@ free(kx);
 
 if(Nmu == 1){
     //write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);
-    write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+    write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,0,0);
 
 }
 else{
    // write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);
-    write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+    write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code,0,0);
 
 }
 
@@ -4345,11 +4373,11 @@ P_shot_noise=pow(L2-L1,3)/Ndata;
 //else{write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);}
 
     if(Nmu == 1){
-        write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+        write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,0,0);
         
     }
     else{
-        write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+        write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code,0,0);
         
     }
 
@@ -4745,11 +4773,11 @@ fclose(f);
         //write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,P_shot_noiseA,binning_type);
         //write_power_spectrum_periodic(kmin,kmax,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psBB_out,P_shot_noiseB,binning_type);
         if(Nmu == 1){
-            write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+            write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,0,0);
             
         }
         else{
-            write_power_spectrum_periodic2D(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+            write_power_spectrum_periodic2D(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,file_for_mu,type_of_code,0,0);
             
         }
 

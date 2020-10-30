@@ -50,15 +50,33 @@ params[7]=veto;
 }
 
 
-void get_line_periodic(FILE *f, double params[])//for periodic box
+void get_line_periodic(FILE *f, double params[],int type)//for periodic box
 {
 double x,y,z,vx,vy,vz,weight;
 double scale_factor;
+int veto;
 weight=1;
-
+veto=1;
 //strictly necessary only need to provide x,y,z;
 
-fscanf(f,"%lf %lf %lf %lf %lf %lf %*s %*d %*d %*d %*d %*f %*f\n",&x,&y,&z,&vx,&vy,&vz);//tinker
+//data
+if(type==0){
+
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %*s %*d %*d %*d %*d %*f %*f\n",&x,&y,&z,&vx,&vy,&vz);//tinker
+fscanf(f,"%lf %lf %lf\n",&x,&y,&z);
+
+//        if(z>=2400.){z=z-2400.;}
+//        if(z<0){z=z+2400.;}
+//printf("%e %e %e\n",x,y,z);
+}
+
+//randoms
+if(type==1){
+
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %*s %*d %*d %*d %*d %*f %*f\n",&x,&y,&z,&vx,&vy,&vz);//tinker
+fscanf(f,"%lf %lf %lf\n",&x,&y,&z);//tinker
+
+}
 
         //In case you need to introduce RSD-shifts like, do it here. You need to perform the shifts 'by hand'
         //scale_factor=1.0;//z=0
@@ -66,16 +84,17 @@ fscanf(f,"%lf %lf %lf %lf %lf %lf %*s %*d %*d %*d %*d %*f %*f\n",&x,&y,&z,&vx,&v
         //scale_factor=0.5;//z=1.0
         //scale_factor=0.4;//z=1.5
         //scale_factor=1./3.;//z=4
-        scale_factor=1./1.695; //z=0.695
+//        scale_factor=1./1.695; //z=0.695
         //scale_factor=1./1.865;//z=0.865
 //        z=z+vz*1.0/(100.*scale_factor*sqrt(0.26479*pow(scale_factor,-3)+1.-0.26479));//z-space distortion correction (assuming z direction)
-        z=z+vz/(100.*sqrt(0.26479*pow(scale_factor,-3)+1.-0.26479));
-        if(z>=1000.){z=z-1000.;}
-        if(z<0){z=z+1000.;}
+//        z=z+vz/(100.*sqrt(0.26479*pow(scale_factor,-3)+1.-0.26479));
+//        if(z>=1000.){z=z-1000.;}
+//        if(z<0){z=z+1000.;}
         
 
 params[0]=x;
 params[1]=y;
 params[2]=z;
 params[3]=weight;
+params[7]=veto;
 }
