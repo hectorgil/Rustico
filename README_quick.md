@@ -21,7 +21,7 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 
 #Type of code (rustico/rusticoX): rustico option for auto-statistics, rusticoX option for cross statistics.
 
-#Type of Box (periodic/cutsky): 'periodic' for periodic boxes with boundary conditions. 'cutsky' for actual observations or mocks which include sky mask
+#Type of Box (periodic/cutsky/periodicFKP): 'periodic' for periodic boxes with boundary conditions. 'cutsky' for actual observations or mocks which include sky mask, periodicFKP for periodic boxes but that want to be treated with the FKP estimator, F=(n-alpha n_ran)/I (this is necessary for post-recon catalogues in periodic boxes for example).
 
 #Type of file (ascii/gadget)x2: 'ascii' is the option required for 'cutsky'. 'periodic' option allows 'ascii' files or 'gadget' files. Gadget units assumed kpc/h. See 'ascii file structure' below for the format of the file. In case of rusticoX option is selected 2 inputs are required, for the 2 object-field to cross-correlate. 
 
