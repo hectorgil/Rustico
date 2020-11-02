@@ -1198,7 +1198,7 @@ max=parameter_value[11];
 printf("Ok!\n\n");
 if(strcmp(type_of_survey, "periodic") == 0)
 {
-P_shot_noise=pow(L2-L1,3)/NdataB*1.;
+P_shot_noise=pow(L2-L1,3)/Ndata*1.;
 }
 if(strcmp(type_of_survey, "periodicFKP") == 0)
 {
@@ -1250,7 +1250,7 @@ parameter_valueB[3]=NdataB;
 
 if(strcmp(type_of_survey, "periodic") == 0)
 {
-      P_shot_noiseB=pow(L2-L1,3)/NdataB*1.;
+      P_shot_noiseB=pow(L2-L1,3)/Ndata2B*1.;
 }
 if(strcmp(type_of_survey, "periodicFKP") == 0)
 {
