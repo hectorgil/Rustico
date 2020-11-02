@@ -42,8 +42,8 @@ int bintype_sw;
 double kmineff;
 double keff;
 double KX,KY,KZ;
-int ivec,jvec,kvec;
-int i2vec,j2vec,k2vec;
+long int ivec,jvec,kvec;
+long int i2vec,j2vec,k2vec;
 double *kvector;
 long int index2;
 long int ngrid_eff;
@@ -188,8 +188,8 @@ if(strcmp(do_odd_multipoles,"yes") == 0){
                 tid=omp_get_thread_num();
 
 if(strcmp(type,"FFT") == 0){
-                ivec=(int)(i/(ngrid*ngrid*1.));
-                jvec=(int)( (i-ivec*ngrid*ngrid)/(ngrid*1.));
+                ivec=(long int)(i/(ngrid*ngrid*1.));
+                jvec=(long int)( (i-ivec*ngrid*ngrid)/(ngrid*1.));
                 kvec=i-ivec*ngrid*ngrid-jvec*ngrid;
 KX=kvector[ivec];
 KY=kvector[jvec];
@@ -696,8 +696,8 @@ double **Octo;
     double **OctoAB;
     
 long int **nmodes;
-int l,tid,i,j,k;
-int i2,j2,k2;
+long int l,tid,i,j,k;
+long int i2,j2,k2;
 long int l2;
 FILE *f,*fAB,*fBB;
 double *kx;
@@ -836,8 +836,8 @@ if(strcmp(do_odd_multipoles, "yes") == 0){
         for(l2=0;l2<ngridtot;l2++)
         {
                 tid=omp_get_thread_num();
-                i=(int)(l2/(ngrid*ngrid*1.));
-                j=(int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
+                i=(long int)(l2/(ngrid*ngrid*1.));
+                j=(long int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
                 k=l2-i*ngrid*ngrid-j*ngrid;
 
 if(bintype_sw==0){
@@ -1176,8 +1176,8 @@ double ***PkAB;
 double ***PkBB;
 
 long int ***nmodes;
-int l,tid,i,j,k,lmu;
-int i2,j2,k2;
+long int l,tid,i,j,k,lmu;
+long int i2,j2,k2;
 long int l2;
 FILE *f,*fAB,*fBB;
 double *kx;
@@ -1274,8 +1274,8 @@ if(bintype_sw==1){Nk=(int)((log10(sqrt(3.)*2.*Pi*ngrid/(2.*(L2-L1)))-log10(2.*Pi
         for(l2=0;l2<ngridtot;l2++)
         {
                 tid=omp_get_thread_num();
-                i=(int)(l2/(ngrid*ngrid*1.));
-                j=(int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
+                i=(long int)(l2/(ngrid*ngrid*1.));
+                j=(long int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
                 k=l2-i*ngrid*ngrid-j*ngrid;
 
 if(bintype_sw==0){

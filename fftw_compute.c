@@ -186,7 +186,7 @@ void loop_directsum_exact_skycut(double kmin,double kmax, double *s_x, double *s
 {
 int tid;
 long int j,i,i1,i2;
-int xindex,yindex,zindex;
+long int xindex,yindex,zindex;
 long int NGRID;//Number of k-modes between kmin and kmax
 double KXX,KYY,KZZ;
 double kdotx1,ckdotx1,skdotx1,musq,kampsq,kdotx2,ckdotx2,skdotx2,kam;
@@ -237,8 +237,8 @@ for(i=0;i<ngrid;i++)
 i=0;
 for(j=0;j<ngridtot;j++)//Count the number of grid modes btween kmax and kmin
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 SX=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -259,8 +259,8 @@ KZ=malloc(sizeof(double)*NGRID);
 i=0;
 for(j=0;j<ngridtot;j++)
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 SX=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -561,7 +561,7 @@ void loop_directsum_yamamoto_skycut(double kmin,double kmax, double *s_x, double
 {
 int tid;
 long int j,i;
-int xindex,yindex,zindex;
+long int xindex,yindex,zindex;
 long int NGRID;//Number of k-modes between kmin and kmax
 double KXX,KYY,KZZ,XAM,kamp,mu,XAM05;
 double SXR1,SYR1,SZR1,SXR2,SYR2,SZR2,WGHTR1;
@@ -671,8 +671,8 @@ for(i=0;i<ngrid;i++)
 i=0;
 for(j=0;j<ngridtot;j++)//Count the number of grid modes btween kmax and kmin
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 VEC=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -694,8 +694,8 @@ KZ=malloc(sizeof(double)*NGRID);
 i=0;
 for(j=0;j<ngridtot;j++)
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 VEC=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -1258,7 +1258,7 @@ free(kmax_i);
 
 void modify_input_for_yamamoto(int mode_yamamoto, int mode_yamamoto_prev, double in[], int ngrid, double L1, double L2)
 {
-int i,j,k;
+long int i,j,k;
 long int c;
 double kmod2;
 double prev_factor,curr_factor;
@@ -1268,8 +1268,8 @@ long int ngridtot=pow(ngrid,3);
         #pragma omp parallel for private(c,i,j,k,kmod2,prev_factor,curr_factor,r_x,r_y,r_z) shared(ngrid,ngridtot,L1,L2,in,mode_yamamoto,mode_yamamoto_prev)
 		for(c=0;c<ngridtot;c++)
 		{
-			i=(int)(c/(ngrid*ngrid*1.));
-			j=(int)( (c-i*ngrid*ngrid)/(ngrid*1.));
+			i=(long int)(c/(ngrid*ngrid*1.));
+			j=(long int)( (c-i*ngrid*ngrid)/(ngrid*1.));
 			k=c-i*ngrid*ngrid-j*ngrid;
                         
             kmod2=(L1+i*(L2-L1)/ngrid*1.)*(L1+i*(L2-L1)/ngrid*1.)+(L1+j*(L2-L1)/ngrid*1.)*(L1+j*(L2-L1)/ngrid*1.)+(L1+k*(L2-L1)/ngrid*1.)*(L1+k*(L2-L1)/ngrid*1.);//kmod2 should be always different than 0
@@ -1500,14 +1500,17 @@ in[c]*=curr_factor/prev_factor;
 void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], double deltak_im[], int ngrid, double L1, double L2, int mode_mass_ass)
 {
   fftw_complex *out;
+ // double *out2;
+ //double a1,a2;
   fftw_plan p;
-  int i,j,k;
+  long int i,j,k;
+  double ii,jj,kk;
   long int c;
   double cx,cy,cz;
   double *kx;
   double Pi=(4.*atan(1.));
   long int ngridtotr2c=(pow(ngrid,3)/2+pow(ngrid,2));//N*N*(N/2+1)
-
+  //printf("%ld\n",ngridtotr2c);
   long int index2;
         kx=malloc(sizeof(double)*(ngrid));
         for(i=0;i<ngrid;i++)
@@ -1523,20 +1526,27 @@ void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], do
 	}
 
     out =(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*(ngridtotr2c));
+    if(out==NULL){printf("Error, grid-array (out fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
     fftw_plan_with_nthreads(omp_get_max_threads());
     p =  fftw_plan_dft_r2c_3d(ngrid,ngrid,ngrid,in,out,FFTW_ESTIMATE);
-
+   if(p==NULL){printf("Error, FFTW-plan (within fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
     fftw_execute(p);//FFT
     fftw_destroy_plan(p);
 
-   #pragma omp parallel for private(c,i,j,k,cx,cy,cz,index2) shared(kx,deltak_re,deltak_im,out,ngrid,ngridtotr2c,mode_mass_ass,mode_yamamoto,Pi)
+   #pragma omp parallel for private(c,i,j,k,ii,jj,kk,cx,cy,cz,index2) shared(kx,deltak_re,deltak_im,out,ngrid,ngridtotr2c,mode_mass_ass,mode_yamamoto,Pi)
   for(index2=0;index2<ngridtotr2c;index2++)
   {
 
 
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
-k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+ii=index2*1./(1.*(ngrid*ngrid/2.+ngrid));
+i=(long int)(ii);
+jj=(index2-i*(ngrid*ngrid/2.+ngrid))/(1.*(ngrid/2.+1));
+j=(long int)(jj);
+kk=index2-i*(ngrid*ngrid/2.+ngrid)-j*(ngrid/2.+1);
+k=(long int)(kk);
+//i=(int)(index2/(ngrid*ngrid/2.+ngrid));
+//j=(int)( (index2-i*(ngrid*ngrid/2.+ngrid))/(ngrid/2.+1) );
+//k=index2-i*(ngrid*ngrid/2.+ngrid)-j*(ngrid/2.+1);
 
         cx=sin( kx[i]*Pi/(2.*kx[ngrid/2]) )/( kx[i]*Pi/(2.*kx[ngrid/2]) );
         cy=sin( kx[j]*Pi/(2.*kx[ngrid/2]) )/( kx[j]*Pi/(2.*kx[ngrid/2]) );
@@ -1836,8 +1846,8 @@ if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 #pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re0_b,deltak_im0_b,deltak_re2,deltak_im2,deltak_re2_b,deltak_im2_b,kx,L2,L1,i_inter,Ninterlacing,do_bispectrum2,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 Sk=kx[i]+ kx[j]+ kx[k];
 
@@ -2363,8 +2373,8 @@ i_yama2=i_yama;
 #pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
 Sk=kx[i]+ kx[j]+ kx[k];
@@ -3466,8 +3476,8 @@ if(strcmp(type_of_code, "rusticoX") == 0){
 #pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
 
@@ -3804,8 +3814,8 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
       for(index2=0;index2<ngridtotr2c;index2++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+            i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+            j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
             k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
              phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
              phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -3876,7 +3886,9 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
      L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
-     delta_data = (double*) calloc(ngridtot, sizeof(double));
+     delta_data = (double*) calloc(ngridtot, sizeof(double));//inizialized to 0.
+     if(delta_data==NULL){printf("Warning, grid-array (delta_data) couldn't be created. Exiting now...\n");exit(0);}
+     //delta_data = (double*) malloc(sizeof(double)*ngridtot);memset(delta_data,0,sizeof(double));
 
     if( strcmp(type_of_input,"particles") == 0){
 //printf("%lf, %lf\n",L1b,L2b);
@@ -3924,6 +3936,7 @@ fclose(f);
     if(strcmp(type_of_code, "rusticoX") == 0){
    
         delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+        if(delta_dataB==NULL){printf("Warning, grid-array (delta_dataB) couldn't be created. Exiting now...\n");exit(0);}
         printf("Assigning particles-B to the grid (Iteration %ld) ...", i_inter);
         for(c=0; c<NdataB; c++)
         {
@@ -3961,10 +3974,12 @@ fclose(f);
      if(i_inter==1)
      {
         deltak_re= (double*) calloc(ngridtotr2c,sizeof(double));
+        if(deltak_re==NULL){printf("Warning, grid-array (deltak_re) couldn't be created. Exiting now...\n");exit(0);}
         deltak_im= (double*) calloc(ngridtotr2c,sizeof(double));
+        if(deltak_im==NULL){printf("Warning, grid-array (deltak_im) couldn't be created. Exiting now...\n");exit(0);}
         fftw_yamamoto_skycut(0,delta_data, deltak_re, deltak_im, ngrid,L1b,L2b, mode_correction);
         free(delta_data);
-         
+        //exit(0); //////////////////////////////////////////
          if(strcmp(type_of_code, "rusticoX") == 0){
 
              deltak_reB= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -3987,8 +4002,8 @@ fclose(f);
       for(index2=0;index2<ngridtotr2c;index2++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+            i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+            j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
             k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
              phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4013,8 +4028,8 @@ fclose(f);
                    for(index2=0;index2<ngridtotr2c;index2++)
                    {
 
-                         i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                         j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                         i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                         j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                          k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                           phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4228,8 +4243,8 @@ fclose(f);
         for(index2=0;index2<ngridtotr2c;index2++)
           {
 
-                i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                  phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4333,8 +4348,8 @@ fclose(f);
                 for(index2=0;index2<ngridtotr2c;index2++)
                   {
 
-                        i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                        j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                        i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                        j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                         k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                          phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4499,8 +4514,8 @@ printf("Ok!\n");
       for(index2=0;index2<ngridtotr2c;index2++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+            i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+            j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
             k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
              phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
              phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4661,8 +4676,8 @@ fclose(f);
             for(index2=0;index2<ngridtotr2c;index2++)
               {
 
-                    i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                    j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                    i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                    j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                     k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                      phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4733,8 +4748,8 @@ fclose(f);
             #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_bB,new_deltak_im_bB) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_reB,deltak_imB,deltak_re_bB,deltak_im_bB,i_inter,Ninterlacing,L1,L2)
               for(index2=0;index2<ngridtotr2c;index2++)
               {
-                   i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                   j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                   i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                   j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                    k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                    phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));

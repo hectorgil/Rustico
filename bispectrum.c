@@ -62,7 +62,7 @@ long int N_eff1,N_eff1_unique;
 double  K_eff1;
 //double  K_eff1z;
 long int K_eff1_now,K_eff1_bef;
-int i,j,k;
+long int i,j,k;
 long int l_new;
 double L_lmu;
 double argument;
@@ -93,8 +93,8 @@ if(mode == 0){L_lmu=1.0;}
   //K_eff1z=0;
 
   do{
-i=(int)(L[line_test]/(ngrid*ngrid*1.));
-j=(int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
+i=(long int)(L[line_test]/(ngrid*ngrid*1.));
+j=(long int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
 k=L[line_test]-i*ngrid*ngrid-j*ngrid;
 if(k<=ngrid/2)
 {
@@ -185,7 +185,7 @@ double  K_eff1;
 //double  K_eff1z;
 long int K_eff1_now,K_eff1_bef;
 long int N_eff1_unique;
-int i,j,k;
+long int i,j,k;
 long int l_new;
 
   in_bis= (fftw_complex*) fftw_malloc(ngridr2c*sizeof(fftw_complex));
@@ -218,8 +218,8 @@ long int l_new;
 
 
   do{
-i=(int)(L[line_test]/(ngrid*ngrid*1.));
-j=(int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
+i=(long int)(L[line_test]/(ngrid*ngrid*1.));
+j=(long int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
 k=L[line_test]-i*ngrid*ngrid-j*ngrid;
 if(k<=ngrid/2)
 {
@@ -305,7 +305,7 @@ long int ngridr2c=(pow(ngrid,3)/2+pow(ngrid,2));
 fftw_complex *in_bis_NT;
 double ki,ijk;
 long int line_test;
-int i,j,k;
+long int i,j,k;
 long int l_new;
 
 
@@ -329,8 +329,8 @@ long int l_new;
   line_test=line_test+1;
  
   do{
-i=(int)(L[line_test]/(ngrid*ngrid*1.));
-j=(int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
+i=(long int)(L[line_test]/(ngrid*ngrid*1.));
+j=(long int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
 k=L[line_test]-i*ngrid*ngrid-j*ngrid;
 if(k<=ngrid/2)
 {
@@ -364,7 +364,7 @@ void write_triangles_bin(int ngrid,double *Triangles_k,long int *Weight_k, doubl
 {
 double ki,ijk;
 long int line_test;
-int i,j,k;
+long int i,j,k;
 long int l_triangles;
 long int K_eff1_now,K_eff1_bef;
 long int N_eff1;
@@ -385,8 +385,8 @@ long int N_eff1;
 l_triangles=0;
 N_eff1=0;
   do{
-i=(int)(L[line_test]/(ngrid*ngrid*1.));
-j=(int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
+i=(long int)(L[line_test]/(ngrid*ngrid*1.));
+j=(long int)((L[line_test]-i*(ngrid*ngrid))/(ngrid*1.));
 k=L[line_test]-i*ngrid*ngrid-j*ngrid;
 if(k<=ngrid/2)
 {

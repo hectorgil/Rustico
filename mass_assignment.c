@@ -1,4 +1,7 @@
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double weight, double L2, double L1, int ngrid)
 {
@@ -6,9 +9,10 @@ void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_y=s_y+(-L1);
 	s_z=s_z+(-L1);
 	
-	int  xindex=(int)(ngrid*s_x/(L2-L1));
-	int  yindex=(int)(ngrid*s_y/(L2-L1));
-	int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int  xindex=(long int)(ngrid*s_x/(L2-L1));
+	long int  yindex=(long int)(ngrid*s_y/(L2-L1));
+	long int  zindex=(long int)(ngrid*s_z/(L2-L1));
+        //long int ngridtot=pow(ngrid,3);
 
         if(xindex<0){xindex=xindex+ngrid;}
         if(xindex>ngrid-1){xindex=xindex-ngrid;}
@@ -32,6 +36,10 @@ void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	if( fabs(sx)<=1./2. && fabs(sy)<=1./2. && fabs(sz)<=1./2.)//only contributing to the adjacent grids
 	{
                         index=(pow(ngrid,2)*xindex+ngrid*yindex+zindex);
+                        //if(index<0 || index>=ngridtot){printf("index=%ld/%ld, (%lf,%lf,%lf) Core dumped is coming...\n",index,ngridtot,s_x,s_y,s_z);exit(0);}
+                        //if(xindex<0 || xindex>=ngrid){printf("x %lf %d\n",s_x,xindex);exit(0);}
+                        //if(yindex<0 || yindex>=ngrid){printf("y %lf %d\n",s_y,yindex);exit(0);}
+                        //if(zindex<0 || zindex>=ngrid){printf("z %lf %d\n",s_z,zindex);exit(0);}
 		        delta[index]=delta[index]+weight;
 	}
 
@@ -45,10 +53,10 @@ void cic_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_z=s_z+(-L1);
 	
 
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	long  int  xindex=(int)(ngrid*s_x/(L2-L1));
+        long int  yindex=(int)(ngrid*s_y/(L2-L1));
+         long  int  zindex=(int)(ngrid*s_z/(L2-L1));
 /*
         if(xindex<0){xindex=xindex+ngrid;}
         if(xindex>ngrid-1){xindex=xindex-ngrid;}
@@ -60,9 +68,9 @@ void cic_assingment(double delta[], double s_x, double s_y, double s_z, double w
         if(zindex>ngrid-1){zindex=zindex-ngrid;}
 */
 
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
 
 		  double sx;
 		  double sy;
@@ -110,10 +118,10 @@ void tsc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_z=s_z+(-L1);
 	
 
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
 /*
         if(xindex<0){xindex=xindex+ngrid;}
         if(xindex>ngrid-1){xindex=xindex-ngrid;}
@@ -125,9 +133,9 @@ void tsc_assingment(double delta[], double s_x, double s_y, double s_z, double w
         if(zindex>ngrid-1){zindex=zindex-ngrid;}
 */
 
-                  int  xindex2;
-	          int  yindex2;
-		  int  zindex2;
+                long  int  xindex2;
+	        long  int  yindex2;
+		long  int  zindex2;
                   long int index;
 		  double sx;
 		  double sy;
@@ -210,10 +218,10 @@ void pcs_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_z=s_z+(-L1);
 	
 
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
 /*
         if(xindex<0){xindex=xindex+ngrid;}
         if(xindex>ngrid-1){xindex=xindex-ngrid;}
@@ -226,9 +234,9 @@ void pcs_assingment(double delta[], double s_x, double s_y, double s_z, double w
 */
 
            long int index;
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
 
 		  double sx;
 		  double sy;
@@ -304,10 +312,10 @@ void pq4s_assingment(double delta[], double s_x, double s_y, double s_z, double 
 	s_y=s_y+(-L1);
 	s_z=s_z+(-L1);
 	
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
 /*
         if(xindex<0){xindex=xindex+ngrid;}
         if(xindex>ngrid-1){xindex=xindex-ngrid;}
@@ -320,9 +328,9 @@ void pq4s_assingment(double delta[], double s_x, double s_y, double s_z, double 
 */
 
 long int index;
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
 
 		  double sx;
 		  double sy;
@@ -409,10 +417,10 @@ void pq5s_assingment(double delta[], double s_x, double s_y, double s_z, double 
 	s_y=s_y+(-L1);
 	s_z=s_z+(-L1);
 	
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
 /*
         if(xindex<0){xindex=xindex+ngrid;}
         if(xindex>ngrid-1){xindex=xindex-ngrid;}
@@ -424,9 +432,9 @@ void pq5s_assingment(double delta[], double s_x, double s_y, double s_z, double 
         if(zindex>ngrid-1){zindex=zindex-ngrid;}
 */
 
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
                   long int index;
 		  double sx;
 		  double sy;

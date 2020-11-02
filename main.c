@@ -38,7 +38,7 @@ char name_file_ini[2000];//name of inizialization file
 //Main Parameters read in
 double L1,L2;//Box limit in Mpc/h
 double kf,kny;
-char type_of_survey[50];//type of survey: Periodic or Cutsky
+char type_of_survey[50];//type of survey: Periodic or Cutsky or PeriodicFKP
 char type_of_computation[10];//type of computation: DSY /  FFT / DSE
 int power_grid;//power in number of grid cells: integer between 6 and 15 
 int ngrid;//Number of grid cells: pow(2,power_grid)
@@ -552,10 +552,10 @@ if(strcmp(type_of_code, "rusticoX") == 0){if(strcmp(type_of_fileB, "gadget") != 
 
 if( strcmp(type_of_survey, "cutsky") != 0 && strcmp(type_of_survey, "periodic") != 0  && strcmp(type_of_survey, "periodicFKP") != 0){printf("Survey type must be either 'cutsky', 'periodic' or 'periodicFKP'. Entry read %s. Exiting now...\n",type_of_survey);return 0;}
 if( strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_file, "gadget") == 0 ){printf("Warning. Cutsky+gadget option not available. Exiting now...\n");return 0;}
-if( strcmp(type_of_survey, "periodicFKP") == 0 && strcmp(type_of_file, "gadget") == 0 ){printf("Warning. Periodicpostrecon + gadget option not available. Exiting now...\n");return 0;}
+if( strcmp(type_of_survey, "periodicFKP") == 0 && strcmp(type_of_file, "gadget") == 0 ){printf("Warning. PeriodicFKP + gadget option not available. Exiting now...\n");return 0;}
 if(strcmp(type_of_code, "rusticoX") == 0){
 if( strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_fileB, "gadget") == 0 ){printf("Warning. Cutsky+gadget option not available. Exiting now...\n");return 0;}
-if( strcmp(type_of_survey, "periodicFKP") == 0 && strcmp(type_of_fileB, "gadget") == 0 ){printf("Warning. Periodicpostrecon + gadget option not available. Exiting now...\n");return 0;}
+if( strcmp(type_of_survey, "periodicFKP") == 0 && strcmp(type_of_fileB, "gadget") == 0 ){printf("Warning. PeriodicFKP + gadget option not available. Exiting now...\n");return 0;}
 }
 if(gadget_files<1 && strcmp(type_of_file,"gadget") == 0){printf("Warning. gadget files entry must be >0. Entered value %d. Exiting now...\n",gadget_files);return 0;}
 if(strcmp(type_of_code, "rusticoX") == 0){if(gadget_filesB<1 &&  strcmp(type_of_fileB,"gadget") == 0){printf("Warning. gadget files entry must be >0. Entered value %d. Exiting now...\n",gadget_files);return 0;}}
@@ -1198,7 +1198,7 @@ max=parameter_value[11];
 printf("Ok!\n\n");
 if(strcmp(type_of_survey, "periodic") == 0)
 {
-P_shot_noise=pow(L2-L1,3)/Ndata*1.;
+P_shot_noise=pow(L2-L1,3)/Ndata2*1.;
 }
 if(strcmp(type_of_survey, "periodicFKP") == 0)
 {
