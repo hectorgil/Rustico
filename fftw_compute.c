@@ -1504,7 +1504,7 @@ void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], do
  //double a1,a2;
   fftw_plan p;
   long int i,j,k;
-  double ii,jj,kk;
+ // double ii,jj,kk;
   long int c;
   double cx,cy,cz;
   double *kx;
@@ -1526,27 +1526,29 @@ void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], do
 	}
 
     out =(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*(ngridtotr2c));
-    if(out==NULL){printf("Error, grid-array (out fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
+//    if(out==NULL){printf("Error, grid-array (out fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
     fftw_plan_with_nthreads(omp_get_max_threads());
     p =  fftw_plan_dft_r2c_3d(ngrid,ngrid,ngrid,in,out,FFTW_ESTIMATE);
-   if(p==NULL){printf("Error, FFTW-plan (within fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
+//   if(p==NULL){printf("Error, FFTW-plan (within fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
     fftw_execute(p);//FFT
     fftw_destroy_plan(p);
 
-   #pragma omp parallel for private(c,i,j,k,ii,jj,kk,cx,cy,cz,index2) shared(kx,deltak_re,deltak_im,out,ngrid,ngridtotr2c,mode_mass_ass,mode_yamamoto,Pi)
+   #pragma omp parallel for private(c,i,j,k,cx,cy,cz,index2) shared(kx,deltak_re,deltak_im,out,ngrid,ngridtotr2c,mode_mass_ass,mode_yamamoto,Pi)
   for(index2=0;index2<ngridtotr2c;index2++)
   {
 
-
+/*
 ii=index2*1./(1.*(ngrid*ngrid/2.+ngrid));
 i=(long int)(ii);
 jj=(index2-i*(ngrid*ngrid/2.+ngrid))/(1.*(ngrid/2.+1));
 j=(long int)(jj);
 kk=index2-i*(ngrid*ngrid/2.+ngrid)-j*(ngrid/2.+1);
 k=(long int)(kk);
-//i=(int)(index2/(ngrid*ngrid/2.+ngrid));
-//j=(int)( (index2-i*(ngrid*ngrid/2.+ngrid))/(ngrid/2.+1) );
-//k=index2-i*(ngrid*ngrid/2.+ngrid)-j*(ngrid/2.+1);
+*/
+i=(long int)(index2*1./(1.*ngrid*ngrid/2.+ngrid*1.));
+j=(long int)( (index2-i*(1.*ngrid*ngrid/2.+ngrid*1.))/(ngrid/2.+1.) );
+//k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+k=index2-(i*(ngrid*ngrid+2*ngrid)-j*(ngrid+2))/2;
 
         cx=sin( kx[i]*Pi/(2.*kx[ngrid/2]) )/( kx[i]*Pi/(2.*kx[ngrid/2]) );
         cy=sin( kx[j]*Pi/(2.*kx[ngrid/2]) )/( kx[j]*Pi/(2.*kx[ngrid/2]) );
@@ -3887,7 +3889,7 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
      delta_data = (double*) calloc(ngridtot, sizeof(double));//inizialized to 0.
-     if(delta_data==NULL){printf("Warning, grid-array (delta_data) couldn't be created. Exiting now...\n");exit(0);}
+//     if(delta_data==NULL){printf("Warning, grid-array (delta_data) couldn't be created. Exiting now...\n");exit(0);}
      //delta_data = (double*) malloc(sizeof(double)*ngridtot);memset(delta_data,0,sizeof(double));
 
     if( strcmp(type_of_input,"particles") == 0){
@@ -3936,7 +3938,7 @@ fclose(f);
     if(strcmp(type_of_code, "rusticoX") == 0){
    
         delta_dataB = (double*) calloc(ngridtot, sizeof(double));
-        if(delta_dataB==NULL){printf("Warning, grid-array (delta_dataB) couldn't be created. Exiting now...\n");exit(0);}
+//        if(delta_dataB==NULL){printf("Warning, grid-array (delta_dataB) couldn't be created. Exiting now...\n");exit(0);}
         printf("Assigning particles-B to the grid (Iteration %ld) ...", i_inter);
         for(c=0; c<NdataB; c++)
         {
@@ -3974,12 +3976,12 @@ fclose(f);
      if(i_inter==1)
      {
         deltak_re= (double*) calloc(ngridtotr2c,sizeof(double));
-        if(deltak_re==NULL){printf("Warning, grid-array (deltak_re) couldn't be created. Exiting now...\n");exit(0);}
+//        if(deltak_re==NULL){printf("Warning, grid-array (deltak_re) couldn't be created. Exiting now...\n");exit(0);}
         deltak_im= (double*) calloc(ngridtotr2c,sizeof(double));
-        if(deltak_im==NULL){printf("Warning, grid-array (deltak_im) couldn't be created. Exiting now...\n");exit(0);}
+//        if(deltak_im==NULL){printf("Warning, grid-array (deltak_im) couldn't be created. Exiting now...\n");exit(0);}
         fftw_yamamoto_skycut(0,delta_data, deltak_re, deltak_im, ngrid,L1b,L2b, mode_correction);
         free(delta_data);
-        //exit(0); //////////////////////////////////////////
+ 
          if(strcmp(type_of_code, "rusticoX") == 0){
 
              deltak_reB= (double*) calloc(ngridtotr2c,sizeof(double));
