@@ -1372,11 +1372,11 @@ if( strcmp(file_for_mu,"no") == 0 ){
         for(lmu=0;lmu<mubin;lmu++)
         {
 
-if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%d.txt",name_ps_out,lmu);f=fopen(name_ps_out2,"a");}
+if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%ld.txt",name_ps_out,lmu);f=fopen(name_ps_out2,"a");}
             if(strcmp(type_of_code, "rusticoX") == 0)
             {
-                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psAB_out2,"%s_%d.txt",name_psAB_out,lmu);fAB=fopen(name_psAB_out2,"a");}
-                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psBB_out2,"%s_%d.txt",name_psBB_out,lmu);fBB=fopen(name_psBB_out2,"a");}
+                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psAB_out2,"%s_%ld.txt",name_psAB_out,lmu);fAB=fopen(name_psAB_out2,"a");}
+                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psBB_out2,"%s_%ld.txt",name_psBB_out,lmu);fBB=fopen(name_psBB_out2,"a");}
 
             }
 
