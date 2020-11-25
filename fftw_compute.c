@@ -1548,7 +1548,7 @@ k=(long int)(kk);
 i=(long int)(index2*1./(1.*ngrid*ngrid/2.+ngrid*1.));
 j=(long int)( (index2-i*(1.*ngrid*ngrid/2.+ngrid*1.))/(ngrid/2.+1.) );
 //k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
-k=index2-(i*(ngrid*ngrid+2*ngrid)-j*(ngrid+2))/2;
+k=index2-(i*(ngrid*ngrid+2*ngrid)+j*(ngrid+2))/2;
 
         cx=sin( kx[i]*Pi/(2.*kx[ngrid/2]) )/( kx[i]*Pi/(2.*kx[ngrid/2]) );
         cy=sin( kx[j]*Pi/(2.*kx[ngrid/2]) )/( kx[j]*Pi/(2.*kx[ngrid/2]) );
