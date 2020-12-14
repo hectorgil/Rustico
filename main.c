@@ -1420,7 +1420,7 @@ if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %l
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I22);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I22);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
 fprintf(f,"#Shot noise value %lf\n",P_shot_noise);
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
@@ -1474,7 +1474,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I22B);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I22B);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
         fprintf(f,"#Shot noise value %lf\n",P_shot_noiseB);
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
@@ -1526,7 +1526,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf\n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",sqrt(I22*I22B));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",sqrt(I22*I22B));}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
         fprintf(f,"#Shot noise value %lf\n",P_shot_noiseB);
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
@@ -1576,7 +1576,7 @@ fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1612,7 +1612,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I33B);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33B);}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1647,7 +1647,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",cbrt(I33*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1682,7 +1682,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",cbrt(I33*I33B*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33B*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1717,7 +1717,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",cbrt(I33B*I33B*I33));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33B*I33B*I33));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1752,7 +1752,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",cbrt(I33*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1787,7 +1787,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",cbrt(I33B*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33B*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1822,7 +1822,7 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf %lf deg^2\n",Area_survey,Area_surveyB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf %lf \n",alpha,alphaB);}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",cbrt(I33*I33*I33B));}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",cbrt(I33*I33*I33B));}
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1864,7 +1864,7 @@ fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1897,7 +1897,7 @@ fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
@@ -1930,7 +1930,7 @@ fprintf(f,"#Size of the Box %lf Mpc/h\n",L2-L1);
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Area of the survey used %lf deg^2\n",Area_survey);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of alpha: %lf\n",alpha);}
 if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s file\n", type_normalization_mode2 );}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %lf\n",I33);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization %e\n",I33);}
 fprintf(f,"#Type of Computation: %s\n",type_of_computation);
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
