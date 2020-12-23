@@ -623,7 +623,8 @@ if( strcmp(shuffle, "no") != 0 && Ndata==0){printf("Error, when shuffling option
 if( strcmp(shuffle, "no") != 0 && NdataB==0 && strcmp(type_of_code,"rusticoX") == 0 ){printf("Error, when shuffling option enabled, a valid data file must be provided. Exiting now...\n");exit(0);}
 
    
- 
+}//cutsky
+	
     if( strcmp(window_function, "yes") == 0){
 
     if(window_norm_bin<=0 || window_norm_bin>20){printf("Error, the minimum bin at which the window is normalized must be >0 and <20: %d. Exiting now...\n",window_norm_bin);exit(0);}
@@ -640,7 +641,6 @@ if( strcmp(shuffle, "no") != 0 && NdataB==0 && strcmp(type_of_code,"rusticoX") =
 
     }
 
-}//cutsky
 
 if( strcmp(do_bispectrum, "no") == 0 && strcmp(do_bispectrum2, "yes") == 0 ){printf("Warning. Bispectrum multipoles computation requires a bispectrum calculation. Exiting now...\n");return 0;}
     
