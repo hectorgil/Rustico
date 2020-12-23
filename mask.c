@@ -56,7 +56,7 @@ double **s_eff,**W0,**W2,**W4,**W6,**W8,**num_eff;
 int N_bin;
 double s,xlos,ylos,zlos,mu,weight_ij;
 int index_s;
-
+int i_window_norm_bin;
 //if shuffle == 0
 if(strcmp(shuffle,"no") == 0){
 
@@ -250,7 +250,7 @@ zlos=s_z_ran[j];
 mu=((s_x_ran[i]-s_x_ran[j])*xlos+(s_y_ran[i]-s_y_ran[j])*ylos+(s_z_ran[i]-s_z_ran[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
 if(i==j){mu=0;}
 index_s=(int)(s/deltaS_window);
-if(index_s<N_bin)
+if(index_s<N_bin && s>0)
 {
 num_eff[index_s][tid]=num_eff[index_s][tid]+1.;
 W0[index_s][tid]=W0[index_s][tid]+weight_ij/(s*s*deltaS_window);
@@ -286,6 +286,17 @@ printf("Complete!\n");
 
 norm=W0[window_norm_bin-1][0];
 
+if(norm==0)//if no particles in this bin (or it contains s=0)
+{
+
+for(i_window_norm_bin=window_norm_bin+1;i_window_norm_bin<N_bin;i_window_norm_bin++)
+{
+norm=W0[i_window_norm_bin-1][0];
+if(norm!=0){break;}
+
+}
+printf("Bin normalization shifted to %d -> %d\n", window_norm_bin,i_window_norm_bin);
+}
 
 //call window
 f=fopen(name_wink_out,"w");
@@ -295,9 +306,9 @@ fprintf(f,"#N= %e Sumwtot= %e\n",norm,sumw);
 fprintf(f,"#seff \t sav \t W0 \t W2 \t W4 \t W6 \t W8\n");
 }
 
-for(i=1;i<N_bin;i++)
+for(i=0;i<N_bin;i++)
 {
-if(num_eff[i][0]==0){break;}//Once an empty bin is found break;
+if(num_eff[i][0]==0 && i>1){break;}//Once an empty bin is found break;
 
 fprintf(f,"%e %e %e %e %e %e %e\n",(i+0.5)*deltaS_window,(s_eff[i][0]/num_eff[i][0]),W0[i][0]/norm,W2[i][0]/norm,W4[i][0]/norm,W6[i][0]/norm,W8[i][0]/norm);
 
@@ -359,7 +370,7 @@ freeTokens(num_eff,N_bin);
     mu=((s_x_ranB[i]-s_x_ranB[j])*xlos+(s_y_ranB[i]-s_y_ranB[j])*ylos+(s_z_ranB[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
     if(i==j){mu=0;}
     index_s=(int)(s/deltaS_window);
-    if(index_s<N_bin)
+    if(index_s<N_bin && s>0)
     {
     num_eff[index_s][tid]=num_eff[index_s][tid]+1.;
     W0[index_s][tid]=W0[index_s][tid]+weight_ij/(s*s*deltaS_window);
@@ -395,6 +406,17 @@ freeTokens(num_eff,N_bin);
 
     normB=W0[window_norm_bin-1][0];
 
+if(normB==0)//if no particles in this bin (or it contains s=0)
+{
+
+for(i_window_norm_bin=window_norm_bin+1;i_window_norm_bin<N_bin;i_window_norm_bin++)
+{
+normB=W0[i_window_norm_bin-1][0];
+if(normB!=0){break;}
+
+}
+printf("Bin normalization shifted to %d -> %d\n", window_norm_bin,i_window_norm_bin);
+}
 
     //call window
     f=fopen(name_winkBB_out,"w");
@@ -404,9 +426,9 @@ freeTokens(num_eff,N_bin);
     fprintf(f,"#seff \t sav \t W0 \t W2 \t W4 \t W6 \t W8\n");
     }
 
-    for(i=1;i<N_bin;i++)
+    for(i=0;i<N_bin;i++)
     {
-    if(num_eff[i][0]==0){break;}//Once an empty bin is found break;
+    if(num_eff[i][0]==0 && i>1){break;}//Once an empty bin is found break;
 
     fprintf(f,"%e %e %e %e %e %e %e\n",(i+0.5)*deltaS_window,(s_eff[i][0]/num_eff[i][0]),W0[i][0]/normB,W2[i][0]/normB,W4[i][0]/normB,W6[i][0]/normB,W8[i][0]/normB);
 
@@ -476,7 +498,7 @@ freeTokens(num_eff,N_bin);
         mu=((s_x_ran[i]-s_x_ranB[j])*xlos+(s_y_ran[i]-s_y_ranB[j])*ylos+(s_z_ran[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
         if(sqrt(xlos*xlos+ylos*ylos+zlos*zlos)==0){mu=0;}
         index_s=(int)(s/deltaS_window);
-        if(index_s<N_bin)
+        if(index_s<N_bin && s>0)
         {
         num_eff[index_s][tid]=num_eff[index_s][tid]+1.;
         W0[index_s][tid]=W0[index_s][tid]+weight_ij/(s*s*deltaS_window);
@@ -512,6 +534,17 @@ freeTokens(num_eff,N_bin);
 
         normAB=W0[window_norm_bin-1][0];
 
+if(normAB==0)//if no particles in this bin (or it contains s=0)
+{
+
+for(i_window_norm_bin=window_norm_bin+1;i_window_norm_bin<N_bin;i_window_norm_bin++)
+{
+normAB=W0[i_window_norm_bin-1][0];
+if(normAB!=0){break;}
+
+}
+printf("Bin normalization shifted to %d -> %d\n", window_norm_bin,i_window_norm_bin);
+}
 
         //call window
         f=fopen(name_winkAB_out,"w");
@@ -521,9 +554,9 @@ freeTokens(num_eff,N_bin);
         fprintf(f,"#seff \t sav \t W0 \t W2 \t W4 \t W6 \t W8\n");
         }
 
-        for(i=1;i<N_bin;i++)
+        for(i=0;i<N_bin;i++)
         {
-        if(num_eff[i][0]==0){break;}//Once an empty bin is found break;
+        if(num_eff[i][0]==0 && i>1){break;}//Once an empty bin is found break;
 
         fprintf(f,"%e %e %e %e %e %e %e\n",(i+0.5)*deltaS_window,(s_eff[i][0]/num_eff[i][0]),W0[i][0]/normAB,W2[i][0]/normAB,W4[i][0]/normAB,W6[i][0]/normAB,W8[i][0]/normAB);
 
