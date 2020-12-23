@@ -12,12 +12,12 @@
 
 //void window_mask_function_RRcount(char *name_wink_out, char *name_randoms_in, int window_norm_bin,double deltaS_window, double percentage_randoms_window, char *yamamoto4window, double *parameter_value, char *header,double L,int nparallel)
 
-void window_mask_function_RRcount(char *name_wink_out,char *name_winkBB_out,char *name_winkAB_out,char *name_randoms_in,char *name_randomsB_in, int window_norm_bin,double deltaS_window,double percentage_randoms_window,char *yamamoto4window,double *parameter_value,double *parameter_valueB,char *header,double L,int nparallel, char *type_of_code,char *shuffle, double *posX, double *posY, double *posZ, double *posW, double *posXB, double *posYB, double *posZB, double *posWB, char *Quadrupole_type, char *Hexadecapole_type, char *type_of_survey)
+void window_mask_function_RRcount(char *name_wink_out,char *name_winkBB_out,char *name_winkAB_out,char *name_randoms_in,char *name_randomsB_in, int window_norm_bin,double deltaS_window,double percentage_randoms_window,char *yamamoto4window,double *parameter_value,double *parameter_valueB,char *header,double L,int nparallel, char *type_of_code,char *shuffle, double *posX, double *posY, double *posZ, double *posW, double *posXB, double *posYB, double *posZB, double *posWB)
 {
 double Omega_m=parameter_value[0];
 double z_min=parameter_value[1];
 double z_max=parameter_value[2];
-double L2,L4,L6,L8;
+
 double Omega_mB;
 double z_minB;
 double z_maxB;
@@ -54,10 +54,9 @@ double sumw,norm,sumwB,normB,sumwAB,normAB;
 double precision=1e-6;
 double **s_eff,**W0,**W2,**W4,**W6,**W8,**num_eff;
 int N_bin;
-double s,xlos,ylos,zlos,mu1,mu2,mu,weight_ij;
-double xlos_i,xlos_j,ylos_i,ylos_j,zlos_i,zlos_j;
+double s,xlos,ylos,zlos,mu,weight_ij;
 int index_s;
-
+int i_window_norm_bin;
 //if shuffle == 0
 if(strcmp(shuffle,"no") == 0){
 
@@ -86,8 +85,6 @@ npar_used=0;
 npar_used_100=0;
 sumw=0;
 f=fopen(name_randoms_in,"r");
-
-if( strcmp(type_of_survey,"cutsky") == 0){
 
 for(i=0;i<npar_ran;i++)
 {
@@ -128,28 +125,6 @@ veto=(int)(params[7]);
       }
 
 }
-}
-if( strcmp(type_of_survey,"periodicFKP") == 0){
-for(i=0;i<npar_ran;i++)
-{
-get_line_periodic(f, params,1);
-
-            random=drand48();
-            npar_used_100++;
-            if(percentage_randoms_window/100.>random){
-
-                   s_x_ran[npar_used]=params[0];
-                   s_y_ran[npar_used]=params[1];
-                   s_z_ran[npar_used]=params[2];
-                   weight_ran[npar_used]=params[3];
-                   sumw=sumw+weight_ran[npar_used];
-                   npar_used++;
-              }
-
-}
-
-}
-
 fclose(f);
 printf("%ld out of %ld randoms used for calculation\n",npar_used,npar_used_100);
     
@@ -159,9 +134,8 @@ printf("%ld out of %ld randoms used for calculation\n",npar_used,npar_used_100);
     npar_usedB=0;
     npar_used_100B=0;
     sumwB=0;
-
     f=fopen(name_randomsB_in,"r");
-    if(strcmp(type_of_survey, "cutsky") == 0){
+
     for(i=0;i<npar_ranB;i++)
     {
     get_line(f, params,1);
@@ -197,29 +171,10 @@ printf("%ld out of %ld randoms used for calculation\n",npar_used,npar_used_100);
                        sumwB=sumwB+weight_ranB[npar_usedB];
                        npar_usedB++;
                             }
+
           }
-    }
-}
-    if(strcmp(type_of_survey, "periodicFKP") == 0){
-    for(i=0;i<npar_ranB;i++)
-    {
-    get_line_periodic(f, params,1);
-
-                 random=drand48();
-                 npar_used_100B++;
-                if(percentage_randoms_window/100.>random){
-
-
-                       s_x_ranB[npar_usedB]=params[0];
-                       s_y_ranB[npar_usedB]=params[1];
-                       s_z_ranB[npar_usedB]=params[2];
-                       weight_ranB[npar_usedB]=params[3];
-                       sumwB=sumwB+weight_ranB[npar_usedB];
-                       npar_usedB++;
-                }
 
     }
-}
     fclose(f);
     printf("%ld out of %ld randoms used for calculation\n",npar_usedB,npar_used_100B);
     }
@@ -270,7 +225,7 @@ num_eff[i] = (double*) calloc(nparallel, sizeof(double));
 }
 
 printf("Starting the parallel loop...\n");
-#pragma omp parallel for private(i,j,tid,s,xlos,ylos,zlos,xlos_i,xlos_j,ylos_i,ylos_j,zlos_i,zlos_j,mu,mu1,mu2,index_s,weight_ij,L2,L4,L6,L8,decision_rand) shared(s_x_ran,s_y_ran,s_z_ran,npar_used,W0,W2,W4,W6,W8,deltaS_window,N_bin,s_eff,weight_ran,num_eff,yamamoto4window,Quadrupole_type,Hexadecapole_type,type_of_survey)
+#pragma omp parallel for private(i,j,tid,s,xlos,ylos,zlos,mu,index_s,weight_ij) shared(s_x_ran,s_y_ran,s_z_ran,npar_used,W0,W2,W4,W6,W8,deltaS_window,N_bin,s_eff,weight_ran,num_eff,yamamoto4window)
 for(i=0;i<npar_used;i++)
 {
 tid=omp_get_thread_num();//thread number
@@ -281,88 +236,28 @@ for(j=i;j<npar_used;j++)
 weight_ij=weight_ran[i]*weight_ran[j];
 s=sqrt( pow(s_x_ran[i]-s_x_ran[j],2)+pow(s_y_ran[i]-s_y_ran[j],2)+pow(s_z_ran[i]-s_z_ran[j],2) );
 
-if(strcmp(type_of_survey,"periodicFKP")==0){
-
-mu=(s_z_ran[i]-s_z_ran[j])/s;
-if(i==j){mu=0;}
-L2=Leg2(mu);
-L4=Leg4(mu);
-L6=Leg6(mu);
-L8=Leg8(mu);
-
-}
-if(strcmp(yamamoto4window, "no") == 0  && strcmp(type_of_survey,"cutsky")==0){
+if(strcmp(yamamoto4window, "no") == 0){
 xlos=s_x_ran[j]+(s_x_ran[i]-s_x_ran[j])/2.;
 ylos=s_y_ran[j]+(s_y_ran[i]-s_y_ran[j])/2.;
 zlos=s_z_ran[j]+(s_z_ran[i]-s_z_ran[j])/2.;
+}
+if(strcmp(yamamoto4window, "yes") == 0){
+xlos=s_x_ran[j];
+ylos=s_y_ran[j];
+zlos=s_z_ran[j];
+}
+
 mu=((s_x_ran[i]-s_x_ran[j])*xlos+(s_y_ran[i]-s_y_ran[j])*ylos+(s_z_ran[i]-s_z_ran[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
 if(i==j){mu=0;}
-L2=Leg2(mu);
-L4=Leg4(mu);
-L6=Leg6(mu);
-L8=Leg8(mu);
-}
-if(strcmp(yamamoto4window, "yes") == 0 && strcmp(type_of_survey,"cutsky")==0 ){
-
-
-xlos_j=s_x_ran[j];
-ylos_j=s_y_ran[j];
-zlos_j=s_z_ran[j];
-
-xlos_i=s_x_ran[i];
-ylos_i=s_y_ran[i];
-zlos_i=s_z_ran[i];
-
-        decision_rand=drand48();
-        if(decision_rand>=0.5){
-mu1=((s_x_ran[i]-s_x_ran[j])*xlos_i+(s_y_ran[i]-s_y_ran[j])*ylos_i+(s_z_ran[i]-s_z_ran[j])*zlos_i)/(s*sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i));
-mu2=((s_x_ran[i]-s_x_ran[j])*xlos_j+(s_y_ran[i]-s_y_ran[j])*ylos_j+(s_z_ran[i]-s_z_ran[j])*zlos_j)/(s*sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j));
-
-        if(sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i)==0 || s==0){mu1=0;}
-        if(sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j)==0 || s==0){mu2=0;}
-
-
-}
-else{
-mu2=((s_x_ran[i]-s_x_ran[j])*xlos_i+(s_y_ran[i]-s_y_ran[j])*ylos_i+(s_z_ran[i]-s_z_ran[j])*zlos_i)/(s*sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i));
-mu1=((s_x_ran[i]-s_x_ran[j])*xlos_j+(s_y_ran[i]-s_y_ran[j])*ylos_j+(s_z_ran[i]-s_z_ran[j])*zlos_j)/(s*sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j));
-
-        if(sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i)==0 || s==0){mu2=0;}
-        if(sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j)==0 || s==0){mu1=0;}
-
-
-}
-
-if(i==j){mu1=0;mu2=0;}
-
-if( strcmp(Quadrupole_type,"L0L2") == 0){L2=Leg2(mu1);}//L0L2
-if( strcmp(Quadrupole_type,"L1L1") == 0){L2=0.5*(3.*mu1*mu2-1.);}//L1L1
-
-if( strcmp(Hexadecapole_type,"L0L4") == 0){L4=Leg4(mu1);}//L0L4
-if( strcmp(Hexadecapole_type,"L2L2") == 0){L4=1./8.*(35.*mu1*mu1*mu2*mu2-30.*mu1*mu1+3.);}//L2L2
-if( strcmp(Hexadecapole_type,"L1L3") == 0){L4=1./8.*(35.*mu1*mu1*mu1*mu2-30.*mu1*mu2+3.);}//L1L3
-
-L6=Leg6(mu1);//L0L6 default option
-L8=Leg8(mu1);//L0L8 default option
-
-}
-
-//mu=((s_x_ran[i]-s_x_ran[j])*xlos+(s_y_ran[i]-s_y_ran[j])*ylos+(s_z_ran[i]-s_z_ran[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
-//if(i==j){mu=0;}
 index_s=(int)(s/deltaS_window);
-if(index_s<N_bin)
+if(index_s<N_bin && s>0)
 {
 num_eff[index_s][tid]=num_eff[index_s][tid]+1.;
 W0[index_s][tid]=W0[index_s][tid]+weight_ij/(s*s*deltaS_window);
-//W2[index_s][tid]=W2[index_s][tid]+weight_ij*Leg2(mu)*5./(s*s*deltaS_window);
-//W4[index_s][tid]=W4[index_s][tid]+weight_ij*Leg4(mu)*9./(s*s*deltaS_window);
-//W6[index_s][tid]=W6[index_s][tid]+weight_ij*Leg6(mu)*13./(s*s*deltaS_window);
-//W8[index_s][tid]=W8[index_s][tid]+weight_ij*Leg8(mu)*17./(s*s*deltaS_window);
-W2[index_s][tid]=W2[index_s][tid]+weight_ij*L2*5./(s*s*deltaS_window);
-W4[index_s][tid]=W4[index_s][tid]+weight_ij*L4*9./(s*s*deltaS_window);
-W6[index_s][tid]=W6[index_s][tid]+weight_ij*L6*13./(s*s*deltaS_window);
-W8[index_s][tid]=W8[index_s][tid]+weight_ij*L8*17./(s*s*deltaS_window);
-
+W2[index_s][tid]=W2[index_s][tid]+weight_ij*Leg2(mu)*5./(s*s*deltaS_window);
+W4[index_s][tid]=W4[index_s][tid]+weight_ij*Leg4(mu)*9./(s*s*deltaS_window);
+W6[index_s][tid]=W6[index_s][tid]+weight_ij*Leg6(mu)*13./(s*s*deltaS_window);
+W8[index_s][tid]=W8[index_s][tid]+weight_ij*Leg8(mu)*17./(s*s*deltaS_window);
 s_eff[index_s][tid]=s_eff[index_s][tid]+s;
 }
 
@@ -391,6 +286,17 @@ printf("Complete!\n");
 
 norm=W0[window_norm_bin-1][0];
 
+if(norm==0)//if no particles in this bin (or it contains s=0)
+{
+
+for(i_window_norm_bin=window_norm_bin+1;i_window_norm_bin<N_bin;i_window_norm_bin++)
+{
+norm=W0[i_window_norm_bin-1][0];
+if(norm!=0){break;}
+
+}
+printf("Bin normalization shifted to %d -> %d\n", window_norm_bin,i_window_norm_bin);
+}
 
 //call window
 f=fopen(name_wink_out,"w");
@@ -400,9 +306,9 @@ fprintf(f,"#N= %e Sumwtot= %e\n",norm,sumw);
 fprintf(f,"#seff \t sav \t W0 \t W2 \t W4 \t W6 \t W8\n");
 }
 
-for(i=1;i<N_bin;i++)
+for(i=0;i<N_bin;i++)
 {
-if(num_eff[i][0]==0){break;}//Once an empty bin is found break;
+if(num_eff[i][0]==0 && i>1){break;}//Once an empty bin is found break;
 
 fprintf(f,"%e %e %e %e %e %e %e\n",(i+0.5)*deltaS_window,(s_eff[i][0]/num_eff[i][0]),W0[i][0]/norm,W2[i][0]/norm,W4[i][0]/norm,W6[i][0]/norm,W8[i][0]/norm);
 
@@ -439,7 +345,7 @@ freeTokens(num_eff,N_bin);
     }
 
     printf("Starting the parallel loop...\n");
-    #pragma omp parallel for private(i,j,tid,s,xlos,ylos,zlos,mu,mu1,mu2,xlos_i,ylos_i,zlos_i,xlos_j,ylos_j,zlos_j,index_s,weight_ij,L2,L4,L6,L8,decision_rand) shared(s_x_ranB,s_y_ranB,s_z_ranB,npar_usedB,W0,W2,W4,W6,W8,deltaS_window,N_bin,s_eff,weight_ranB,num_eff,yamamoto4window,Quadrupole_type,Hexadecapole_type,type_of_survey)
+    #pragma omp parallel for private(i,j,tid,s,xlos,ylos,zlos,mu,index_s,weight_ij) shared(s_x_ranB,s_y_ranB,s_z_ranB,npar_usedB,W0,W2,W4,W6,W8,deltaS_window,N_bin,s_eff,weight_ranB,num_eff,yamamoto4window)
     for(i=0;i<npar_usedB;i++)
     {
     tid=omp_get_thread_num();//thread number
@@ -450,93 +356,28 @@ freeTokens(num_eff,N_bin);
     weight_ij=weight_ranB[i]*weight_ranB[j];
     s=sqrt( pow(s_x_ranB[i]-s_x_ranB[j],2)+pow(s_y_ranB[i]-s_y_ranB[j],2)+pow(s_z_ranB[i]-s_z_ranB[j],2) );
 
-if(strcmp(type_of_survey,"periodicFKP")==0){
-
-mu=(s_z_ranB[i]-s_z_ranB[j])/s;
-if(i==j){mu=0;}
-L2=Leg2(mu);
-L4=Leg4(mu);
-L6=Leg6(mu);
-L8=Leg8(mu);
-
-}
-
-    if(strcmp(yamamoto4window, "no") == 0 && strcmp(type_of_survey,"cutsky") == 0){
+    if(strcmp(yamamoto4window, "no") == 0){
     xlos=s_x_ranB[j]+(s_x_ranB[i]-s_x_ranB[j])/2.;
     ylos=s_y_ranB[j]+(s_y_ranB[i]-s_y_ranB[j])/2.;
     zlos=s_z_ranB[j]+(s_z_ranB[i]-s_z_ranB[j])/2.;
+    }
+    if(strcmp(yamamoto4window, "yes") == 0){
+    xlos=s_x_ranB[j];
+    ylos=s_y_ranB[j];
+    zlos=s_z_ranB[j];
+    }
+
     mu=((s_x_ranB[i]-s_x_ranB[j])*xlos+(s_y_ranB[i]-s_y_ranB[j])*ylos+(s_z_ranB[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
     if(i==j){mu=0;}
-
-    L2=Leg2(mu);
-    L4=Leg4(mu);
-    L6=Leg6(mu);
-    L8=Leg8(mu);
-
-    }
-    if(strcmp(yamamoto4window, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0){
-//    xlos=s_x_ranB[j];
-//    ylos=s_y_ranB[j];
-//    zlos=s_z_ranB[j];
-
-xlos_j=s_x_ranB[j];
-ylos_j=s_y_ranB[j];
-zlos_j=s_z_ranB[j];
-
-xlos_i=s_x_ranB[i];
-ylos_i=s_y_ranB[i];
-zlos_i=s_z_ranB[i];
-
-        decision_rand=drand48();
-        if(decision_rand>=0.5){
-mu1=((s_x_ranB[i]-s_x_ranB[j])*xlos_i+(s_y_ranB[i]-s_y_ranB[j])*ylos_i+(s_z_ranB[i]-s_z_ranB[j])*zlos_i)/(s*sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i));
-mu2=((s_x_ranB[i]-s_x_ranB[j])*xlos_j+(s_y_ranB[i]-s_y_ranB[j])*ylos_j+(s_z_ranB[i]-s_z_ranB[j])*zlos_j)/(s*sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j));
-
-        if(sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i)==0 || s==0){mu1=0;}
-        if(sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j)==0 || s==0){mu2=0;}
-
-
-}
-else{
-mu2=((s_x_ranB[i]-s_x_ranB[j])*xlos_i+(s_y_ranB[i]-s_y_ranB[j])*ylos_i+(s_z_ranB[i]-s_z_ranB[j])*zlos_i)/(s*sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i));
-mu1=((s_x_ranB[i]-s_x_ranB[j])*xlos_j+(s_y_ranB[i]-s_y_ranB[j])*ylos_j+(s_z_ranB[i]-s_z_ranB[j])*zlos_j)/(s*sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j));
-
-        if(sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i)==0 || s==0){mu2=0;}
-        if(sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j)==0 || s==0){mu1=0;}
-
-}
-if(i==j){mu1=0;mu2=0;}
-
-if( strcmp(Quadrupole_type,"L0L2") == 0){L2=Leg2(mu1);}//L0L2
-if( strcmp(Quadrupole_type,"L1L1") == 0){L2=0.5*(3.*mu1*mu2-1.);}//L1L1
-
-if( strcmp(Hexadecapole_type,"L0L4") == 0){L4=Leg4(mu1);}//L0L4
-if( strcmp(Hexadecapole_type,"L2L2") == 0){L4=1./8.*(35.*mu1*mu1*mu2*mu2-30.*mu1*mu1+3.);}//L2L2
-if( strcmp(Hexadecapole_type,"L1L3") == 0){L4=1./8.*(35.*mu1*mu1*mu1*mu2-30.*mu1*mu2+3.);}//L1L3
-
-L6=Leg6(mu1);//L0L6 default option
-L8=Leg8(mu1);//L0L8 default option
-
-
-
-    }
-
-//    mu=((s_x_ranB[i]-s_x_ranB[j])*xlos+(s_y_ranB[i]-s_y_ranB[j])*ylos+(s_z_ranB[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
-//    if(i==j){mu=0;}
     index_s=(int)(s/deltaS_window);
-    if(index_s<N_bin)
+    if(index_s<N_bin && s>0)
     {
     num_eff[index_s][tid]=num_eff[index_s][tid]+1.;
     W0[index_s][tid]=W0[index_s][tid]+weight_ij/(s*s*deltaS_window);
-  //  W2[index_s][tid]=W2[index_s][tid]+weight_ij*Leg2(mu)*5./(s*s*deltaS_window);
-  //  W4[index_s][tid]=W4[index_s][tid]+weight_ij*Leg4(mu)*9./(s*s*deltaS_window);
-  //  W6[index_s][tid]=W6[index_s][tid]+weight_ij*Leg6(mu)*13./(s*s*deltaS_window);
-  //  W8[index_s][tid]=W8[index_s][tid]+weight_ij*Leg8(mu)*17./(s*s*deltaS_window);
-    W2[index_s][tid]=W2[index_s][tid]+weight_ij*L2*5./(s*s*deltaS_window);
-    W4[index_s][tid]=W4[index_s][tid]+weight_ij*L4*9./(s*s*deltaS_window);
-    W6[index_s][tid]=W6[index_s][tid]+weight_ij*L6*13./(s*s*deltaS_window);
-    W8[index_s][tid]=W8[index_s][tid]+weight_ij*L8*17./(s*s*deltaS_window);
-
+    W2[index_s][tid]=W2[index_s][tid]+weight_ij*Leg2(mu)*5./(s*s*deltaS_window);
+    W4[index_s][tid]=W4[index_s][tid]+weight_ij*Leg4(mu)*9./(s*s*deltaS_window);
+    W6[index_s][tid]=W6[index_s][tid]+weight_ij*Leg6(mu)*13./(s*s*deltaS_window);
+    W8[index_s][tid]=W8[index_s][tid]+weight_ij*Leg8(mu)*17./(s*s*deltaS_window);
     s_eff[index_s][tid]=s_eff[index_s][tid]+s;
     }
 
@@ -565,6 +406,17 @@ L8=Leg8(mu1);//L0L8 default option
 
     normB=W0[window_norm_bin-1][0];
 
+if(normB==0)//if no particles in this bin (or it contains s=0)
+{
+
+for(i_window_norm_bin=window_norm_bin+1;i_window_norm_bin<N_bin;i_window_norm_bin++)
+{
+normB=W0[i_window_norm_bin-1][0];
+if(normB!=0){break;}
+
+}
+printf("Bin normalization shifted to %d -> %d\n", window_norm_bin,i_window_norm_bin);
+}
 
     //call window
     f=fopen(name_winkBB_out,"w");
@@ -574,9 +426,9 @@ L8=Leg8(mu1);//L0L8 default option
     fprintf(f,"#seff \t sav \t W0 \t W2 \t W4 \t W6 \t W8\n");
     }
 
-    for(i=1;i<N_bin;i++)
+    for(i=0;i<N_bin;i++)
     {
-    if(num_eff[i][0]==0){break;}//Once an empty bin is found break;
+    if(num_eff[i][0]==0 && i>1){break;}//Once an empty bin is found break;
 
     fprintf(f,"%e %e %e %e %e %e %e\n",(i+0.5)*deltaS_window,(s_eff[i][0]/num_eff[i][0]),W0[i][0]/normB,W2[i][0]/normB,W4[i][0]/normB,W6[i][0]/normB,W8[i][0]/normB);
 
@@ -612,7 +464,7 @@ L8=Leg8(mu1);//L0L8 default option
         }
 
         printf("Starting the parallel loop...\n");
-        #pragma omp parallel for private(i,j,tid,s,xlos,ylos,zlos,xlos_i,ylos_i,zlos_i,xlos_j,ylos_j,zlos_j,mu,mu1,mu2,index_s,weight_ij,decision_rand,L2,L4,L6,L8) shared(s_x_ran,s_y_ran,s_z_ran,npar_used,s_x_ranB,s_y_ranB,s_z_ranB,npar_usedB,W0,W2,W4,W6,W8,deltaS_window,N_bin,s_eff,weight_ran,weight_ranB,num_eff,yamamoto4window,Quadrupole_type,Hexadecapole_type,type_of_survey)
+        #pragma omp parallel for private(i,j,tid,s,xlos,ylos,zlos,mu,index_s,weight_ij,decision_rand) shared(s_x_ran,s_y_ran,s_z_ran,npar_used,s_x_ranB,s_y_ranB,s_z_ranB,npar_usedB,W0,W2,W4,W6,W8,deltaS_window,N_bin,s_eff,weight_ran,weight_ranB,num_eff,yamamoto4window)
         for(i=0;i<npar_used;i++)
         {
         tid=omp_get_thread_num();//thread number
@@ -623,99 +475,37 @@ L8=Leg8(mu1);//L0L8 default option
         weight_ij=weight_ran[i]*weight_ranB[j];
         s=sqrt( pow(s_x_ran[i]-s_x_ranB[j],2)+pow(s_y_ran[i]-s_y_ranB[j],2)+pow(s_z_ran[i]-s_z_ranB[j],2) );
 
-if(strcmp(type_of_survey,"periodicFKP")==0){
-
-mu=(s_z_ran[i]-s_z_ranB[j])/s;
-if(s==0){mu=0;}
-L2=Leg2(mu);
-L4=Leg4(mu);
-L6=Leg6(mu);
-L8=Leg8(mu);
-
-}
-
-
-        if(strcmp(yamamoto4window, "no") == 0  && strcmp(type_of_survey,"cutsky") == 0){
+        if(strcmp(yamamoto4window, "no") == 0){
         xlos=s_x_ranB[j]+(s_x_ran[i]-s_x_ranB[j])/2.;
         ylos=s_y_ranB[j]+(s_y_ran[i]-s_y_ranB[j])/2.;
         zlos=s_z_ranB[j]+(s_z_ran[i]-s_z_ranB[j])/2.;
-
-        mu=((s_x_ran[i]-s_x_ranB[j])*xlos+(s_y_ran[i]-s_y_ranB[j])*ylos+(s_z_ran[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
-        if(sqrt(xlos*xlos+ylos*ylos+zlos*zlos)==0 || s==0){mu=0;}
-
-
         }
-        if(strcmp(yamamoto4window, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0){
+        if(strcmp(yamamoto4window, "yes") == 0){
             
-//        decision_rand=drand48();
-//        if(decision_rand>=0.5){
-//        xlos=s_x_ranB[j];
-//        ylos=s_y_ranB[j];
-//        zlos=s_z_ranB[j];}
-//            else{
-//        xlos=s_x_ran[i];
-//        ylos=s_y_ran[i];
-//        zlos=s_z_ran[i];
-//            }
-
-xlos_j=s_x_ranB[j];
-ylos_j=s_y_ranB[j];
-zlos_j=s_z_ranB[j];
-  
-xlos_i=s_x_ran[i];
-ylos_i=s_y_ran[i];
-zlos_i=s_z_ran[i];
-
         decision_rand=drand48();
         if(decision_rand>=0.5){
-  mu1=((s_x_ran[i]-s_x_ranB[j])*xlos_i+(s_y_ran[i]-s_y_ranB[j])*ylos_i+(s_z_ran[i]-s_z_ranB[j])*zlos_i)/(s*sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i));
-  mu2=((s_x_ran[i]-s_x_ranB[j])*xlos_j+(s_y_ran[i]-s_y_ranB[j])*ylos_j+(s_z_ran[i]-s_z_ranB[j])*zlos_j)/(s*sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j));
-
-        if(sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i)==0 || s==0){mu1=0;}
-        if(sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j)==0 || s==0){mu2=0;}
-
-}
-else{
-
-  mu2=((s_x_ran[i]-s_x_ranB[j])*xlos_i+(s_y_ran[i]-s_y_ranB[j])*ylos_i+(s_z_ran[i]-s_z_ranB[j])*zlos_i)/(s*sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i));
-  mu1=((s_x_ran[i]-s_x_ranB[j])*xlos_j+(s_y_ran[i]-s_y_ranB[j])*ylos_j+(s_z_ran[i]-s_z_ranB[j])*zlos_j)/(s*sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j));
-
-        if(sqrt(xlos_i*xlos_i+ylos_i*ylos_i+zlos_i*zlos_i)==0 || s==0){mu2=0;}
-        if(sqrt(xlos_j*xlos_j+ylos_j*ylos_j+zlos_j*zlos_j)==0 || s==0){mu1=0;}
-
-}
-
-if( strcmp(Quadrupole_type,"L0L2") == 0){L2=Leg2(mu1);}//L0L2
-if( strcmp(Quadrupole_type,"L1L1") == 0){L2=0.5*(3.*mu1*mu2-1.);}//L1L1
-
-if( strcmp(Hexadecapole_type,"L0L4") == 0){L4=Leg4(mu1);}//L0L4
-if( strcmp(Hexadecapole_type,"L2L2") == 0){L4=1./8.*(35.*mu1*mu1*mu2*mu2-30.*mu1*mu1+3.);}//L2L2
-if( strcmp(Hexadecapole_type,"L1L3") == 0){L4=1./8.*(35.*mu1*mu1*mu1*mu2-30.*mu1*mu2+3.);}//L1L3
-
-L6=Leg6(mu1);//L0L6 default option
-L8=Leg8(mu1);//L0L8 default option
-
-          
+        xlos=s_x_ranB[j];
+        ylos=s_y_ranB[j];
+        zlos=s_z_ranB[j];}
+            else{
+        xlos=s_x_ran[i];
+        ylos=s_y_ran[i];
+        zlos=s_z_ran[i];
+            }
+            
         }
 
-//        mu=((s_x_ran[i]-s_x_ranB[j])*xlos+(s_y_ran[i]-s_y_ranB[j])*ylos+(s_z_ran[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
-//        if(sqrt(xlos*xlos+ylos*ylos+zlos*zlos)==0){mu=0;}
+        mu=((s_x_ran[i]-s_x_ranB[j])*xlos+(s_y_ran[i]-s_y_ranB[j])*ylos+(s_z_ran[i]-s_z_ranB[j])*zlos)/(s*sqrt(xlos*xlos+ylos*ylos+zlos*zlos));
+        if(sqrt(xlos*xlos+ylos*ylos+zlos*zlos)==0){mu=0;}
         index_s=(int)(s/deltaS_window);
-        if(index_s<N_bin)
+        if(index_s<N_bin && s>0)
         {
         num_eff[index_s][tid]=num_eff[index_s][tid]+1.;
         W0[index_s][tid]=W0[index_s][tid]+weight_ij/(s*s*deltaS_window);
-//        W2[index_s][tid]=W2[index_s][tid]+weight_ij*Leg2(mu)*5./(s*s*deltaS_window);
-//        W4[index_s][tid]=W4[index_s][tid]+weight_ij*Leg4(mu)*9./(s*s*deltaS_window);
-//        W6[index_s][tid]=W6[index_s][tid]+weight_ij*Leg6(mu)*13./(s*s*deltaS_window);
-//        W8[index_s][tid]=W8[index_s][tid]+weight_ij*Leg8(mu)*17./(s*s*deltaS_window);
-        W2[index_s][tid]=W2[index_s][tid]+weight_ij*L2*5./(s*s*deltaS_window);
-        W4[index_s][tid]=W4[index_s][tid]+weight_ij*L4*9./(s*s*deltaS_window);
-        W6[index_s][tid]=W6[index_s][tid]+weight_ij*L6*13./(s*s*deltaS_window);
-        W8[index_s][tid]=W8[index_s][tid]+weight_ij*L8*17./(s*s*deltaS_window);
-
-
-
+        W2[index_s][tid]=W2[index_s][tid]+weight_ij*Leg2(mu)*5./(s*s*deltaS_window);
+        W4[index_s][tid]=W4[index_s][tid]+weight_ij*Leg4(mu)*9./(s*s*deltaS_window);
+        W6[index_s][tid]=W6[index_s][tid]+weight_ij*Leg6(mu)*13./(s*s*deltaS_window);
+        W8[index_s][tid]=W8[index_s][tid]+weight_ij*Leg8(mu)*17./(s*s*deltaS_window);
         s_eff[index_s][tid]=s_eff[index_s][tid]+s;
         }
 
@@ -744,6 +534,17 @@ L8=Leg8(mu1);//L0L8 default option
 
         normAB=W0[window_norm_bin-1][0];
 
+if(normAB==0)//if no particles in this bin (or it contains s=0)
+{
+
+for(i_window_norm_bin=window_norm_bin+1;i_window_norm_bin<N_bin;i_window_norm_bin++)
+{
+normAB=W0[i_window_norm_bin-1][0];
+if(normAB!=0){break;}
+
+}
+printf("Bin normalization shifted to %d -> %d\n", window_norm_bin,i_window_norm_bin);
+}
 
         //call window
         f=fopen(name_winkAB_out,"w");
@@ -753,9 +554,9 @@ L8=Leg8(mu1);//L0L8 default option
         fprintf(f,"#seff \t sav \t W0 \t W2 \t W4 \t W6 \t W8\n");
         }
 
-        for(i=1;i<N_bin;i++)
+        for(i=0;i<N_bin;i++)
         {
-        if(num_eff[i][0]==0){break;}//Once an empty bin is found break;
+        if(num_eff[i][0]==0 && i>1){break;}//Once an empty bin is found break;
 
         fprintf(f,"%e %e %e %e %e %e %e\n",(i+0.5)*deltaS_window,(s_eff[i][0]/num_eff[i][0]),W0[i][0]/normAB,W2[i][0]/normAB,W4[i][0]/normAB,W6[i][0]/normAB,W8[i][0]/normAB);
 
