@@ -204,13 +204,13 @@ KZ=kz[i];//printf("\n i=%ld/%ld, %lf, %lf, %lf\n",i,ngrid_eff,KX,KY,KZ);
 if(bintype_sw==0){
 
 l=(int)((pow(KX*KX+KY*KY+KZ*KZ,0.5)-kmin)/Deltak);//-1.;
-//if(l<0){l=0;}
+if((pow(KX*KX+KY*KY+KZ*KZ,0.5)-kmin)/Deltak<0){l=-1;}
 }
 
 if(bintype_sw==1){
 
 l=(int)(( log10(pow(KX*KX+KY*KY+KZ*KZ,0.5))-log10(kmin))/Deltak);//-1.;
-//if(l<0){l=0;}
+if(( log10(pow(KX*KX+KY*KY+KZ*KZ,0.5))-log10(kmin))/Deltak<0){l=-1;}
 }
 
                 if(l<Nk && l>=0)
@@ -836,12 +836,12 @@ if(strcmp(do_odd_multipoles, "yes") == 0){
 
 if(bintype_sw==0){
 l=(int)((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak);//-1.;
-//if(l<0){l=0;}
+if((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak<0){l=-1;}
 }
 
 if(bintype_sw==1){
 l=(int)(( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak);//-1.;
-//if(l<0){l=0;}
+if(( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak<0){l=-1;}
 }
 
                 if(l<Nk && l>=0)
@@ -1264,12 +1264,12 @@ if(bintype_sw==1){Nk=(int)((log10(sqrt(3.)*2.*Pi*ngrid/(2.*(L2-L1)))-log10(2.*Pi
 
 if(bintype_sw==0){
 l=(int)((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak);//-1.;
-//if(l<0){l=0;}
+if((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak<0){l=-1;}
 }
 
 if(bintype_sw==1){
-l=(int)(( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak);//-1.;
-//if(l<0){l=0;}
+l=(int)((log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak);//-1.;
+if((log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak<0){l=-1;}
 }
 
                 if(l<Nk && l>=0)
