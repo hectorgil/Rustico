@@ -7,9 +7,7 @@ void get_line(FILE *f, double params[],int type)//skycut option
 {
 
 double RA,dec,redshift,wcp,wnoz,wcol,wsys,wfkp,n_z;
-int veto,wcp_int,wnoz_int,wcol_int;
-char wfkp_cmass_c[200],wfkp_eboss_c[200];
-double wfkp_cmass,wfkp_eboss;
+int veto;
 wcol=1;//collision weight
 wcp=1;
 wnoz=1;
@@ -48,8 +46,7 @@ params[7]=veto;
 
 void get_line_periodic(FILE *f, double params[],int type)//for periodic box
 {
-double x,y,z,vx,vy,vz,weight;
-double scale_factor;
+double x,y,z,vz,weight;
 int veto;
 weight=1;
 veto=1;
