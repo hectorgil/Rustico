@@ -182,11 +182,11 @@ Ndata=NumPart;
 return Ndata;
 }
 
-void loop_directsum_exact_skycut(double kmin,double kmax, double *s_x, double *s_y, double *s_z, double *weight, long int Ndata, double *s_x_ran, double *s_y_ran, double *s_z_ran, double *weight_ran, long int Nrand, double L1, double L2, int ngrid, double P_shot_noise, double Deltak, double I22, double alpha, int n_lines_parallel, char *binning_type,  char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out)
+void loop_directsum_exact_skycut(double kmin,double kmax, double *s_x, double *s_y, double *s_z, double *weight, long int Ndata, double *s_x_ran, double *s_y_ran, double *s_z_ran, double *weight_ran, long int Nrand, double L1, double L2, int ngrid, double P_shot_noise, double Deltak, double I22, double alpha, int n_lines_parallel, char *binning_type,  char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *write_kvectors, char *name_ps_kvectors)
 {
 int tid;
 long int j,i,i1,i2;
-int xindex,yindex,zindex;
+long int xindex,yindex,zindex;
 long int NGRID;//Number of k-modes between kmin and kmax
 double KXX,KYY,KZZ;
 double kdotx1,ckdotx1,skdotx1,musq,kampsq,kdotx2,ckdotx2,skdotx2,kam;
@@ -237,8 +237,8 @@ for(i=0;i<ngrid;i++)
 i=0;
 for(j=0;j<ngridtot;j++)//Count the number of grid modes btween kmax and kmin
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 SX=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -259,8 +259,8 @@ KZ=malloc(sizeof(double)*NGRID);
 i=0;
 for(j=0;j<ngridtot;j++)
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 SX=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -527,8 +527,7 @@ printf("Writing Power Spectrum output %s...",name_ps_out);
 
 sprintf(type,"DSE");
 
-//write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, P0, NULL,P1, NULL, P2, NULL, P3, NULL, P4, NULL, Deltak, ngrid, NGRID, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1);
-    write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, P0, NULL,P1, NULL, P2, NULL, P3, NULL, P4, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, Deltak, ngrid, NGRID, L1, L2, I22,0, name_ps_out,NULL,NULL, P_shot_noise,0, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1,NULL);
+    write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, P0, NULL,P1, NULL, P2, NULL, P3, NULL, P4, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, Deltak, ngrid, NGRID, L1, L2, I22,0, name_ps_out,NULL,NULL, P_shot_noise,0, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1,NULL, write_kvectors, name_ps_kvectors);
 
 
 printf("Ok!\n");
@@ -557,11 +556,11 @@ free(kx);
 
 
 
-void loop_directsum_yamamoto_skycut(double kmin,double kmax, double *s_x, double *s_y, double *s_z, double *weight, long int Ndata, double *s_x_ran, double *s_y_ran, double *s_z_ran, double *weight_ran, long int Nrand, double  L1, double L2, int ngrid, double P_shot_noise, double  Deltak, double  I22, double  alpha, int  n_lines_parallel, char *binning_type,  char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out)
+void loop_directsum_yamamoto_skycut(double kmin,double kmax, double *s_x, double *s_y, double *s_z, double *weight, long int Ndata, double *s_x_ran, double *s_y_ran, double *s_z_ran, double *weight_ran, long int Nrand, double  L1, double L2, int ngrid, double P_shot_noise, double  Deltak, double  I22, double  alpha, int  n_lines_parallel, char *binning_type,  char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *write_kvectors, char *name_ps_kvectors)
 {
 int tid;
 long int j,i;
-int xindex,yindex,zindex;
+long int xindex,yindex,zindex;
 long int NGRID;//Number of k-modes between kmin and kmax
 double KXX,KYY,KZZ,XAM,kamp,mu,XAM05;
 double SXR1,SYR1,SZR1,SXR2,SYR2,SZR2,WGHTR1;
@@ -671,8 +670,8 @@ for(i=0;i<ngrid;i++)
 i=0;
 for(j=0;j<ngridtot;j++)//Count the number of grid modes btween kmax and kmin
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 VEC=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -694,8 +693,8 @@ KZ=malloc(sizeof(double)*NGRID);
 i=0;
 for(j=0;j<ngridtot;j++)
 {
-xindex=(int)(j/(ngrid*ngrid*1.));
-yindex=(int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
+xindex=(long int)(j/(ngrid*ngrid*1.));
+yindex=(long int)( (j-xindex*ngrid*ngrid)/(ngrid*1.));
 zindex=j-xindex*ngrid*ngrid-yindex*ngrid;
 VEC=kx[xindex]*kx[xindex]+kx[yindex]*kx[yindex]+kx[zindex]*kx[zindex];
 SZ=kx[zindex];
@@ -1133,8 +1132,7 @@ freeTokens(octopole_imag,NGRID);}
 printf("Writing Power Spectrum output,  %s...",name_ps_out);
 
 sprintf(type,"DSY");
-//write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2,deltak_re3, deltak_im3, deltak_re4, deltak_im4, Deltak, ngrid, NGRID, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1);
-    write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, Deltak, ngrid, NGRID, L1, L2, I22,0, name_ps_out,NULL,NULL, P_shot_noise,0, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1,NULL);
+    write_power_spectrum_skyscuts(kmin,kmax,KX, KY,KZ, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, Deltak, ngrid, NGRID, L1, L2, I22,0, name_ps_out,NULL,NULL, P_shot_noise,0, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type,1,NULL,write_kvectors, name_ps_kvectors);
 
 
 free(deltak_re0);
@@ -1192,7 +1190,7 @@ free(xamp_ran);}
 }
 
 
-void loop_directsum_yamamoto_skycut_caller(double kmin,double kmax, double *s_x, double *s_y, double *s_z, double *weight, long int Ndata, double *s_x_ran, double *s_y_ran, double *s_z_ran, double *weight_ran, long int Nrand, double L1, double L2, double P_shot_noise, double Deltak, double I22, double alpha, int n_lines_parallel, char *binning_type,  char *Quadrupole_type, char *Octopole_type,char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out, char *type_of_computation)
+void loop_directsum_yamamoto_skycut_caller(double kmin,double kmax, double *s_x, double *s_y, double *s_z, double *weight, long int Ndata, double *s_x_ran, double *s_y_ran, double *s_z_ran, double *weight_ran, long int Nrand, double L1, double L2, double P_shot_noise, double Deltak, double I22, double alpha, int n_lines_parallel, char *binning_type,  char *Quadrupole_type, char *Octopole_type,char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out, char *type_of_computation,char *write_kvectors, char *name_ps_kvectors)
 {
 
 double *kmin_i;
@@ -1234,11 +1232,11 @@ ngrid=ngrid*2;
 
 if(strcmp(type_of_computation, "DSY") == 0)
 {
-loop_directsum_yamamoto_skycut(kmin_i[i],kmax_i[i], s_x, s_y, s_z, weight, Ndata, s_x_ran, s_y_ran, s_z_ran, weight_ran, Nrand, L1, L2, ngrid, P_shot_noise, Deltak, I22, alpha, n_lines_parallel, binning_type, Quadrupole_type, Octopole_type, Hexadecapole_type, do_odd_multipoles, do_anisotropy, name_ps_out);
+loop_directsum_yamamoto_skycut(kmin_i[i],kmax_i[i], s_x, s_y, s_z, weight, Ndata, s_x_ran, s_y_ran, s_z_ran, weight_ran, Nrand, L1, L2, ngrid, P_shot_noise, Deltak, I22, alpha, n_lines_parallel, binning_type, Quadrupole_type, Octopole_type, Hexadecapole_type, do_odd_multipoles, do_anisotropy, name_ps_out,write_kvectors, name_ps_kvectors);
 }
 if(strcmp(type_of_computation, "DSE") == 0)
 {
-loop_directsum_exact_skycut(kmin_i[i],kmax_i[i], s_x, s_y, s_z, weight, Ndata, s_x_ran, s_y_ran, s_z_ran, weight_ran, Nrand, L1, L2, ngrid, P_shot_noise, Deltak, I22, alpha, n_lines_parallel, binning_type,  Quadrupole_type, Octopole_type, Hexadecapole_type, do_odd_multipoles, do_anisotropy, name_ps_out);
+loop_directsum_exact_skycut(kmin_i[i],kmax_i[i], s_x, s_y, s_z, weight, Ndata, s_x_ran, s_y_ran, s_z_ran, weight_ran, Nrand, L1, L2, ngrid, P_shot_noise, Deltak, I22, alpha, n_lines_parallel, binning_type,  Quadrupole_type, Octopole_type, Hexadecapole_type, do_odd_multipoles, do_anisotropy, name_ps_out, write_kvectors, name_ps_kvectors);
 }
 
 }
@@ -1258,7 +1256,7 @@ free(kmax_i);
 
 void modify_input_for_yamamoto(int mode_yamamoto, int mode_yamamoto_prev, double in[], int ngrid, double L1, double L2)
 {
-int i,j,k;
+long int i,j,k;
 long int c;
 double kmod2;
 double prev_factor,curr_factor;
@@ -1268,8 +1266,8 @@ long int ngridtot=pow(ngrid,3);
         #pragma omp parallel for private(c,i,j,k,kmod2,prev_factor,curr_factor,r_x,r_y,r_z) shared(ngrid,ngridtot,L1,L2,in,mode_yamamoto,mode_yamamoto_prev)
 		for(c=0;c<ngridtot;c++)
 		{
-			i=(int)(c/(ngrid*ngrid*1.));
-			j=(int)( (c-i*ngrid*ngrid)/(ngrid*1.));
+			i=(long int)(c/(ngrid*ngrid*1.));
+			j=(long int)( (c-i*ngrid*ngrid)/(ngrid*1.));
 			k=c-i*ngrid*ngrid-j*ngrid;
                         
             kmod2=(L1+i*(L2-L1)/ngrid*1.)*(L1+i*(L2-L1)/ngrid*1.)+(L1+j*(L2-L1)/ngrid*1.)*(L1+j*(L2-L1)/ngrid*1.)+(L1+k*(L2-L1)/ngrid*1.)*(L1+k*(L2-L1)/ngrid*1.);//kmod2 should be always different than 0
@@ -1500,14 +1498,17 @@ in[c]*=curr_factor/prev_factor;
 void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], double deltak_im[], int ngrid, double L1, double L2, int mode_mass_ass)
 {
   fftw_complex *out;
+ // double *out2;
+ //double a1,a2;
   fftw_plan p;
-  int i,j,k;
+  long int i,j,k;
+ // double ii,jj,kk;
   long int c;
   double cx,cy,cz;
   double *kx;
   double Pi=(4.*atan(1.));
   long int ngridtotr2c=(pow(ngrid,3)/2+pow(ngrid,2));//N*N*(N/2+1)
-
+  //printf("%ld\n",ngridtotr2c);
   long int index2;
         kx=malloc(sizeof(double)*(ngrid));
         for(i=0;i<ngrid;i++)
@@ -1523,9 +1524,10 @@ void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], do
 	}
 
     out =(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*(ngridtotr2c));
+//    if(out==NULL){printf("Error, grid-array (out fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
     fftw_plan_with_nthreads(omp_get_max_threads());
     p =  fftw_plan_dft_r2c_3d(ngrid,ngrid,ngrid,in,out,FFTW_ESTIMATE);
-
+//   if(p==NULL){printf("Error, FFTW-plan (within fftw_yamamoto) could not be created. Exiting now...\n");exit(0);}
     fftw_execute(p);//FFT
     fftw_destroy_plan(p);
 
@@ -1533,10 +1535,18 @@ void fftw_yamamoto_skycut(int mode_yamamoto, double in[], double deltak_re[], do
   for(index2=0;index2<ngridtotr2c;index2++)
   {
 
-
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
-k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+/*
+ii=index2*1./(1.*(ngrid*ngrid/2.+ngrid));
+i=(long int)(ii);
+jj=(index2-i*(ngrid*ngrid/2.+ngrid))/(1.*(ngrid/2.+1));
+j=(long int)(jj);
+kk=index2-i*(ngrid*ngrid/2.+ngrid)-j*(ngrid/2.+1);
+k=(long int)(kk);
+*/
+i=(long int)(index2*1./(1.*ngrid*ngrid/2.+ngrid*1.));
+j=(long int)( (index2-i*(1.*ngrid*ngrid/2.+ngrid*1.))/(ngrid/2.+1.) );
+//k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
+k=index2-(i*(ngrid*ngrid+2*ngrid)+j*(ngrid+2))/2;
 
         cx=sin( kx[i]*Pi/(2.*kx[ngrid/2]) )/( kx[i]*Pi/(2.*kx[ngrid/2]) );
         cy=sin( kx[j]*Pi/(2.*kx[ngrid/2]) )/( kx[j]*Pi/(2.*kx[ngrid/2]) );
@@ -1706,8 +1716,9 @@ fftw_cleanup();
 
 
 
-void loop_interlacing_skycut_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid, double alpha, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re0, double *deltak_im0, double *deltak_re2, double *deltak_im2,char *do_bispectrum2)
+void loop_interlacing_skycut_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand, double L1, double L2, int ngrid, double alpha, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re0, double *deltak_im0, double *deltak_re2, double *deltak_im2,char *do_bispectrum2,char *name_density, char *type_of_input,char *type_of_survey)
 {
+FILE *f;
 long int i,j,k,i_inter;
 long int c;
 double phase_cos,phase_sin;
@@ -1750,6 +1761,9 @@ L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
     delta_data = (double*) calloc(ngridtot, sizeof(double));
+
+if( strcmp(type_of_input,"particles") == 0){
+
     printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
     for(c=0; c<Ndata; c++)
     {
@@ -1781,10 +1795,24 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
         }
         free(delta_rand);
 
+
+}else{
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now.\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&delta_data[c]);
+        delta_data[c]=delta_data[c]*pow((L2-L1)/ngrid,3);
+     }
+fclose(f);
+
+}
+
+
         if(i_inter==1){
        fftw_yamamoto_skycut(0, delta_data, deltak_re0, deltak_im0, ngrid,L1b,L2b, mode_correction);
 
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0 && strcmp(type_of_survey,"cutsky") == 0)
 {
    for(i_yama=1;i_yama<=6;i_yama++)
    {
@@ -1799,7 +1827,7 @@ if(strcmp(do_bispectrum2, "yes") == 0)
         deltak_im0_b= (double*) calloc(ngridtotr2c,sizeof(double));
         fftw_yamamoto_skycut(0, delta_data, deltak_re0_b, deltak_im0_b, ngrid,L1b,L2b, mode_correction);
 
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 {
 
        deltak_re2_b= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -1815,11 +1843,11 @@ if(strcmp(do_bispectrum2, "yes") == 0)
 
 }
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re0_b,deltak_im0_b,deltak_re2,deltak_im2,deltak_re2_b,deltak_im2_b,kx,L2,L1,i_inter,Ninterlacing,do_bispectrum2)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re2_b,new_deltak_im2_b) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re0_b,deltak_im0_b,deltak_re2,deltak_im2,deltak_re2_b,deltak_im2_b,kx,L2,L1,i_inter,Ninterlacing,do_bispectrum2,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 Sk=kx[i]+ kx[j]+ kx[k];
 
@@ -1832,7 +1860,7 @@ new_deltak_im0_b=deltak_re0_b[index2]*phase_sin+deltak_im0_b[index2]*phase_cos;
 deltak_re0[index2]+=new_deltak_re0_b;
 deltak_im0[index2]+=new_deltak_im0_b;
 
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 {
 new_deltak_re2_b=deltak_re2_b[index2]*phase_cos-deltak_im2_b[index2]*phase_sin;
 new_deltak_im2_b=deltak_re2_b[index2]*phase_sin+deltak_im2_b[index2]*phase_cos;
@@ -1846,7 +1874,7 @@ deltak_im2[index2]+=new_deltak_im2_b;
 
         free(deltak_re0_b);
         free(deltak_im0_b);
-if(strcmp(do_bispectrum2, "yes") == 0)
+if(strcmp(do_bispectrum2, "yes") == 0  && strcmp(type_of_survey,"cutsky") == 0)
 {
         free(deltak_re2_b);
         free(deltak_im2_b);
@@ -1864,9 +1892,9 @@ free(kx);
 }
 
 
-void loop_interlacing_skycut(double kmin,double kmax,int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB,long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code)
+void loop_interlacing_skycut(double kmin,double kmax,int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB,long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB, char *type_of_input,char *type_of_survey,char *file_for_mu,int Nmu,char *write_kvectors, char *name_ps_kvectors)
 {
-
+FILE *f;
 char type[200];
 long int i,j,k,i_inter;
 long int c;
@@ -1952,7 +1980,7 @@ if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
 
-if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
+if(strcmp(do_anisotropy,"no") == 0 || strcmp(type_of_survey,"periodicFKP") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
 
 //printf("%ld %ld %ld %ld\n",delta1_sw,delta2_sw,delta3_sw,delta4_sw);
 
@@ -1984,6 +2012,9 @@ L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
      delta_data = (double*) calloc(ngridtot, sizeof(double));   
+
+if( strcmp(type_of_input,"particles") == 0){
+
     printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
 
 
@@ -2016,6 +2047,28 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
                                  delta_data[c]+=alpha*delta_rand[c];
         }
         free(delta_rand);
+
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
+}else{
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now.\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&delta_data[c]);
+        delta_data[c]=delta_data[c]*pow((L2-L1)/ngrid,3);
+     }
+fclose(f);
+
+}
 
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
@@ -2052,6 +2105,17 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
                                         delta_dataB[c]+=alphaB*delta_randB[c];
                }
                free(delta_randB);
+
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
         
     }
     
@@ -2068,7 +2132,7 @@ L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
     
       }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0 ){
 
 if(delta2_sw==1){
          deltak_re2=(double*) calloc(ngridtotr2c,sizeof(double));
@@ -2195,7 +2259,7 @@ i_yama2=i_yama;
           fftw_yamamoto_skycut(0, delta_dataB, deltak_re0_bB, deltak_im0_bB, ngrid,L1b,L2b, mode_correction);
       }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0){
 
 if(delta2_sw==1){
          deltak_re2_b=(double*) calloc(ngridtotr2c,sizeof(double));
@@ -2306,11 +2370,11 @@ i_yama2=i_yama;
 }//do-aniso
 
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
 Sk=kx[i]+ kx[j]+ kx[k];
@@ -2332,7 +2396,7 @@ deltak_im0[index2]+=new_deltak_im0_b;
         deltak_im0B[index2]+=new_deltak_im0_bB;
     }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0){
 
 if(delta1_sw==1){
 
@@ -2419,7 +2483,7 @@ deltak_im4[index2]+=new_deltak_im4_b;
           free(deltak_im0_bB);
       }
 
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"periodicFKP") == 0){
 
 if(delta1_sw==1){
         free(deltak_re1_b);
@@ -2478,6 +2542,8 @@ printf("Ok!\n");
 
 if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0)
 {
+if( strcmp(type_of_input,"particles") == 0){
+
 printf("positions freed\n");
 free(pos_x);
 free(pos_y);
@@ -2486,9 +2552,12 @@ free(weight);
 free(pos_x_rand);
 free(pos_y_rand);
 free(pos_z_rand);
-free(weight_rand);
+free(weight_rand);}
+
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
+ 
+if( strcmp(type_of_input,"particles") == 0){
         free(pos_xB);
         free(pos_yB);
         free(pos_zB);
@@ -2496,7 +2565,7 @@ free(weight_rand);
         free(pos_x_randB);
         free(pos_y_randB);
         free(pos_z_randB);
-        free(weight_randB);
+        free(weight_randB);}
     }
 }
 
@@ -2517,10 +2586,20 @@ free(kx);
     }
 
 sprintf(type,"FFT");
-//write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
 
-    write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code);
+if(strcmp(type_of_survey,"cutsky") == 0){
+    write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code,write_kvectors, name_ps_kvectors);
+}
+if(strcmp(type_of_survey,"periodicFKP") == 0){
 
+if(Nmu==1){
+write_power_spectrum_periodic(kmin,kmax,deltak_re0, deltak_im0, deltak_re0B,deltak_im0B,bin_ps, ngrid, L1, L2, Ninterlacing, name_ps_out, name_psAB_out, name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,I22,I22B,write_kvectors, name_ps_kvectors);
+}
+if(Nmu>1){
+write_power_spectrum_periodic2D(kmin,kmax,deltak_re0,deltak_im0,deltak_re0B,deltak_im0B,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code,I22,I22B,write_kvectors, name_ps_kvectors);
+}
+
+}
 
 //free deltas
 
@@ -2531,7 +2610,7 @@ free(deltak_im0);
         free(deltak_re0B);
         free(deltak_im0B);
     }
-if(strcmp(do_anisotropy,"yes") ==0 ){
+if(strcmp(do_anisotropy,"yes") ==0 && strcmp(type_of_survey,"cutsky") == 0){
 
 if(delta2_sw==1){
           free(deltak_re2);
@@ -2583,8 +2662,9 @@ printf("Ok!\n");
 
 }
 
-void loop_interlacing_skycut2(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB, long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code)
+void loop_interlacing_skycut2(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double *pos_x_rand, double *pos_y_rand, double *pos_z_rand, double *weight_rand,long int Nrand,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double *pos_x_randB, double *pos_y_randB, double *pos_z_randB, double *weight_randB, long int NrandB, double L1, double L2, int ngrid,  double P_shot_noise,double P_shot_noiseB, double bin_ps, double I22,double I22B, double alpha,double alphaB, int mode_correction, int n_lines_parallel, char *binning_type, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type, char *do_odd_multipoles,char *do_anisotropy, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_bispectrum,char *type_of_code, char *name_density,char *name_densityB, char *type_of_survey, char *file_for_mu, int Nmu,char *write_kvectors, char *name_ps_kvectors)
 {
+FILE *f;
 char type[200];
 long int i,j,k,i_inter;
 long int c;
@@ -2612,7 +2692,7 @@ if(strcmp(Octopole_type, "L0L3") == 0){delta3_sw=1;delta1_sw=1;}
 if(strcmp(Octopole_type, "L1L2") == 0){delta1_sw=1;delta2_sw=1;}
 }
 
-if(strcmp(do_anisotropy,"no") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
+if(strcmp(do_anisotropy,"no") == 0 || strcmp(type_of_survey,"periodicFKP") == 0){delta1_sw=0;delta2_sw=0;delta3_sw=0;delta4_sw=0;}
 
 
 alpha=-alpha;
@@ -2707,6 +2787,8 @@ if(i_inter==1)
           {
 
 if(strcmp(do_anisotropy,"no") == 0 && i_yama==1){break;}
+
+if(strcmp(type_of_survey,"periodicFKP") == 0 && i_yama==1){break;}
 
 if(i_yama==1 && delta2_sw==0){i_yama=7;}
  
@@ -2837,8 +2919,18 @@ if(pos_x_rand[c]*pos_x_rand[c]+pos_y_rand[c]*pos_y_rand[c]+pos_z_rand[c]*pos_z_r
         { 
                                  delta_data[c]+=alpha*delta_rand[c];
         } 
-
         free(delta_rand);
+
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
 
 if(i_yama==0){
         deltak_re0= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -2997,8 +3089,18 @@ if(i_yama>=25 && i_yama<=34){fftw_yamamoto_skycut(i_yama, delta_data, deltak_re3
                           {
                                                    delta_dataB[c]+=alphaB*delta_randB[c];
                           }
-
                           free(delta_randB);
+
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*pow((L2-L1)/ngrid,-3));
+     }
+fclose(f);
+}
+
 
                   if(i_yama==0){
                           deltak_re0B= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -3054,6 +3156,8 @@ if(i_yama>=25 && i_yama<=34){fftw_yamamoto_skycut(i_yama, delta_data, deltak_re3
           {
 
 if(strcmp(do_anisotropy,"no") == 0 && i_yama==1){break;}
+
+if(strcmp(type_of_survey,"periodicFKP") == 0 && i_yama==1){break;}
 
 if(i_yama==1 && delta2_sw==0){i_yama=7;}
 
@@ -3368,11 +3472,11 @@ if(strcmp(type_of_code, "rusticoX") == 0){
 }
 
 
-#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code)
+#pragma omp parallel for private(i,j,k,c,index2,phase_cos,phase_sin,new_deltak_re0_b,new_deltak_im0_b,new_deltak_re1_b,new_deltak_im1_b,new_deltak_re2_b,new_deltak_im2_b,new_deltak_re3_b,new_deltak_im3_b,new_deltak_re4_b,new_deltak_im4_b,new_deltak_re0_bB,new_deltak_im0_bB,new_deltak_re1_bB,new_deltak_im1_bB,new_deltak_re2_bB,new_deltak_im2_bB,new_deltak_re3_bB,new_deltak_im3_bB,new_deltak_re4_bB,new_deltak_im4_bB) shared(ngrid,ngridtot,ngridtotr2c,deltak_re0,deltak_im0,deltak_re1,deltak_im1,deltak_re2,deltak_im2,deltak_re3,deltak_im3,deltak_re4,deltak_im4,deltak_re0_b,deltak_im0_b,deltak_re1_b,deltak_im1_b,deltak_re2_b,deltak_im2_b,deltak_re3_b,deltak_im3_b,deltak_re4_b,deltak_im4_b,deltak_re0B,deltak_im0B,deltak_re1B,deltak_im1B,deltak_re2B,deltak_im2B,deltak_re3B,deltak_im3B,deltak_re4B,deltak_im4B,deltak_re0_bB,deltak_im0_bB,deltak_re1_bB,deltak_im1_bB,deltak_re2_bB,deltak_im2_bB,deltak_re3_bB,deltak_im3_bB,deltak_re4_bB,deltak_im4_bB,kx,L2,L1,i_inter,Ninterlacing,delta1_sw,delta2_sw,delta3_sw,delta4_sw,do_anisotropy,type_of_code,type_of_survey)
 for(index2=0;index2<ngridtotr2c;index2++)
 {
-i=(int)(index2/(ngrid*ngrid/2+ngrid));
-j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
 
@@ -3552,10 +3656,22 @@ if(strcmp(type_of_code, "rusticoX") == 0)
 
 }
 sprintf(type,"FFT");
-//write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4, bin_ps, ngrid, 0, L1, L2, I22, name_ps_out, P_shot_noise, binning_type, do_anisotropy, do_odd_multipoles, Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing);
 
-    write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code);
+if( strcmp(type_of_survey,"cutsky") == 0){
+    write_power_spectrum_skyscuts(kmin,kmax,NULL, NULL, NULL, deltak_re0, deltak_im0,deltak_re1, deltak_im1, deltak_re2, deltak_im2, deltak_re3, deltak_im3, deltak_re4, deltak_im4,deltak_re0B, deltak_im0B,deltak_re1B, deltak_im1B, deltak_re2B, deltak_im2B, deltak_re3B, deltak_im3B, deltak_re4B, deltak_im4B, bin_ps, ngrid, 0, L1, L2, I22,I22B, name_ps_out,name_psAB_out,name_psBB_out, P_shot_noise,P_shot_noiseB, binning_type, do_anisotropy, do_odd_multipoles,  Quadrupole_type, Octopole_type, Hexadecapole_type, type ,Ninterlacing,type_of_code, write_kvectors, name_ps_kvectors);
+}
 
+if( strcmp(type_of_survey,"periodicFKP") == 0){
+
+if(Nmu == 1){
+
+}
+if(Nmu > 1){
+
+
+}
+
+}
 
 
 //free deltas
@@ -3622,6 +3738,7 @@ printf("Ok!\n");
 
 void loop_interlacing_periodic_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double L1, double L2, int ngrid, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re, double *deltak_im)
 {
+//  FILE *f;
   long int i,j,k,i_inter;
   long int c;
   double phase_cos,phase_sin;
@@ -3674,6 +3791,8 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
 
 
+
+
      printf("Ok!\n");
      printf("Performing FFTs ...");
      if(i_inter==1)
@@ -3693,8 +3812,8 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
       for(index2=0;index2<ngridtotr2c;index2++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+            i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+            j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
             k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
              phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
              phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -3717,10 +3836,9 @@ free(kx);
 
 }
 
-//void loop_interlacing_periodic(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata, double L1, double L2, int ngrid, double P_shot_noise, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out, char *type_of_mass_assigment,char *do_odd_multipoles, char *do_anisotropy, char *do_bispectrum,int Nmu,char *file_for_mu)
-void loop_interlacing_periodic(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double L1, double L2, int ngrid, double P_shot_noise,double P_shot_noiseB, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_odd_multipoles,char *do_anisotropy, char *do_bispectrum,int Nmu, char *file_for_mu, char *type_of_code)
+void loop_interlacing_periodic(double kmin, double kmax, int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata,double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double L1, double L2, int ngrid, double P_shot_noise,double P_shot_noiseB, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment, char *do_odd_multipoles,char *do_anisotropy, char *do_bispectrum,int Nmu, char *file_for_mu, char *type_of_code,char  *name_density, char *name_densityB,char *type_of_input, char *write_kvectors, char *name_ps_kvectors)
 {
-  
+  FILE *f;
   long int i,j,k,i_inter;
   long int c;
   double phase_cos,phase_sin; 
@@ -3766,7 +3884,12 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      L2b=L2-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
      L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
-     delta_data = (double*) calloc(ngridtot, sizeof(double));
+     delta_data = (double*) calloc(ngridtot, sizeof(double));//inizialized to 0.
+//     if(delta_data==NULL){printf("Warning, grid-array (delta_data) couldn't be created. Exiting now...\n");exit(0);}
+     //delta_data = (double*) malloc(sizeof(double)*ngridtot);memset(delta_data,0,sizeof(double));
+
+    if( strcmp(type_of_input,"particles") == 0){
+//printf("%lf, %lf\n",L1b,L2b);
      printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
      for(c=0; c<Ndata; c++)
      {
@@ -3779,16 +3902,39 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
      }
 
-
+//exit(0);
         #pragma omp parallel for private(c) shared(ngrid,ngridtot,Ndata,delta_data)
         for(c=0;c<ngridtot;c++)
         {
-                                 delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);
+                                 delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);//print out delta_data[c]*ngrid^3 which is delta(x) 
+                                 //modify delta inputed by delta/ngrid3 to match the definition from here (norm of FFTW)
         }
-        
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*ngridtot);
+     }
+fclose(f);
+}
+
+}//particles
+else{//density
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now...\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&delta_data[c]);
+        delta_data[c]=delta_data[c]/ngridtot*1.;
+     }
+fclose(f);
+}        
+
     if(strcmp(type_of_code, "rusticoX") == 0){
    
         delta_dataB = (double*) calloc(ngridtot, sizeof(double));
+//        if(delta_dataB==NULL){printf("Warning, grid-array (delta_dataB) couldn't be created. Exiting now...\n");exit(0);}
         printf("Assigning particles-B to the grid (Iteration %ld) ...", i_inter);
         for(c=0; c<NdataB; c++)
         {
@@ -3807,6 +3953,17 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
            {
                                     delta_dataB[c]=delta_dataB[c]/NdataB-pow(ngrid,-3);
            }
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*ngridtot);
+     }
+fclose(f);
+}
+
+
         
     }
 
@@ -3815,10 +3972,12 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      if(i_inter==1)
      {
         deltak_re= (double*) calloc(ngridtotr2c,sizeof(double));
+//        if(deltak_re==NULL){printf("Warning, grid-array (deltak_re) couldn't be created. Exiting now...\n");exit(0);}
         deltak_im= (double*) calloc(ngridtotr2c,sizeof(double));
+//        if(deltak_im==NULL){printf("Warning, grid-array (deltak_im) couldn't be created. Exiting now...\n");exit(0);}
         fftw_yamamoto_skycut(0,delta_data, deltak_re, deltak_im, ngrid,L1b,L2b, mode_correction);
         free(delta_data);
-         
+ 
          if(strcmp(type_of_code, "rusticoX") == 0){
 
              deltak_reB= (double*) calloc(ngridtotr2c,sizeof(double));
@@ -3841,8 +4000,8 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
       for(index2=0;index2<ngridtotr2c;index2++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+            i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+            j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
             k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
              phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -3867,8 +4026,8 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
                    for(index2=0;index2<ngridtotr2c;index2++)
                    {
 
-                         i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                         j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                         i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                         j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                          k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                           phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -3889,18 +4048,21 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
 if(i_inter==Ninterlacing && strcmp(do_bispectrum, "no") == 0 )//only free them in the last interation and if no-bispectrum is computed
 {
+
+    if( strcmp(type_of_input,"particles") == 0){
 printf("positions freed\n");
 free(pos_x);
 free(pos_y);
 free(pos_z);
-free(weight);
+free(weight);}
     
     if(strcmp(type_of_code, "rusticoX") == 0){
         
+    if( strcmp(type_of_input,"particles") == 0){
         free(pos_xB);
         free(pos_yB);
         free(pos_zB);
-        free(weightB);
+        free(weightB);}
     }
     
 }
@@ -3915,13 +4077,12 @@ free(kx);
     if(strcmp(type_of_code, "rusticoX") == 0){printf("Writing Power Spectrum output %s %s %s...",name_ps_out,name_psAB_out,name_psBB_out);}
 
 if(Nmu == 1){
-    //write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);
-    write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+
+    write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,0,0,write_kvectors, name_ps_kvectors);
 
 }
 else{
-   // write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);
-    write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+    write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code,0,0,write_kvectors, name_ps_kvectors);
 
 }
 
@@ -3930,10 +4091,9 @@ printf("Ok!\n");
 }
 
 
-//void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in ,int gadget_files, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu)
-void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in,char *name_dataB_in ,int gadget_files,int gadget_filesB, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD,char *RSDB, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code)
+void loop_interlacing_periodic_gadget(double kmin,double kmax, int Ninterlacing, char *name_data_in,char *name_dataB_in ,int gadget_files,int gadget_filesB, double L1, double L2, int ngrid, double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor,char *grid_correction_string, char *RSD,char *RSDB, char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code, char *name_density,char *name_densityB,char *type_of_input,char *write_kvectors, char *name_ps_kvectors)
 {
-  //FILE *f;f=fopen("/DATA/hector/box1.txt","w");
+  FILE *f;
   double *pos_x,*pos_y,*pos_z;
     double *pos_xB,*pos_yB,*pos_zB;
   double weight;
@@ -4046,6 +4206,16 @@ weight=1.0;
             {
                                      delta_data[c]=delta_data[c]/Ndata-pow(ngrid,-3);
             }
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_data[c]*ngridtot);
+     }
+fclose(f);
+}
+
 
 
 
@@ -4070,8 +4240,8 @@ weight=1.0;
         for(index2=0;index2<ngridtotr2c;index2++)
           {
 
-                i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                 k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                  phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4142,6 +4312,15 @@ weight=1.0;
                     {
                                              delta_dataB[c]=delta_dataB[c]/NdataB-pow(ngrid,-3);
                     }
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*ngridtot);
+     }
+fclose(f);
+}
 
 
 
@@ -4166,8 +4345,8 @@ weight=1.0;
                 for(index2=0;index2<ngridtotr2c;index2++)
                   {
 
-                        i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                        j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                        i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                        j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                         k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                          phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4202,15 +4381,13 @@ P_shot_noise=pow(L2-L1,3)/Ndata;
     P_shot_noiseB=pow(L2-L1,3)/NdataB;
     }
     
-//if(Nmu == 1){write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,do_odd_multipoles,do_anisotropy);}
-//else{write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,P_shot_noise,binning_type,file_for_mu);}
 
     if(Nmu == 1){
-        write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+        write_power_spectrum_periodic(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,0,0,write_kvectors, name_ps_kvectors);
         
     }
     else{
-        write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+        write_power_spectrum_periodic2D(kmin,kmax,deltak_re,deltak_im,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_ps_out,name_psAB_out,name_psBB_out,P_shot_noise,P_shot_noiseB,binning_type,file_for_mu,type_of_code,0,0,write_kvectors, name_ps_kvectors);
         
     }
 
@@ -4332,8 +4509,8 @@ printf("Ok!\n");
       for(index2=0;index2<ngridtotr2c;index2++)
       {
 
-            i=(int)(index2/(ngrid*ngrid/2+ngrid));
-            j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+            i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+            j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
             k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
              phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
              phase_sin=sin(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4358,7 +4535,7 @@ params_input[0]=pow(L2-L1,3)/Ndata;
 
 }
 
-    void loop_interlacing_periodic_gadget_x_ascii(double kmin,double kmax,int Ninterlacing, char *name_dataA_in, int gadget_filesA, double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double L1, double L2, int ngrid, double P_shot_noiseB,  double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_psAA_out,char *name_psAB_out, char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor, char *do_bispectrum, char *RSD,char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code)
+    void loop_interlacing_periodic_gadget_x_ascii(double kmin,double kmax,int Ninterlacing, char *name_dataA_in, int gadget_filesA, double *pos_xB, double *pos_yB, double *pos_zB, double *weightB, long int NdataB, double L1, double L2, int ngrid, double P_shot_noiseB,  double bin_ps, int mode_correction, int n_lines_parallel, char *binning_type, char *name_psAA_out,char *name_psAB_out, char *name_psBB_out, char *type_of_mass_assigment,double Shot_noise_factor, char *do_bispectrum, char *RSD,char *do_odd_multipoles,char *do_anisotropy, int Nmu, char *file_for_mu,char *type_of_code,  char *name_density, char *name_densityB, char *write_kvectors, char *name_ps_kvectors)
     {
      
          FILE *f;
@@ -4463,6 +4640,16 @@ params_input[0]=pow(L2-L1,3)/Ndata;
                 {
                                          delta_dataA[c]=delta_dataA[c]/NdataA-pow(ngrid,-3);
                 }
+if( strcmp( name_density,"no") !=0 )
+{
+f=fopen(name_density,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataA[c]*ngridtot);
+     }
+fclose(f);
+}
+
            printf("Ok!\n");
              printf("Performing FFTs ...");
            if(i_inter==1)
@@ -4484,8 +4671,8 @@ params_input[0]=pow(L2-L1,3)/Ndata;
             for(index2=0;index2<ngridtotr2c;index2++)
               {
 
-                    i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                    j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                    i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                    j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                     k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                      phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4526,6 +4713,15 @@ params_input[0]=pow(L2-L1,3)/Ndata;
                          {
                            delta_dataB[c]=delta_dataB[c]/NdataB-pow(ngrid,-3);
                      }
+if( strcmp( name_densityB,"no") !=0 )
+{
+f=fopen(name_densityB,"w");
+     for(c=0;c<ngridtot;c++)
+     {
+        fprintf(f,"%e\n",delta_dataB[c]*ngridtot);
+     }
+fclose(f);
+}
 
 
              printf("Ok!\n");
@@ -4547,8 +4743,8 @@ params_input[0]=pow(L2-L1,3)/Ndata;
             #pragma omp parallel for private(index2,c,i,j,k,phase_cos,phase_sin,new_deltak_re_bB,new_deltak_im_bB) shared(ngrid,ngridtot,ngridtotr2c,kx,deltak_reB,deltak_imB,deltak_re_bB,deltak_im_bB,i_inter,Ninterlacing,L1,L2)
               for(index2=0;index2<ngridtotr2c;index2++)
               {
-                   i=(int)(index2/(ngrid*ngrid/2+ngrid));
-                   j=(int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
+                   i=(long int)(index2/(ngrid*ngrid/2+ngrid));
+                   j=(long int)( (index2-i*(ngrid*ngrid/2+ngrid))/(ngrid/2+1) );
                    k=index2-i*(ngrid*ngrid/2+ngrid)-j*(ngrid/2+1);
 
                    phase_cos=cos(((L2-L1)/ngrid*1.)*(i_inter*1.-1.)/Ninterlacing*1.*(kx[i]+ kx[j]+ kx[k]));
@@ -4583,15 +4779,13 @@ params_input[0]=pow(L2-L1,3)/Ndata;
 
         printf("Writing Power Spectrum output %s %s %s...",name_psAA_out,name_psAB_out,name_psBB_out);
         P_shot_noiseA=pow(L2-L1,3)/NdataA;
-        //write_power_spectrum_periodic_cross(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAB_out,0.0,binning_type);
-        //write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,P_shot_noiseA,binning_type);
-        //write_power_spectrum_periodic(kmin,kmax,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psBB_out,P_shot_noiseB,binning_type);
+
         if(Nmu == 1){
-            write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code);
+            write_power_spectrum_periodic(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,do_odd_multipoles,do_anisotropy,type_of_code,0,0,write_kvectors, name_ps_kvectors);
             
         }
         else{
-            write_power_spectrum_periodic2D(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,file_for_mu,type_of_code);
+            write_power_spectrum_periodic2D(kmin,kmax,deltak_reA,deltak_imA,deltak_reB,deltak_imB,bin_ps,Nmu, ngrid,L1,L2,Ninterlacing,name_psAA_out,name_psAB_out,name_psBB_out,P_shot_noiseA,P_shot_noiseB,binning_type,file_for_mu,type_of_code,0,0,write_kvectors, name_ps_kvectors);
             
         }
 

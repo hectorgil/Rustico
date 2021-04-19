@@ -23,6 +23,31 @@ void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *
      fval[0]=c/(100.*sqrt(omega*pow(1+z,3)+1.-omega)); 
 }
 */
+
+long int get_number_used_lines_periodic(char *filename, double parameter_value[],int type)
+{
+FILE *f;
+long int npar=(long int)(parameter_value[3]);
+long int i;
+double weight;
+int veto;
+long int npar_used=0;
+double params[8];
+f=fopen(filename,"r");
+for(i=0;i<npar;i++)
+{
+
+get_line_periodic(f, params,type);
+weight=params[3];
+veto=(int)(params[7]);
+
+if(weight>0 && veto>0){npar_used++;}
+
+}
+fclose(f);
+return npar_used;
+}
+
 long int get_number_used_lines_data(char *filename, double parameter_value[])
 {
 FILE *f;
@@ -115,7 +140,7 @@ double DeltaR=parameter_value[25];
 long int index_radial;
 double *radial_cell, *radial_all_weight_cell,*radial_fkp_cell, *radial_weight_cell;
 double *z_cell;
-int veto;
+int veto,obj;
 double params[8];
 
 Area=parameter_value[13]*pow(Pi/180.,2);
@@ -167,14 +192,15 @@ if(redshift>z_min && redshift<z_max && veto==1 && weight_col>0)
 printf("\nWriting %s...",name_den_out);
         f=fopen(name_den_out,"w");
         if(f==NULL){printf("File %s could not be created. Exiting now...\n",name_den_out);exit(0);}
-        fprintf(f,"#Interval: %lf Mpc/h\n",DeltaR);
-        fprintf(f,"# z <nobs> <wc nobs> <wc wfkp nobs>\n");
+        fprintf(f,"#Interval: %lf Mpc/h, Area=%lf deg^2\n",DeltaR,Area*pow(Pi/180.,-2));
+        fprintf(f,"# z <nobs> <wc nobs> <wc wfkp nobs> N_objects\n");
         for(i=0;i<n_bin_r;i++)
         {
                 if(radial_cell[i]!=0)
                 {
                         z_cell[i]=z_cell[i]/radial_cell[i];
-                        fprintf(f,"%lf %.16lf %.16lf %.16lf\n",z_cell[i],radial_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.),  radial_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.), radial_all_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.) );
+                        obj=(int)(radial_cell[i]);
+                        fprintf(f,"%lf %e %e %e %d\n",z_cell[i],radial_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.),  radial_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.), radial_all_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.),obj );
                 }
         }
         fclose(f);
@@ -188,7 +214,7 @@ free(function_parameters);
 }
 
 
-void get_skycuts_data(char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[], char *type_normalization_mode, double radata[], double decdata[], double zdata[], double wcoldata[], double wsysdata[],double wfkpdata[], double nzdata[],char *shuffle)
+void get_skycuts_data(char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[], char *type_normalization_mode, double radata[], double decdata[], double zdata[], double wcoldata[], double wsysdata[],double wfkpdata[], double nzdata[],char *shuffle,double Rsmooth)
 {
 double Omega_m=parameter_value[0];
 double z_min=parameter_value[1];
@@ -272,6 +298,7 @@ alpha_data=0;
 
 i_DeltaR++;
 DeltaR=i_DeltaR*0.5;
+if(Rsmooth>0){DeltaR=Rsmooth;}
 
   n_bin_r=(long int)((r_max-r_min)/DeltaR);//printf("\n %lf %d\n",DeltaR,n_bin_r);
   radial_cell = (double*) calloc(n_bin_r, sizeof(double));
@@ -460,9 +487,10 @@ if(IN2<IN2_min){IN2_min=IN2;}
 //printf("%lf %lf %.10lf %lf %lf\n",DeltaR,I22_min,I33_min,IN1_min,IN2_min);
 
 
-}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0);
+}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0 && Rsmooth==0);
 
-if(strcmp(type_normalization_mode, "density") == 0){DeltaR_min=10.;}//Returns a fixed value if normalized by density
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth==0){DeltaR_min=10.;}//Returns a fixed value if normalized by density
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth>0){DeltaR_min=Rsmooth;}//Returns a fixed value if normalized by density
 
 free(function_parameters);
 //Copy needed information 
@@ -476,7 +504,7 @@ parameter_value[9]=normalization;
 parameter_value[10]=min;
 parameter_value[11]=max;
 parameter_value[12]=alpha_data;
-parameter_value[13]=num3;
+parameter_value[28]=num3;
 
 parameter_value[14]=I22_min;
 parameter_value[15]=I22_w_data_min;
@@ -525,7 +553,7 @@ double *radial_cell,*radial_fkp_cell,*z_cell,*radial_weight_cell,*radial_all_wei
 double r_min,r_max;
 long int n_bin_r;
 long int index_radial;
-int veto;
+int veto,obj;
 double params[8];
 npar=(long int)(parameter_value[3]);
 
@@ -716,14 +744,15 @@ if(i==Ndata){i=0;j++;}
     printf("\nWriting %s...",name_den_out);
     f=fopen(name_den_out,"w");
     if(f==NULL){printf("File %s could not be created. Exiting now...\n",name_den_out);exit(0);}
-fprintf(f,"#Interval: %lf Mpc/h\n",DeltaR);
-fprintf(f,"# z <nobs> <wc nobs> <wc wfkp nobs>\n");
+fprintf(f,"#Interval: %lf Mpc/h, Area=%lf deg^2\n",DeltaR,Area*pow(Pi/180.,-2));
+fprintf(f,"# z <nobs> <wc nobs> <wc wfkp nobs> N_obj\n");
 for(i=0;i<n_bin_r;i++)
 {
     if(radial_cell[i]!=0)
     {
         z_cell[i]=z_cell[i]/radial_cell[i];
-        fprintf(f,"%lf %.16lf %.16lf %.16lf\n",z_cell[i],radial_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.),  radial_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.), radial_all_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.) );
+        obj=(int)(radial_cell[i]);
+        fprintf(f,"%lf %e %e %e %d\n",z_cell[i],radial_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.),  radial_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.), radial_all_weight_cell[i]/(Area*pow(r_min+i*(r_max-r_min)/n_bin_r*1.,2)*(r_max-r_min)/n_bin_r*1.),obj );
     }
 }
 
@@ -739,7 +768,7 @@ free(L);
 
 }
 
-void get_skycuts_randoms(char *path, char *id, char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],char *type_normalization_mode, char *type_normalization_mode2, double *radata, double *decdata, double *zdata, double *wcoldata, double *wsysdata,double *wfkpdata, double *nzdata,long int Ndata, double alpha_true, char *shuffle, char *write_shuffled_randoms,char *name_out_randoms)
+void get_skycuts_randoms(char *path, char *id, char *filename, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],char *type_normalization_mode, char *type_normalization_mode2, double *radata, double *decdata, double *zdata, double *wcoldata, double *wsysdata,double *wfkpdata, double *nzdata,long int Ndata, double alpha_true, char *shuffle, char *write_shuffled_randoms,char *name_out_randoms,double Rsmooth)
 {
 
 long int *L;
@@ -829,7 +858,7 @@ alpha=parameter_value[12];
 
 i_DeltaR++;
 DeltaR=i_DeltaR*0.5;
-
+if(Rsmooth>0){DeltaR=Rsmooth;}
 
   n_bin_r=(long int)((r_max-r_min)/DeltaR);//printf("\n %d\n",n_bin_r);
   radial_cell = (double*) calloc(n_bin_r, sizeof(double));
@@ -1148,9 +1177,11 @@ if(I33_w_randoms<I33_w_randoms_min){I33_w_randoms_min=I33_w_randoms;}
 free(radial_cell);
 free(radial_fkp_cell);
 
-}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0 && strcmp(type_normalization_mode2, "randoms") == 0);
+}while(DeltaR<40 && strcmp(type_normalization_mode, "area") == 0 && strcmp(type_normalization_mode2, "randoms") == 0 && Rsmooth==0);
 
-if(strcmp(type_normalization_mode, "density") == 0){DeltaR_min=10.;}//If no area is used for normalization, keep deltaR by data
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth==0){DeltaR_min=10.;}//If no area is used for normalization, keep deltaR by data
+if(strcmp(type_normalization_mode, "density") == 0 && Rsmooth>0){DeltaR_min=Rsmooth;}//If no area is used for normalization, keep deltaR by data
+
 if(strcmp(type_normalization_mode, "area") == 0 && strcmp(type_normalization_mode2, "data") == 0){DeltaR_min=parameter_value[25];}//if no randoms are explored, keep deltaR by data
 
 
@@ -1166,7 +1197,7 @@ parameter_value[9]=normalization;
 parameter_value[10]=min;
 parameter_value[11]=max;
 parameter_value[12]=alpha_data;
-parameter_value[13]=num3;
+parameter_value[28]=num3;
 
 parameter_value[14]=I22_w_randoms_min;
 parameter_value[15]=I22_w_randoms_min;
@@ -1187,34 +1218,57 @@ free(L);
 }
 
 
-void get_periodic_data(char *filename_data, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[])
+void get_periodic_data(char *filename_data, double pos_x[], double pos_y[], double pos_z[], double weight[], double parameter_value[],int type)
 {
-long int i,npar;
+long int i,j,npar;
 double max,min;
-double params[4];
-
+double wght,veto;
+double params[8];
+double sumweighted,Psn_1a,Bsn_1a;
 FILE *f;
 npar=(int)(parameter_value[3]);
 f=fopen(filename_data,"r");
+sumweighted=0;
+Psn_1a=0;
+Bsn_1a=0;
+j=0;
 for(i=0;i<npar;i++)
 {
-get_line_periodic(f, params);
-pos_x[i]=params[0];
-pos_y[i]=params[1];
-pos_z[i]=params[2];
-weight[i]=params[3];
+get_line_periodic(f, params,type);
+veto=params[7];
+wght=params[3];
+if(veto>0 && wght>0)
+{
+pos_x[j]=params[0];
+pos_y[j]=params[1];
+pos_z[j]=params[2];
+weight[j]=params[3];
+sumweighted=sumweighted+weight[j];
 
-      if(pos_x[i]>max || i==0){max=pos_x[i];}
-      if(pos_y[i]>max){max=pos_y[i];}
-      if(pos_z[i]>max){max=pos_z[i];}
-      if(pos_x[i]<min || i==0){min=pos_x[i];}
-      if(pos_y[i]<min){min=pos_y[i];}
-      if(pos_z[i]<min){min=pos_z[i];}
+  Psn_1a+=pow(weight[j],2);//false pairs
 
+  Bsn_1a+=pow(weight[j],3);//false pairs
+
+//if(pos_z[i]-pos_z[i]!=0){printf("Error %ld %lf (%lf,%lf)\n",i,pos_z[i],pos_x[i],pos_y[i]);exit(0);}
+//if(pos_z[i]/pos_z[i]!=1){printf("Error %ld %lf (%lf,%lf)\n",i,pos_z[i],pos_x[i],pos_y[i]);exit(0);}
+
+      if(pos_x[j]>max || i==0){max=pos_x[j];}
+      if(pos_y[j]>max){max=pos_y[j];}
+      if(pos_z[j]>max){max=pos_z[j];}
+      if(pos_x[j]<min || i==0){min=pos_x[j];}
+      if(pos_y[j]<min){min=pos_y[j];}
+      if(pos_z[j]<min){min=pos_z[j];}
+
+j++;
+}
 
 }
 fclose(f);
+parameter_value[4]=Psn_1a;
+parameter_value[21]=Bsn_1a;
+
 parameter_value[10]=min;
 parameter_value[11]=max;
+parameter_value[12]=sumweighted;//alpha_data1  alpha_data1B alpha_rand1  alpha_rand1B -> alpha1 alpha1B
 }
 

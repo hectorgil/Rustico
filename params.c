@@ -1,51 +1,56 @@
 #Main parameters
 #Type of code (rustico/rusticoX): rustico
-#Type of Box (periodic/cutsky): periodic
-#Type of file (ascii/gadget)x2: gadget
-#Number of gadget files(int)x2: 16
+#Type of Box (periodic/periodicFKP/cutsky): cutsky
+#Type of file (ascii/gadget)x2: ascii
+#Type of input (density/particles): particles
+#Number of gadget files(int)x2: 1
 #RSD distorsion on gadget periodic box (yes/no)x2: yes
-#Size of the Box (double/double): 0 +2400.
+#Size of the Box (double/double): -2600.0 +2400.0
 #Type of Computation (DSE/DSY/FFT): FFT
 
 #Power Spectrum options
 #Binning for the Power Spectrum (linear/log10): linear
 #Size of the bin for the power spectrum (double):  0.01
-#k-range for computation (double/double): 0 0.33
+#k-range for computation (double/double): 0 0.67
 #Do anisotropy signal (yes/no): yes
-#Do odd multipoles (yes/no): yes
+#Do odd multipoles (yes/no): no
+#Write kvectors in each bin(yes/no): yes
 #Do mu-binning Power Spectrum (yes/no): no
 #Number of mu-bins (int): 120
 #Different files for mu-bin (yes/no): no
 
 #Bispectrum parameters
-#Do Bispectrum (yes/no): yes
-#Do Bispectrum multipoles (yes/no): yes
-#Do Multigrid (yes/no): no
+#Do Bispectrum (yes/no): no
+#Do Bispectrum multipoles (yes/no): no
+#Do Multigrid (yes/no): yes
+#Bispectrum optimization (lowmem/standard/himem): standard
 #Triangle Shapes (ALL/EQU/ISO/SQU): ALL
-#Size of the bin for the bispectrum (double): 0.015707963
+#Size of the bin for the bispectrum (double): 0.01
 #Normalization of triangles(FFT/APR_SUM/APR_EFF,EXA_EFF): FFT
 #Write triangles in each bin(yes/no): no
 #Path for triangles in each bin: ./power_spectra/triangles
 
 #Read inout parameters
-#Path of datax2: /DATA/cwagner/newcov/1/snapshot_004
-#Path of randomsx2: none
+#Path of datax2: /home/DATA/hector/eboss/DR16_LRG_data/v72_30Jan/eBOSS_LRGpCMASS_clustering_NGC_v7_2.dat_t1.txt
+#Path of randomsx2: /home/DATA/hector/eboss/DR16_LRG_data/v72_30Jan/eBOSS_LRGpCMASS_clustering_NGC_v7_2.ran_t1.txt
 #Path of output: ./test
-#Identifier of output: z0_Dk6_run1
+#Identifier of output: LRG_g256
 #Write header: yes
+#Write density: no
 
 #FFT parameters
 #Number of Grid Cells power (int): 8
-#Type of mass assingment (NGC/CIC/TSC/PCS/P4S/P5S): P5S
+#Type of mass assingment (NGC/CIC/TSC/PCS/P4S/P5S): PCS
 #Type of Yamamoto (GridCenter/GridAverage): GridCenter
 #Number of interlacing steps (int): 2
 #Do Grid Correction? (yes/no): yes
 
 #Cutsky parameters
-#Redshift Range (double/double)x2: 0.8 2.2
+#Redshift Range (double/double)x2: 0.6 1.0
 #Omega matter value (double): 0.31
-#Area effective value in deg^2 (double)x2: 2843.514974043143
-#Quadrupole as (L0L2/L1L1): L2
+#Area effective value in deg^2 (double)x2: 1.
+#Smoothing scale for normalization in Mpc/h (double): 1. 
+#Quadrupole as (L0L2/L1L1): L0L2
 #Octopole as (L0L3/L1L2): L1L2
 #Hexadecapole as (L0L4/L2L2/L1L3): L2L2
 #Compute Normalization as (area/density): density
@@ -55,8 +60,15 @@
 #Write shuffled randoms (yes/no): no
 
 #Window function paircounts
-#Compute Window Selection function (yes/no): yes
-#Bin for window normalization (int) 5
+#Compute Window Selection function (yes/no): no
+#Bin for window normalization (int) 1
 #DeltaS binning (double) 1.0
-#Percentage of randoms selected in % (double) 10.
+#Percentage of randoms selected in % (double) 100.
 #Yamamoto aproximation (yes/no): yes
+
+#Density input options
+#Value of Pnoise (double) 1000.
+#Value of Bnoise1 (double) 1000.
+#Value of Bnoise2 (double) 1000.
+#I22 normalization (double): 1.
+#I33 normalization (double): 1.

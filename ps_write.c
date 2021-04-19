@@ -5,9 +5,9 @@
 #include <string.h>
 #include "functions.h"
 //#include "structures.h"
+#define MAX_VEC (1e7)
 
-//void write_power_spectrum_skyscuts(double kmin,double kmax,double kx[], double ky[], double kz[], double P0r[], double P0i[],double P1r[], double P1i[], double P2r[], double P2i[], double P3r[], double P3i[], double P4r[], double P4i[], double Deltak, int ngrid, long int NGRID, double L1, double L2, double I22, char *name_ps_out, double P_shot_noise, char *binning_type, char *do_anisotropy, char *do_odd_multipoles, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type,char *type,int N_interlacing)
-void write_power_spectrum_skyscuts(double kmin,double kmax,double kx[], double ky[], double kz[], double P0r[], double P0i[],double P1r[], double P1i[], double P2r[], double P2i[], double P3r[], double P3i[], double P4r[], double P4i[],double P0rB[], double P0iB[],double P1rB[], double P1iB[], double P2rB[], double P2iB[], double P3rB[], double P3iB[], double P4rB[], double P4iB[], double Deltak, int ngrid, long int NGRID, double L1, double L2, double I22,double I22B, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, double P_shot_noise,double P_shot_noiseB, char *binning_type, char *do_anisotropy, char *do_odd_multipoles, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type,char *type,int N_interlacing, char *type_of_code)
+void write_power_spectrum_skyscuts(double kmin,double kmax,double kx[], double ky[], double kz[], double P0r[], double P0i[],double P1r[], double P1i[], double P2r[], double P2i[], double P3r[], double P3i[], double P4r[], double P4i[],double P0rB[], double P0iB[],double P1rB[], double P1iB[], double P2rB[], double P2iB[], double P3rB[], double P3iB[], double P4rB[], double P4iB[], double Deltak, int ngrid, long int NGRID, double L1, double L2, double I22,double I22B, char *name_ps_out,char *name_psAB_out,char *name_psBB_out, double P_shot_noise,double P_shot_noiseB, char *binning_type, char *do_anisotropy, char *do_odd_multipoles, char *Quadrupole_type, char *Octopole_type, char *Hexadecapole_type,char *type,int N_interlacing, char *type_of_code, char *write_kvectors, char *name_ps_kvectors)
 {
 FILE *f,*fAB,*fBB;
 long int i,j,k,l22;
@@ -36,14 +36,21 @@ double **Octo;
     double **HexadecaBA;
     double **OctoBA;
 
+double ***KXvec,***KYvec,***KZvec;//   KXvec[vector][l-bin][tid]
+long int **num_vec;
+long int *printed_modes;
+long int max_num_vectors=MAX_VEC;//among all threads
+long int i_vectors;
+char name_ps_bin[2000];
 long int **nmodes;
+
 double Pi=(4.*atan(1.));
 int bintype_sw;
 double kmineff;
 double keff;
 double KX,KY,KZ;
-int ivec,jvec,kvec;
-int i2vec,j2vec,k2vec;
+long int ivec,jvec,kvec;
+long int i2vec,j2vec,k2vec;
 double *kvector;
 long int index2;
 long int ngrid_eff;
@@ -181,15 +188,48 @@ if(strcmp(do_odd_multipoles,"yes") == 0){
                 K[l] = (double*)calloc(nthreads,sizeof(double));
         }
 
+if(strcmp(write_kvectors,"yes") == 0){//K[vector][l][thread]
+
+printed_modes = (long int*)calloc(Nk,sizeof(long int));//inizialized to 0
+
+max_num_vectors=(long int)(max_num_vectors*1./nthreads*1.);//split equally among threads.
+
+KXvec = (double ***) malloc(sizeof(double**)*(max_num_vectors));//not inizialized
+KYvec = (double ***) malloc(sizeof(double**)*(max_num_vectors));
+KZvec = (double ***) malloc(sizeof(double**)*(max_num_vectors));
+
+num_vec = (long int**)calloc(Nk,sizeof(long int*));//inizialized to 0
+
+      for(l=0;l<Nk;l++)
+      {
+         num_vec[l] = (long int*) calloc(nthreads,sizeof(long int));
+      }
+
+        for(i_vectors=0;i_vectors<max_num_vectors;i_vectors++)
+        {
+                KXvec[i_vectors] = (double **) malloc( sizeof(double*)*(Nk));
+                KYvec[i_vectors] = (double **) malloc( sizeof(double*)*(Nk));
+                KZvec[i_vectors] = (double **) malloc( sizeof(double*)*(Nk));
+
+                for(l=0;l<Nk;l++)
+                {
+                    KXvec[i_vectors][l] = (double *) malloc( sizeof(double)*(nthreads));
+                    KYvec[i_vectors][l] = (double *) malloc( sizeof(double)*(nthreads));
+                    KZvec[i_vectors][l] = (double *) malloc( sizeof(double)*(nthreads));
+                }
+
+        }
+}
+
     
-#pragma omp parallel for private(i2vec,j2vec,k2vec,ivec,jvec,kvec,KX,KY,KZ,i,tid,l,kmineff,keff,index2) shared(NGRID,ngrid,K,kmin,kx,ky,kz,Mono,Di,Quadru,Octo,Hexadeca,MonoBB,DiBB,QuadruBB,OctoBB,HexadecaBB,MonoAB,DiAB,QuadruAB,OctoAB,HexadecaAB,DiBA,QuadruBA,OctoBA,HexadecaBA,P0r,P1r,P2r,P3r,P4r,P0i,P1i,P2i,P3i,P4i,nmodes,Deltak,Nk,bintype_sw,type,do_anisotropy,do_odd_multipoles, Quadrupole_type,Hexadecapole_type,Octopole_type,N_interlacing,kvector,mode_duplicate,ngrid_eff,type_of_code)
+#pragma omp parallel for private(i2vec,j2vec,k2vec,ivec,jvec,kvec,KX,KY,KZ,i,tid,l,kmineff,keff,index2) shared(NGRID,ngrid,K,kmin,kx,ky,kz,Mono,Di,Quadru,Octo,Hexadeca,MonoBB,DiBB,QuadruBB,OctoBB,HexadecaBB,MonoAB,DiAB,QuadruAB,OctoAB,HexadecaAB,DiBA,QuadruBA,OctoBA,HexadecaBA,P0r,P1r,P2r,P3r,P4r,P0i,P1i,P2i,P3i,P4i,nmodes,Deltak,Nk,bintype_sw,type,do_anisotropy,do_odd_multipoles, Quadrupole_type,Hexadecapole_type,Octopole_type,N_interlacing,kvector,mode_duplicate,ngrid_eff,type_of_code,write_kvectors,KXvec,KYvec,KZvec,num_vec,max_num_vectors)
         for(i=0;i<ngrid_eff;i++)
         {
                 tid=omp_get_thread_num();
 
 if(strcmp(type,"FFT") == 0){
-                ivec=(int)(i/(ngrid*ngrid*1.));
-                jvec=(int)( (i-ivec*ngrid*ngrid)/(ngrid*1.));
+                ivec=(long int)(i/(ngrid*ngrid*1.));
+                jvec=(long int)( (i-ivec*ngrid*ngrid)/(ngrid*1.));
                 kvec=i-ivec*ngrid*ngrid-jvec*ngrid;
 KX=kvector[ivec];
 KY=kvector[jvec];
@@ -204,13 +244,15 @@ KZ=kz[i];//printf("\n i=%ld/%ld, %lf, %lf, %lf\n",i,ngrid_eff,KX,KY,KZ);
 if(bintype_sw==0){
 
 l=(int)((pow(KX*KX+KY*KY+KZ*KZ,0.5)-kmin)/Deltak);//-1.;
-if((pow(KX*KX+KY*KY+KZ*KZ,0.5)-kmin)/Deltak<0){l=-1;}
+//if(l<0){l=0;}
+if( (pow(KX*KX+KY*KY+KZ*KZ,0.5)-kmin)/Deltak<0  ){l=-1;}
 }
 
 if(bintype_sw==1){
 
 l=(int)(( log10(pow(KX*KX+KY*KY+KZ*KZ,0.5))-log10(kmin))/Deltak);//-1.;
-if(( log10(pow(KX*KX+KY*KY+KZ*KZ,0.5))-log10(kmin))/Deltak<0){l=-1;}
+//if(l<0){l=0;}
+if( ( log10(pow(KX*KX+KY*KY+KZ*KZ,0.5))-log10(kmin))/Deltak<0  ){l=-1;}
 }
 
                 if(l<Nk && l>=0)
@@ -223,6 +265,13 @@ if(strcmp(type,"DSE") == 0 && KX*KX+KY*KY+KZ*KZ>0){
                K[l][tid]+=pow(KX*KX+KY*KY+KZ*KZ,0.5);//two modes coming from the condition kz>0
                Mono[l][tid]+=P0r[i];
                nmodes[l][tid]+=1;
+
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][tid]<max_num_vectors ){
+               KXvec[num_vec[l][tid]][l][tid]=KX;
+               KYvec[num_vec[l][tid]][l][tid]=KY;
+               KZvec[num_vec[l][tid]][l][tid]=KZ; 
+               num_vec[l][tid]++;}
+
                Quadru[l][tid]+=P2r[i];
                Hexadeca[l][tid]+=P4r[i];
 
@@ -247,6 +296,13 @@ if(KX*KX+KY*KY+KZ*KZ>0){
         
     }
                nmodes[l][tid]+=1;//printf("\n(1)\n");
+
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][tid]<max_num_vectors ){
+               KXvec[num_vec[l][tid]][l][tid]=KX;
+               KYvec[num_vec[l][tid]][l][tid]=KY;
+               KZvec[num_vec[l][tid]][l][tid]=KZ;
+               num_vec[l][tid]++;}
+
 
 //if(l==0){printf("A %lf %lf %lf, %lf %lf\n",KX,KY,KZ,P0r[index2],P0i[index2]);}
 
@@ -346,6 +402,24 @@ if(strcmp(type,"DSE") == 0 && KX*KX+KY*KY+KZ*KZ>0){
                K[l][tid]+=mode_duplicate*pow(KX*KX+KY*KY+KZ*KZ,0.5);//two modes coming from the condition kz>0
                Mono[l][tid]+=mode_duplicate*P0r[i];
                nmodes[l][tid]+=mode_duplicate;
+              
+
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][tid]<max_num_vectors-mode_duplicate+1 ){
+
+               KXvec[num_vec[l][tid]][l][tid]=KX;
+               KYvec[num_vec[l][tid]][l][tid]=KY;
+               KZvec[num_vec[l][tid]][l][tid]=KZ;
+               num_vec[l][tid]++;
+               if(mode_duplicate==2)
+               {
+               KXvec[num_vec[l][tid]][l][tid]=KX;
+               KYvec[num_vec[l][tid]][l][tid]=KY;
+               KZvec[num_vec[l][tid]][l][tid]=-KZ;//check this
+               num_vec[l][tid]++;
+               }
+
+               }
+
                Quadru[l][tid]+=mode_duplicate*P2r[i];
                Hexadeca[l][tid]+=mode_duplicate*P4r[i];
 
@@ -372,6 +446,23 @@ if(KX*KX+KY*KY+KZ*KZ>0){
 
                K[l][tid]+=mode_duplicate*pow(KX*KX+KY*KY+KZ*KZ,0.5);//two modes coming from the condition kz>0
                nmodes[l][tid]+=mode_duplicate;//printf("\n(2)\n");
+               
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][tid]<max_num_vectors-mode_duplicate+1 ){
+               KXvec[num_vec[l][tid]][l][tid]=KX;
+               KYvec[num_vec[l][tid]][l][tid]=KY;
+               KZvec[num_vec[l][tid]][l][tid]=KZ;
+               num_vec[l][tid]++;
+
+               if(mode_duplicate==2)
+               {
+               KXvec[num_vec[l][tid]][l][tid]=KX;
+               KYvec[num_vec[l][tid]][l][tid]=KY;
+               KZvec[num_vec[l][tid]][l][tid]=-KZ;//check this
+               num_vec[l][tid]++;
+               }
+
+               }
+
                Mono[l][tid]+=mode_duplicate*(pow(P0r[index2],2)+pow(P0i[index2],2));
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
@@ -485,6 +576,11 @@ for(l=0;l<Nk;l++)
 {
 for(tid=1;tid<nthreads;tid++)
 {
+
+if( strcmp(write_kvectors,"yes") == 0 ){
+printed_modes[l]=printed_modes[l]+num_vec[l][tid];//missing thread 0!
+}
+
 K[l][0]+=K[l][tid];
 Mono[l][0]+=Mono[l][tid];
     if(strcmp(type_of_code, "rusticoX") == 0)
@@ -526,6 +622,43 @@ Octo[l][0]+=Octo[l][tid];
 nmodes[l][0]+=nmodes[l][tid];
 }
 }
+
+
+if( strcmp(write_kvectors,"yes") == 0)
+{
+        for(l=0;l<Nk;l++)
+        {
+if(bintype_sw==0){keff=(l+0.5)*Deltak+kmin;}
+if(bintype_sw==1){keff=pow(10,(l+0.5)*Deltak+log10(kmin));}
+        printed_modes[l]=printed_modes[l]+num_vec[l][0];//thread 0 was missing!
+        sprintf(name_ps_bin,"%s_bin%d.txt",name_ps_kvectors,l);
+        f=fopen(name_ps_bin,"w");
+        fprintf(f,"#bin %d\n",l); 
+        fprintf(f,"#kfundamental %e\n",2*Pi/(L2-L1));
+        fprintf(f,"#binning size %e\n",Deltak);
+        fprintf(f,"#binning type %s\n",binning_type);
+        fprintf(f,"#K-eff= %e\n",K[l][0]*1./nmodes[l][0]*1.);
+        fprintf(f,"#K-center= %e\n",keff);
+        fprintf(f,"#Total number of modes %ld\n",nmodes[l][0]);
+        fprintf(f,"#Printed number of modes %ld\n",printed_modes[l]);
+        fprintf(f,"#kx\t ky\t kz\n");
+           for(tid=0;tid<nthreads;tid++)
+           {
+               for(i_vectors=0;i_vectors<num_vec[l][tid];i_vectors++)
+               {
+                   fprintf(f,"%e\t %e\t %e\n",KXvec[i_vectors][l][tid],KYvec[i_vectors][l][tid],KZvec[i_vectors][l][tid]);
+               }
+           }
+        
+        fclose(f);
+       }
+free(printed_modes);
+freeTokensLInt(num_vec,Nk);
+freeTokens3(KXvec,max_num_vectors,Nk);
+freeTokens3(KYvec,max_num_vectors,Nk);
+freeTokens3(KZvec,max_num_vectors,Nk);
+}
+
 
   f=fopen(name_ps_out,"a");
     if(strcmp(type_of_code, "rusticoX") == 0)
@@ -671,9 +804,7 @@ freeTokensLInt(nmodes,Nk);
 }
 
 
-//void write_power_spectrum_periodic(double kmin, double kmax, double deltak_re[], double deltak_im[], double Deltak, int  ngrid, double L1, double L2, int Ninterlacing, char *name_ps_out, double P_shot_noise, char *binning_type, char *do_odd_multipoles,char *do_anisotropy)
-
-void write_power_spectrum_periodic(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out, char *name_psAB_out, char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *do_odd_multipoles,char *do_anisotropy,char *type_of_code)
+void write_power_spectrum_periodic(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out, char *name_psAB_out, char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *do_odd_multipoles,char *do_anisotropy,char *type_of_code,double I22,double I22B,char *write_kvectors, char *name_ps_kvectors)
 {
 double Pi=(4.*atan(1.));
 double **K;
@@ -694,10 +825,17 @@ double **Octo;
     double **HexadecaAB;
     double **DiAB;
     double **OctoAB;
+
+double ***KXvec,***KYvec,***KZvec;//   KXvec[vector][l-bin][tid]
+long int **num_vec;
+long int *printed_modes;
+long int max_num_vectors=MAX_VEC;//among all threads 4pik^2Dk (1+Dk^2/(12k^2)) / kf^3 for each k-bin
+long int i_vectors;
+char name_ps_bin[2000];
     
 long int **nmodes;
-int l,tid,i,j,k;
-int i2,j2,k2;
+long int l,tid,i,j,k;
+long int i2,j2,k2;
 long int l2;
 FILE *f,*fAB,*fBB;
 double *kx;
@@ -707,6 +845,12 @@ double kmineff;
 double keff;
 long int index2;
 long int ngridtot=pow(ngrid,3);
+int FKP=1;
+//Pure periodic cases
+if(I22==0){I22=pow(L2-L1,-3);FKP=0;}
+if(I22B==0){I22B=pow(L2-L1,-3);}
+
+
 if(strcmp(binning_type, "linear") == 0){bintype_sw=0;}
 if(strcmp(binning_type, "log10") == 0){bintype_sw=1;}
 
@@ -825,23 +969,57 @@ if(strcmp(do_odd_multipoles, "yes") == 0){
 
         }
 
+if(strcmp(write_kvectors,"yes") == 0){//K[vector][l][thread]
 
-#pragma  omp parallel for private(index2,l2,i,j,k,l,tid,i2,k2,j2,argument,kmineff,keff) shared(ngrid,ngridtot,kx,Deltak,Nk,K,deltak_re,deltak_im,nmodes,Mono,Di,Quadru,Octo,Hexadeca,MonoBB,DiBB,QuadruBB,OctoBB,HexadecaBB,MonoAB,DiAB,QuadruAB,OctoAB,HexadecaAB,Ninterlacing,kmin,bintype_sw,k_av,do_odd_multipoles,do_anisotropy,type_of_code)
+printed_modes = (long int*)calloc(Nk,sizeof(long int));//inizialized to 0
+
+max_num_vectors=(long int)(max_num_vectors*1./nthreads*1.);//split equally among threads.
+
+KXvec = (double ***) malloc(sizeof(double**)*(max_num_vectors));//not inizialized
+KYvec = (double ***) malloc(sizeof(double**)*(max_num_vectors));
+KZvec = (double ***) malloc(sizeof(double**)*(max_num_vectors));
+
+num_vec = (long int**)calloc(Nk,sizeof(long int*));//inizialized to 0
+
+      for(l=0;l<Nk;l++)
+      {
+         num_vec[l] = (long int*) calloc(nthreads,sizeof(long int));
+      }
+
+        for(i_vectors=0;i_vectors<max_num_vectors;i_vectors++)
+        {
+                KXvec[i_vectors] = (double **) malloc( sizeof(double*)*(Nk));
+                KYvec[i_vectors] = (double **) malloc( sizeof(double*)*(Nk));
+                KZvec[i_vectors] = (double **) malloc( sizeof(double*)*(Nk));
+
+                for(l=0;l<Nk;l++)
+                {
+                    KXvec[i_vectors][l] = (double *) malloc( sizeof(double)*(nthreads));
+                    KYvec[i_vectors][l] = (double *) malloc( sizeof(double)*(nthreads));
+                    KZvec[i_vectors][l] = (double *) malloc( sizeof(double)*(nthreads));
+                }
+
+        }
+}
+
+#pragma  omp parallel for private(index2,l2,i,j,k,l,tid,i2,k2,j2,argument,kmineff,keff) shared(ngrid,ngridtot,kx,Deltak,Nk,K,deltak_re,deltak_im,nmodes,Mono,Di,Quadru,Octo,Hexadeca,MonoBB,DiBB,QuadruBB,OctoBB,HexadecaBB,MonoAB,DiAB,QuadruAB,OctoAB,HexadecaAB,Ninterlacing,kmin,bintype_sw,k_av,do_odd_multipoles,do_anisotropy,type_of_code,write_kvectors,KXvec,KYvec,KZvec,num_vec,max_num_vectors)
         for(l2=0;l2<ngridtot;l2++)
         {
                 tid=omp_get_thread_num();
-                i=(int)(l2/(ngrid*ngrid*1.));
-                j=(int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
+                i=(long int)(l2/(ngrid*ngrid*1.));
+                j=(long int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
                 k=l2-i*ngrid*ngrid-j*ngrid;
 
 if(bintype_sw==0){
 l=(int)((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak);//-1.;
-if((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak<0){l=-1;}
+//if(l<0){l=0;}
+if( (pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak<0   ){l=-1;}
 }
 
 if(bintype_sw==1){
 l=(int)(( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak);//-1.;
-if(( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak<0){l=-1;}
+//if(l<0){l=0;}
+if( ( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak<0  ){l=-1;}
 }
 
                 if(l<Nk && l>=0)
@@ -897,6 +1075,14 @@ Octo[l][tid]+=(pow(deltak_re[index2]/Ninterlacing*1.,2)+pow(deltak_im[index2]/Ni
 
 
 nmodes[l][tid]+=1;
+
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][tid]<max_num_vectors){
+               KXvec[num_vec[l][tid]][l][tid]=kx[i];
+               KYvec[num_vec[l][tid]][l][tid]=kx[j];
+               KZvec[num_vec[l][tid]][l][tid]=kx[k];
+               num_vec[l][tid]++;
+               }
+
 }
 }
 else
@@ -949,6 +1135,13 @@ Octo[l][tid]+=(pow(deltak_re[index2]/Ninterlacing*1.,2)+pow(deltak_im[index2]/Ni
 
 
                nmodes[l][tid]+=1;
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][tid]<max_num_vectors){
+               KXvec[num_vec[l][tid]][l][tid]=kx[i];
+               KYvec[num_vec[l][tid]][l][tid]=kx[j];
+               KZvec[num_vec[l][tid]][l][tid]=kx[k];
+               num_vec[l][tid]++;
+               }
+
 }
 }
                }//if l<Nk
@@ -962,6 +1155,11 @@ for(l=0;l<Nk;l++)
 {
 for(tid=1;tid<nthreads;tid++)
 {
+
+if( strcmp(write_kvectors,"yes") == 0 ){
+printed_modes[l]=printed_modes[l]+num_vec[l][tid];//missing thread 0!
+}
+
 k_av[l][0]+=k_av[l][tid];
 K[l][0]+=K[l][tid];
 Mono[l][0]+=Mono[l][tid];
@@ -1007,6 +1205,42 @@ nmodes[l][0]+=nmodes[l][tid];
 }
 
 
+if( strcmp(write_kvectors,"yes") == 0)
+{
+        for(l=0;l<Nk;l++)
+        {
+if(bintype_sw==0){keff=(l+0.5)*Deltak+kmin;}
+if(bintype_sw==1){keff=pow(10,(l+0.5)*Deltak+log10(kmin));}
+        printed_modes[l]=printed_modes[l]+num_vec[l][0];//thread 0 was missing!
+        sprintf(name_ps_bin,"%s_bin%d.txt",name_ps_kvectors,l);
+        f=fopen(name_ps_bin,"w");
+        fprintf(f,"#bin %d\n",l);
+        fprintf(f,"#kfundamental %e\n",2*Pi/(L2-L1));
+        fprintf(f,"#binning size %e\n",Deltak);
+        fprintf(f,"#binning type %s\n",binning_type);
+        fprintf(f,"#K-eff= %e\n",K[l][0]*1./nmodes[l][0]*1.);
+        fprintf(f,"#K-center= %e\n",keff);
+        fprintf(f,"#Total number of modes %ld\n",nmodes[l][0]);
+        fprintf(f,"#Printed number of modes %ld\n",printed_modes[l]);
+        fprintf(f,"#kx\t ky\t kz\n");
+           for(tid=0;tid<nthreads;tid++)
+           {
+               for(i_vectors=0;i_vectors<num_vec[l][tid];i_vectors++)
+               {
+                   fprintf(f,"%e\t %e\t %e\n",KXvec[i_vectors][l][tid],KYvec[i_vectors][l][tid],KZvec[i_vectors][l][tid]);
+               }
+           }
+        
+        fclose(f);
+        }
+free(printed_modes);
+freeTokensLInt(num_vec,Nk);
+freeTokens3(KXvec,max_num_vectors,Nk);
+freeTokens3(KYvec,max_num_vectors,Nk);
+freeTokens3(KZvec,max_num_vectors,Nk);
+}
+
+
   f=fopen(name_ps_out,"a");
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
@@ -1020,36 +1254,36 @@ nmodes[l][0]+=nmodes[l][tid];
                 if(nmodes[l][0]!=0)
                 {       k_av[l][0]*=1./nmodes[l][0]*1.;
                         K[l][0]*=1./nmodes[l][0]*1.;
-                        Mono[l][0]*=pow(L2-L1,3)/(nmodes[l][0]*1.);
+                        Mono[l][0]*=1.0/(nmodes[l][0]*1.*I22);
                     if(strcmp(type_of_code, "rusticoX") == 0)
                     {
-                        MonoBB[l][0]*=pow(L2-L1,3)/(nmodes[l][0]*1.);
-                        MonoAB[l][0]*=pow(L2-L1,3)/(nmodes[l][0]*1.);
+                        MonoBB[l][0]*=1.0/(nmodes[l][0]*1.*I22B);
+                        MonoAB[l][0]*=1.0/(nmodes[l][0]*1.*sqrt(I22*I22B));
 
                     }
 if(strcmp(do_anisotropy, "yes") == 0){
-                        Quadru[l][0]*=pow(L2-L1,3)*5./(nmodes[l][0]*1.);
-                        Hexadeca[l][0]*=pow(L2-L1,3)*9/(nmodes[l][0]);
+                        Quadru[l][0]*=5./(nmodes[l][0]*1.*I22);
+                        Hexadeca[l][0]*=9./(nmodes[l][0]*1.*I22);
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
-        QuadruBB[l][0]*=pow(L2-L1,3)*5./(nmodes[l][0]*1.);
-        HexadecaBB[l][0]*=pow(L2-L1,3)*9/(nmodes[l][0]);
+        QuadruBB[l][0]*=5./(nmodes[l][0]*1.*I22B);
+        HexadecaBB[l][0]*=9./(nmodes[l][0]*1.*I22B);
         
-        QuadruAB[l][0]*=pow(L2-L1,3)*5./(nmodes[l][0]*1.);
-        HexadecaAB[l][0]*=pow(L2-L1,3)*9/(nmodes[l][0]);
+        QuadruAB[l][0]*=5./(nmodes[l][0]*1.*sqrt(I22*I22B));
+        HexadecaAB[l][0]*=9./(nmodes[l][0]*1.*sqrt(I22*I22B));
     }
     
 }
 if(strcmp(do_odd_multipoles, "yes") == 0){
-                        Di[l][0]*=pow(L2-L1,3)*3./(nmodes[l][0]*1.);
-                        Octo[l][0]*=pow(L2-L1,3)*7/(nmodes[l][0]);
+                        Di[l][0]*=3./(nmodes[l][0]*1.*I22);
+                        Octo[l][0]*=7./(nmodes[l][0]*1.*I22);
     if(strcmp(type_of_code, "rusticoX") == 0)
     {
-        DiBB[l][0]*=pow(L2-L1,3)*3./(nmodes[l][0]*1.);
-        OctoBB[l][0]*=pow(L2-L1,3)*7/(nmodes[l][0]);
+        DiBB[l][0]*=3./(nmodes[l][0]*1.*I22B);
+        OctoBB[l][0]*=7./(nmodes[l][0]*1.*I22B);
         
-        DiAB[l][0]*=pow(L2-L1,3)*3./(nmodes[l][0]*1.);
-        OctoAB[l][0]*=pow(L2-L1,3)*7/(nmodes[l][0]);
+        DiAB[l][0]*=3./(nmodes[l][0]*1.*sqrt(I22*I22B));
+        OctoAB[l][0]*=7./(nmodes[l][0]*1.*sqrt(I22*I22B));
     }
     
 }
@@ -1134,6 +1368,10 @@ freeTokens(Octo,Nk);
 }
 
 freeTokensLInt(nmodes,Nk);
+
+//free these onnly if it's periodic (but not for periodicFKP)
+if(FKP==0){
+
 free(deltak_re);
 free(deltak_im);
     if(strcmp(type_of_code, "rusticoX") == 0)
@@ -1141,14 +1379,14 @@ free(deltak_im);
         free(deltak_reB);
         free(deltak_imB);
     }
+}
+
 free(kx);
 
 }
 
 
-//void write_power_spectrum_periodic2D(double kmin, double kmax, double deltak_re[], double deltak_im[], double Deltak, int mubin, int  ngrid, double L1, double L2, int Ninterlacing, char *name_ps_out, double P_shot_noise, char *binning_type,char *file_for_mu)
-
-void write_power_spectrum_periodic2D(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak,int mubin, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out,char *name_psAB_out,char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *file_for_mu,char *type_of_code)
+void write_power_spectrum_periodic2D(double kmin,double kmax,double deltak_re[],double deltak_im[],double deltak_reB[],double deltak_imB[],double Deltak,int mubin, int ngrid,double L1,double L2,int Ninterlacing,char *name_ps_out,char *name_psAB_out,char *name_psBB_out,double P_shot_noise,double P_shot_noiseB,char *binning_type,char *file_for_mu,char *type_of_code, double I22,double I22B,char *write_kvectors, char *name_ps_kvectors)
 {
 char name_ps_out2[2000];
 char name_psAB_out2[2000];
@@ -1163,9 +1401,17 @@ double ***Pk;
 double ***PkAB;
 double ***PkBB;
 
+double ****KXvec,****KYvec,****KZvec;//   KXvec[vector][l-bin][tid]
+long int ***num_vec;
+long int **printed_modes;
+long int max_num_vectors=1e7;//among all threads 4pik^2Dk (1+Dk^2/(12k^2)) / kf^3 for each k-bin
+long int i_vectors;
+char name_ps_bin[2000];
+
+
 long int ***nmodes;
-int l,tid,i,j,k,lmu;
-int i2,j2,k2;
+long int l,tid,i,j,k,lmu;
+long int i2,j2,k2;
 long int l2;
 FILE *f,*fAB,*fBB;
 double *kx;
@@ -1175,6 +1421,10 @@ double kmineff;
 double keff;
 long int index2;
 long int ngridtot=pow(ngrid,3);
+int FKP=1;
+if(I22==0){I22=pow(L2-L1,-3);FKP=0;}
+if(I22B==0){I22B=pow(L2-L1,-3);}
+
 if(strcmp(binning_type, "linear") == 0){bintype_sw=0;}
 if(strcmp(binning_type, "log10") == 0){bintype_sw=1;}
 
@@ -1253,23 +1503,73 @@ if(bintype_sw==1){Nk=(int)((log10(sqrt(3.)*2.*Pi*ngrid/(2.*(L2-L1)))-log10(2.*Pi
 
         }
 
+if(strcmp(write_kvectors,"yes") == 0){//K[vector][l][thread]
 
-#pragma  omp parallel for private(index2,l2,i,j,k,l,lmu,tid,i2,k2,j2,argument,kmineff,keff) shared(ngrid,ngridtot,kx,Deltak,Nk,K,Mu,deltak_re,deltak_im,deltak_reB,deltak_imB,nmodes,Pk,PkAB,PkBB,Ninterlacing,kmin,bintype_sw,mubin,k_av,mu_av,type_of_code)
+printed_modes = (long int**)calloc(Nk,sizeof(long int*));//inizialized to 0
+for(l=0;l<Nk;l++)
+{
+printed_modes[l]=(long int*)calloc(mubin,sizeof(long int));
+}
+
+max_num_vectors=(long int)(max_num_vectors*1./(nthreads*1.*mubin));//split equally among threads.
+
+KXvec = (double ****) malloc(sizeof(double***)*(max_num_vectors));//not inizialized
+KYvec = (double ****) malloc(sizeof(double***)*(max_num_vectors));
+KZvec = (double ****) malloc(sizeof(double***)*(max_num_vectors));
+
+num_vec = (long int***)calloc(Nk,sizeof(long int**));//inizialized to 0
+      for(l=0;l<Nk;l++)
+      {
+         num_vec[l] = (long int**) calloc(mubin,sizeof(long int*));
+         for(lmu=0;lmu<mubin;lmu++)
+         {
+             num_vec[l][lmu] = (long int*) calloc(nthreads,sizeof(long int));
+         }
+      }
+
+        for(i_vectors=0;i_vectors<max_num_vectors;i_vectors++)
+        {
+                KXvec[i_vectors] = (double ***) malloc( sizeof(double**)*(Nk));
+                KYvec[i_vectors] = (double ***) malloc( sizeof(double**)*(Nk));
+                KZvec[i_vectors] = (double ***) malloc( sizeof(double**)*(Nk));
+
+                for(l=0;l<Nk;l++)
+                {
+                 
+                    KXvec[i_vectors][l] = (double **) malloc( sizeof(double*)*(mubin));
+                    KYvec[i_vectors][l] = (double **) malloc( sizeof(double*)*(mubin));
+                    KZvec[i_vectors][l] = (double **) malloc( sizeof(double*)*(mubin));
+                    for(lmu=0;lmu<mubin;lmu++)
+                    {
+                         KXvec[i_vectors][l][lmu] = (double *) malloc( sizeof(double)*(nthreads));
+                         KYvec[i_vectors][l][lmu] = (double *) malloc( sizeof(double)*(nthreads));
+                         KZvec[i_vectors][l][lmu] = (double *) malloc( sizeof(double)*(nthreads));
+                    }
+                }
+
+        }
+}
+
+#pragma  omp parallel for private(index2,l2,i,j,k,l,lmu,tid,i2,k2,j2,argument,kmineff,keff) shared(ngrid,ngridtot,kx,Deltak,Nk,K,Mu,deltak_re,deltak_im,deltak_reB,deltak_imB,nmodes,Pk,PkAB,PkBB,Ninterlacing,kmin,bintype_sw,mubin,k_av,mu_av,type_of_code,write_kvectors,KXvec,KYvec,KZvec,num_vec,max_num_vectors)
         for(l2=0;l2<ngridtot;l2++)
         {
                 tid=omp_get_thread_num();
-                i=(int)(l2/(ngrid*ngrid*1.));
-                j=(int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
+                i=(long int)(l2/(ngrid*ngrid*1.));
+                j=(long int)( (l2-i*ngrid*ngrid)/(ngrid*1.));
                 k=l2-i*ngrid*ngrid-j*ngrid;
 
 if(bintype_sw==0){
 l=(int)((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak);//-1.;
-if((pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak<0){l=-1;}
+//if(l<0){l=0;}
+
+if( (pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5)-kmin)/Deltak<0 ){l=-1;}
+
 }
 
 if(bintype_sw==1){
-l=(int)((log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak);//-1.;
-if((log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak<0){l=-1;}
+l=(int)(( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak);//-1.;
+//if(l<0){l=0;}
+if( ( log10(pow(kx[i]*kx[i]+kx[j]*kx[j]+kx[k]*kx[k],0.5))-log10(kmin))/Deltak<0 ){l=-1;}
 }
 
                 if(l<Nk && l>=0)
@@ -1306,6 +1606,14 @@ Pk[l][lmu][tid]+=pow(deltak_re[index2]/Ninterlacing*1.,2)+pow(deltak_im[index2]/
 
     }
 nmodes[l][lmu][tid]+=1;
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][lmu][tid]<max_num_vectors){
+               KXvec[num_vec[l][lmu][tid]][l][lmu][tid]=kx[i];
+               KYvec[num_vec[l][lmu][tid]][l][lmu][tid]=kx[j];
+               KZvec[num_vec[l][lmu][tid]][l][lmu][tid]=kx[k];
+               num_vec[l][lmu][tid]++;
+               }
+
+
 }
 }
 else
@@ -1327,6 +1635,14 @@ Pk[l][lmu][tid]+=pow(deltak_re[index2]/Ninterlacing*1.,2)+pow(deltak_im[index2]/
 
     }
                nmodes[l][lmu][tid]+=1;
+               if(strcmp(write_kvectors,"yes") == 0 && num_vec[l][lmu][tid]<max_num_vectors){
+               KXvec[num_vec[l][lmu][tid]][l][lmu][tid]=kx[i];
+               KYvec[num_vec[l][lmu][tid]][l][lmu][tid]=kx[j];
+               KZvec[num_vec[l][lmu][tid]][l][lmu][tid]=kx[k];
+
+               num_vec[l][lmu][tid]++;
+               }
+
 }
 }
                }//l<Nk if
@@ -1340,6 +1656,11 @@ for(lmu=0;lmu<mubin;lmu++)
 {
 for(tid=1;tid<nthreads;tid++)
 {
+
+if( strcmp(write_kvectors,"yes") == 0 ){
+printed_modes[l][lmu]=printed_modes[l][lmu]+num_vec[l][lmu][tid];//missing thread 0!
+}
+
 k_av[l][lmu][0]+=k_av[l][lmu][tid];
 K[l][lmu][0]+=K[l][lmu][tid];
 mu_av[l][lmu][0]+=mu_av[l][lmu][tid];
@@ -1357,6 +1678,53 @@ nmodes[l][lmu][0]+=nmodes[l][lmu][tid];
 }
 
 
+if( strcmp(write_kvectors,"yes") == 0)
+{
+
+     for(lmu=0;lmu<mubin;lmu++)
+     {
+        for(l=0;l<Nk;l++)
+        {
+//if(bintype_sw==0){keff=(l+0.5)*Deltak+kmin;}
+//if(bintype_sw==1){keff=pow(10,(l+0.5)*Deltak+log10(kmin));}
+        printed_modes[l][lmu]=printed_modes[l][lmu]+num_vec[l][lmu][0];//thread 0 was missing!
+        sprintf(name_ps_bin,"%s_bink%d_binmu%d.txt",name_ps_kvectors,l,lmu);
+        f=fopen(name_ps_bin,"w");
+        fprintf(f,"#bin-k %d\n",l);
+        fprintf(f,"#bin-mu %d\n",lmu);
+        fprintf(f,"#kfundamental %e\n",2*Pi/(L2-L1));
+        fprintf(f,"#binning-k size %e\n",Deltak);
+        fprintf(f,"#binning-mu size %e\n",1./mubin*1.);
+        fprintf(f,"#binning type %s\n",binning_type);
+        fprintf(f,"#K-eff= %e\n",K[l][lmu][0]*1./nmodes[l][lmu][0]*1.);
+        fprintf(f,"#K-center= %e\n",k_av[l][lmu][0]*1./nmodes[l][lmu][0]*1.);
+        fprintf(f,"#mu-eff= %e\n",Mu[l][lmu][0]*1./nmodes[l][lmu][0]*1.);
+        fprintf(f,"#mu-center= %e\n",mu_av[l][lmu][0]*1./nmodes[l][lmu][0]*1.);
+        fprintf(f,"#Total number of modes %ld\n",nmodes[l][lmu][0]);
+        fprintf(f,"#Printed number of modes %ld\n",printed_modes[l][lmu]);
+        fprintf(f,"#kx\t ky\t kz\n");
+           for(tid=0;tid<nthreads;tid++)
+           {
+               for(i_vectors=0;i_vectors<num_vec[l][lmu][tid];i_vectors++)
+               {
+                   fprintf(f,"%e\t %e\t %e\n",KXvec[i_vectors][l][lmu][tid],KYvec[i_vectors][l][lmu][tid],KZvec[i_vectors][l][lmu][tid]);
+               }
+           }
+        
+     
+        fclose(f);
+        }
+
+     }
+
+freeTokensLInt(printed_modes,Nk);
+freeTokensLInt3(num_vec,Nk,mubin);
+freeTokens4(KXvec,max_num_vectors,Nk,mubin);
+freeTokens4(KYvec,max_num_vectors,Nk,mubin);
+freeTokens4(KZvec,max_num_vectors,Nk,mubin);
+
+}
+
 
 if( strcmp(file_for_mu,"no") == 0 ){
     f=fopen(name_ps_out,"a");
@@ -1372,11 +1740,11 @@ if( strcmp(file_for_mu,"no") == 0 ){
         for(lmu=0;lmu<mubin;lmu++)
         {
 
-if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%d.txt",name_ps_out,lmu);f=fopen(name_ps_out2,"a");}
+if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%ld.txt",name_ps_out,lmu);f=fopen(name_ps_out2,"a");}
             if(strcmp(type_of_code, "rusticoX") == 0)
             {
-                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psAB_out2,"%s_%d.txt",name_psAB_out,lmu);fAB=fopen(name_psAB_out2,"a");}
-                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psBB_out2,"%s_%d.txt",name_psBB_out,lmu);fBB=fopen(name_psBB_out2,"a");}
+                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psAB_out2,"%s_%ld.txt",name_psAB_out,lmu);fAB=fopen(name_psAB_out2,"a");}
+                if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_psBB_out2,"%s_%ld.txt",name_psBB_out,lmu);fBB=fopen(name_psBB_out2,"a");}
 
             }
 
@@ -1391,11 +1759,11 @@ if( strcmp(file_for_mu,"yes") == 0 ){sprintf(name_ps_out2,"%s_%d.txt",name_ps_ou
                         mu_av[l][lmu][0]*=1./nmodes[l][lmu][0]*1.;
                         Mu[l][lmu][0]*=1./nmodes[l][lmu][0]*1.;
 
-                        Pk[l][lmu][0]*=pow(L2-L1,3)/(nmodes[l][lmu][0]*1.);
+                        Pk[l][lmu][0]*=1.0/(nmodes[l][lmu][0]*1.*I22);
                     if(strcmp(type_of_code, "rusticoX") == 0)
                     {
-                        PkBB[l][lmu][0]*=pow(L2-L1,3)/(nmodes[l][lmu][0]*1.);
-                        PkAB[l][lmu][0]*=pow(L2-L1,3)/(nmodes[l][lmu][0]*1.);
+                        PkBB[l][lmu][0]*=1.0/(nmodes[l][lmu][0]*1.*I22B);
+                        PkAB[l][lmu][0]*=1.0/(nmodes[l][lmu][0]*1.*sqrt(I22*I22B));
 
                     }
 
@@ -1450,6 +1818,9 @@ freeTokens3(Pk,Nk,mubin);
 
     }
 freeTokensLInt3(nmodes,Nk,mubin);
+
+if(FKP==0){
+
 free(deltak_re);
 free(deltak_im);
     if(strcmp(type_of_code, "rusticoX") == 0)
@@ -1458,6 +1829,8 @@ free(deltak_im);
         free(deltak_imB);
 
     }
+}
+
 free(kx);
 
 }

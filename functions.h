@@ -35,6 +35,8 @@ void freeTokensInt2(int ***tokens,int N1,int *N2);
 
 void freeTokens3(double ***tokens, int N1, int N2);
 
+void freeTokens4(double ****tokens, int N1, int N2,int N3);
+
 void freeTokensInt3(int ***tokens,int N1,int N2);
 
 void check_box_for_yamamoto_old(double *parametersL1, int ngrid);

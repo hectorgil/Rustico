@@ -299,6 +299,25 @@ free(tokens);
 
 }
 
+void freeTokens4(double ****tokens, int N1, int N2, int N3)
+{
+int i,j,l;
+for(i=0;i<N1;++i)
+{
+     for(j=0;j<N2;++j)
+     {
+        for(l=0;l<N3;++l)
+        {
+            free(tokens[i][j][l]);
+        }
+        free(tokens[i][j]);
+     }
+     free(tokens[i]);
+}
+free(tokens);
+
+}
+
 void freeTokensInt(int **tokens, int N)
 {
 int i;
