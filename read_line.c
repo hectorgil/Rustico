@@ -17,7 +17,6 @@ wfkp=1;//FKP weight
 n_z=1;//number density of galaxies
 veto=1;//whether this galaxy needs to be vetoed (veto=0 for vetoed galaxy, otherwise and by default 1)
 wsys=1;//systematic/imaging weight.
-char in_eboss_foot[20],iscmass[200];
 //if some of these inputs doesn't exist in your survey (for both data or random catalogue) do not assigne a value (by default is 1). 
 
 //Total weight which will be applied to each galaxy: wsys*veto*wfkp*wcol.
@@ -25,20 +24,13 @@ char in_eboss_foot[20],iscmass[200];
 
 if(type==0){//data
 
-fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %*s %s %*s %s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,iscmass,in_eboss_foot,wfkp_cmass_c,&wfkp);
-
-if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
-else{wcol=wcp*wnoz;}
-
+fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wsys,&wcp,&wnoz,&n_z,&wfkp);
 
 }
 
 if(type==1){//random
 
-fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %s %s %*s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,in_eboss_foot,iscmass,wfkp_cmass_c,&wfkp);
-
-if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
-else{wcol=wcp*wnoz;}
+fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wsys,&wcp,&wnoz,&n_z,&wfkp);
 
 }
 
@@ -75,9 +67,6 @@ if(type==1){
 fscanf(f,"%lf %lf %lf\n",&x,&y,&z);
 
 }
-        if(z>=2400.){z=z-2400.;}
-        if(z<0){z=z+2400.;}
-        
 
 params[0]=x;
 params[1]=y;
