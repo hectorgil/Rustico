@@ -1969,7 +1969,7 @@ for(i1=0;i1<Nk1;i1++)
 l1=-1;
 do{
 l1++;
-if(l1==Nk){printf("Error. K1[%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,K1eff[i1]);exit(0);}
+if(l1==Nk){printf("Error. K1[%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,K1eff[i1]);exit(0);}
 }while(Kuni[l1]!=K1eff[i1]);
 vector_pointerk1[i1]=l1;
 
@@ -1978,7 +1978,7 @@ vector_pointerk1[i1]=l1;
       l2=-1;
       do{
       l2++;
-      if(l2==Nk){printf("Error. K2[%d,%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,K2eff[i1][i2]);exit(0);}
+      if(l2==Nk){printf("Error. K2[%ld,%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,K2eff[i1][i2]);exit(0);}
       }while(Kuni[l2]!=K2eff[i1][i2]);
       vector_pointerk2[i1][i2]=l2;
          
@@ -1987,7 +1987,7 @@ vector_pointerk1[i1]=l1;
          l3=-1;
          do{
          l3++;
-         if(l3==Nk){printf("Error. K3[%d,%d,%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,i3,K3eff[i1][i2][i3]);exit(0);}
+         if(l3==Nk){printf("Error. K3[%ld,%ld,%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,i3,K3eff[i1][i2][i3]);exit(0);}
          }while(Kuni[l3]!=K3eff[i1][i2][i3]);
          vector_pointerk3[i1][i2][i3]=l3;
          }
@@ -2391,7 +2391,7 @@ for(i1=0;i1<Nk1;i1++)
 l1=-1;
 do{
 l1++;
-if(l1==Nk){printf("Error. K1[%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,K1eff[i1]);exit(0);}
+if(l1==Nk){printf("Error. K1[%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,K1eff[i1]);exit(0);}
 }while(Kuni[l1]!=K1eff[i1]);
 vector_pointerk1[i1]=l1;
 
@@ -2400,7 +2400,7 @@ vector_pointerk1[i1]=l1;
       l2=-1;
       do{
       l2++;
-      if(l2==Nk){printf("Error. K2[%d,%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,K2eff[i1][i2]);exit(0);}
+      if(l2==Nk){printf("Error. K2[%ld,%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,K2eff[i1][i2]);exit(0);}
       }while(Kuni[l2]!=K2eff[i1][i2]);
       vector_pointerk2[i1][i2]=l2;
 
@@ -2409,7 +2409,7 @@ vector_pointerk1[i1]=l1;
          l3=-1;
          do{
          l3++;
-         if(l3==Nk){printf("Error. K3[%d,%d,%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,i3,K3eff[i1][i2][i3]);exit(0);}
+         if(l3==Nk){printf("Error. K3[%ld,%ld,%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,i3,K3eff[i1][i2][i3]);exit(0);}
          }while(Kuni[l3]!=K3eff[i1][i2][i3]);
          vector_pointerk3[i1][i2][i3]=l3;
          }
@@ -2774,7 +2774,7 @@ for(i1=0;i1<Nk1;i1++)
 l1=-1;
 do{
 l1++;
-if(l1==Nk){printf("Error. K1[%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,K1eff[i1]);exit(0);}
+if(l1==Nk){printf("Error. K1[%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,K1eff[i1]);exit(0);}
 }while(Kuni[l1]!=K1eff[i1]);
 vector_pointerk1[i1]=l1;
 
@@ -2783,7 +2783,7 @@ vector_pointerk1[i1]=l1;
       l2=-1;
       do{
       l2++;
-      if(l2==Nk){printf("Error. K2[%d,%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,K2eff[i1][i2]);exit(0);}
+      if(l2==Nk){printf("Error. K2[%ld,%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,K2eff[i1][i2]);exit(0);}
       }while(Kuni[l2]!=K2eff[i1][i2]);
       vector_pointerk2[i1][i2]=l2;
 
@@ -2792,7 +2792,7 @@ vector_pointerk1[i1]=l1;
          l3=-1;
          do{
          l3++;
-         if(l3==Nk){printf("Error. K3[%d,%d,%d]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,i3,K3eff[i1][i2][i3]);exit(0);}
+         if(l3==Nk){printf("Error. K3[%ld,%ld,%ld]=%lf not stored in any Kuni vector. Exiting now...\n",i1,i2,i3,K3eff[i1][i2][i3]);exit(0);}
          }while(Kuni[l3]!=K3eff[i1][i2][i3]);
          vector_pointerk3[i1][i2][i3]=l3;
          }

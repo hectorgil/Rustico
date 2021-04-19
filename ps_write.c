@@ -1212,9 +1212,9 @@ if( strcmp(write_kvectors,"yes") == 0)
 if(bintype_sw==0){keff=(l+0.5)*Deltak+kmin;}
 if(bintype_sw==1){keff=pow(10,(l+0.5)*Deltak+log10(kmin));}
         printed_modes[l]=printed_modes[l]+num_vec[l][0];//thread 0 was missing!
-        sprintf(name_ps_bin,"%s_bin%d.txt",name_ps_kvectors,l);
+        sprintf(name_ps_bin,"%s_bin%ld.txt",name_ps_kvectors,l);
         f=fopen(name_ps_bin,"w");
-        fprintf(f,"#bin %d\n",l);
+        fprintf(f,"#bin %ld\n",l);
         fprintf(f,"#kfundamental %e\n",2*Pi/(L2-L1));
         fprintf(f,"#binning size %e\n",Deltak);
         fprintf(f,"#binning type %s\n",binning_type);
@@ -1688,10 +1688,10 @@ if( strcmp(write_kvectors,"yes") == 0)
 //if(bintype_sw==0){keff=(l+0.5)*Deltak+kmin;}
 //if(bintype_sw==1){keff=pow(10,(l+0.5)*Deltak+log10(kmin));}
         printed_modes[l][lmu]=printed_modes[l][lmu]+num_vec[l][lmu][0];//thread 0 was missing!
-        sprintf(name_ps_bin,"%s_bink%d_binmu%d.txt",name_ps_kvectors,l,lmu);
+        sprintf(name_ps_bin,"%s_bink%ld_binmu%ld.txt",name_ps_kvectors,l,lmu);
         f=fopen(name_ps_bin,"w");
-        fprintf(f,"#bin-k %d\n",l);
-        fprintf(f,"#bin-mu %d\n",lmu);
+        fprintf(f,"#bin-k %ld\n",l);
+        fprintf(f,"#bin-mu %ld\n",lmu);
         fprintf(f,"#kfundamental %e\n",2*Pi/(L2-L1));
         fprintf(f,"#binning-k size %e\n",Deltak);
         fprintf(f,"#binning-mu size %e\n",1./mubin*1.);
