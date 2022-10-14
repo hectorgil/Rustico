@@ -17,6 +17,10 @@ icc main.c bispectrum.c functions.c mass_assignment.c fftw_compute.c read_positi
 
 ./rustico_icc param_file.txt
 
+==== Considerations ===
+
+When running the code for the very first time with the bispectrum option enabled for, the code will create some "wisdom" files in order to speed up the computation of the bispectrum for further runs. These files will depend on the grid used: wisdom64, wisdom128, wisdom256 etc. Please, allow for the 1st time a single process to run, so these files can be created without an overlapping writting errors. Once these files are created, several processs can simultaneously run, as they will be required only to be read. 
+
 ====Parameter file options====
 
 #Type of code (rustico/rusticoX): rustico option for auto-statistics, rusticoX option for cross statistics.
