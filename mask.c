@@ -40,8 +40,8 @@ double MIN[1];
 double MAX[1];
 double Pi=(4.*atan(1.));
 //double Area=parameter_value[13]*pow(Pi/180.,2);
-double params[8];
-double RA,dec,redshift,weight_fkp,weight_col,weight_sys,n_z,theta, radial,nuissance;//,max,min;
+double params[9];
+double RA,dec,redshift,distance,weight_fkp,weight_col,weight_sys,n_z,theta, radial,nuissance;//,max,min;
 int veto;
 long int i,j,l,npar_ran,npar_ranB,npar_used,npar_used_100,npar_usedB,npar_used_100B;
 int tid;
@@ -57,6 +57,11 @@ int N_bin;
 double s,xlos,ylos,zlos,mu,weight_ij;
 int index_s;
 int i_window_norm_bin;
+double *redshift_table,*dist_table;
+double zlow=-1;
+double zhigh=20;
+int N_z_table=10000;
+int free_table_dist_z=0;
 //if shuffle == 0
 if(strcmp(shuffle,"no") == 0){
 
@@ -92,11 +97,40 @@ get_line(f, params,1);
 RA=params[0];
 dec=params[1];
 redshift=params[2];
+distance=params[8];
 weight_fkp=params[3];
 //n_z=params[4];
 weight_col=params[5];
 weight_sys=params[6];
 veto=(int)(params[7]);
+
+if(redshift==-1 && distance==-1){printf("Error, line %ld in randoms returns no physical redshift or distance. Exiting now...\n",i);exit(0);}
+
+if(i==0 && redshift==-1 && distance!=-1)
+{ 
+//generate distance - z table
+redshift_table = (double*) calloc(N_z_table, sizeof(double));
+dist_table = (double*) calloc(N_z_table, sizeof(double));
+free_table_dist_z=1;
+for(j=0;j<N_z_table;j++)
+{
+redshift_table[j]=(zhigh-(zlow))/N_z_table*1.*(j-0.5);//interpolation between z= zhigh and zlow
+MAX[0]=redshift_table[j];
+MIN[0]=0;
+adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
+dist_table[j]=radial;
+}
+
+//interpolate dist into z
+redshift=Interpol(distance, dist_table, redshift_table, N_z_table);
+if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when converting dist into z (z=%lf). Please enlarge zhigh-zlow range in mask.c\n",redshift);} 
+}
+
+if(i>0 && redshift==-1 && distance!=-1){
+//interpolate dist into z
+redshift=Interpol(distance, dist_table, redshift_table, N_z_table);//z-dist monotonically growing
+if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when converting dist into z (z=%lf). Please enlarge zhigh-zlow range in mask.c\n",redshift);}
+}
 
         theta=90.-dec;
         if(redshift>z_min && redshift<z_max && veto==1 && weight_col>0)
@@ -147,6 +181,15 @@ printf("%ld out of %ld randoms used for calculation\n",npar_used,npar_used_100);
     weight_col=params[5];
     weight_sys=params[6];
     veto=(int)(params[7]);
+    distance=params[8];
+
+if(redshift==-1 && distance==-1){printf("Error, line %ld in randoms returns no physical redshift or distance. Exiting now...\n",i);exit(0);}
+
+if(redshift==-1 && distance!=-1){
+//interpolate dist into z
+redshift=Interpol(distance, dist_table, redshift_table, N_z_table);
+if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when converting dist into z (z=%lf). Please enlarge zhigh-zlow range in mask.c\n",redshift);}
+}
 
             theta=90.-dec;
             if(redshift>z_minB && redshift<z_maxB && veto==1 && weight_col>0)
@@ -578,7 +621,13 @@ free(s_x_ran);
 free(s_y_ran);
 free(s_z_ran);
 free(weight_ran);
-    
+
+if(free_table_dist_z==1)
+{
+free(redshift_table);
+free(dist_table);
+} 
+   
         if(strcmp(type_of_code, "rusticoX") == 0){
             
             free(s_x_ranB);

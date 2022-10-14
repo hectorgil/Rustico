@@ -1,4 +1,7 @@
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double weight, double L2, double L1, int ngrid)
 {
@@ -6,9 +9,21 @@ void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_y=s_y+(-L1);
 	s_z=s_z+(-L1);
 	
-	int  xindex=(int)(ngrid*s_x/(L2-L1));
-	int  yindex=(int)(ngrid*s_y/(L2-L1));
-	int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int  xindex=(long int)(ngrid*s_x/(L2-L1));
+	long int  yindex=(long int)(ngrid*s_y/(L2-L1));
+	long int  zindex=(long int)(ngrid*s_z/(L2-L1));
+        //long int ngridtot=pow(ngrid,3);
+
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
+
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+
+
         long int index;
 	double sx;
 	double sy;
@@ -21,6 +36,10 @@ void ngc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	if( fabs(sx)<=1./2. && fabs(sy)<=1./2. && fabs(sz)<=1./2.)//only contributing to the adjacent grids
 	{
                         index=(pow(ngrid,2)*xindex+ngrid*yindex+zindex);
+                        //if(index<0 || index>=ngridtot){printf("index=%ld/%ld, (%lf,%lf,%lf) Core dumped is coming...\n",index,ngridtot,s_x,s_y,s_z);exit(0);}
+                        //if(xindex<0 || xindex>=ngrid){printf("x %lf %d\n",s_x,xindex);exit(0);}
+                        //if(yindex<0 || yindex>=ngrid){printf("y %lf %d\n",s_y,yindex);exit(0);}
+                        //if(zindex<0 || zindex>=ngrid){printf("z %lf %d\n",s_z,zindex);exit(0);}
 		        delta[index]=delta[index]+weight;
 	}
 
@@ -34,14 +53,24 @@ void cic_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_z=s_z+(-L1);
 	
 
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	long  int  xindex=(int)(ngrid*s_x/(L2-L1));
+        long int  yindex=(int)(ngrid*s_y/(L2-L1));
+         long  int  zindex=(int)(ngrid*s_z/(L2-L1));
+/*
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
 
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+*/
+
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
 
 		  double sx;
 		  double sy;
@@ -89,14 +118,24 @@ void tsc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_z=s_z+(-L1);
 	
 
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
+/*
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
 
-                  int  xindex2;
-	          int  yindex2;
-		  int  zindex2;
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+*/
+
+                long  int  xindex2;
+	        long  int  yindex2;
+		long  int  zindex2;
                   long int index;
 		  double sx;
 		  double sy;
@@ -159,6 +198,10 @@ void tsc_assingment(double delta[], double s_x, double s_y, double s_z, double w
 					  }
 
                                           index=(pow(ngrid,2)*xindex2+ngrid*yindex2+zindex2);
+//if(xindex2<0 || xindex2>=ngrid){printf("x %lf %d %d\n",s_x,xindex,xindex2);exit(0);}
+//if(yindex2<0 || yindex2>=ngrid){printf("y %lf %d %d\n",s_y,yindex,yindex2);exit(0);}
+//if(zindex2<0 || zindex2>=ngrid){printf("z %lf %d %d\n",s_z,zindex, zindex2);exit(0);}
+
 
 					  delta[index]=delta[index]+factor_x*factor_y*factor_z*weight;
 
@@ -175,14 +218,25 @@ void pcs_assingment(double delta[], double s_x, double s_y, double s_z, double w
 	s_z=s_z+(-L1);
 	
 
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
+/*
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
+
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+*/
+
            long int index;
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
 
 		  double sx;
 		  double sy;
@@ -258,14 +312,25 @@ void pq4s_assingment(double delta[], double s_x, double s_y, double s_z, double 
 	s_y=s_y+(-L1);
 	s_z=s_z+(-L1);
 	
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
+/*
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
+
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+*/
+
 long int index;
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
 
 		  double sx;
 		  double sy;
@@ -352,14 +417,24 @@ void pq5s_assingment(double delta[], double s_x, double s_y, double s_z, double 
 	s_y=s_y+(-L1);
 	s_z=s_z+(-L1);
 	
-	int i,j,l;
-	 int  xindex=(int)(ngrid*s_x/(L2-L1));
-	  int  yindex=(int)(ngrid*s_y/(L2-L1));
-	   int  zindex=(int)(ngrid*s_z/(L2-L1));
+	long int i,j,l;
+	 long int  xindex=(int)(ngrid*s_x/(L2-L1));
+	  long int  yindex=(int)(ngrid*s_y/(L2-L1));
+	   long int  zindex=(int)(ngrid*s_z/(L2-L1));
+/*
+        if(xindex<0){xindex=xindex+ngrid;}
+        if(xindex>ngrid-1){xindex=xindex-ngrid;}
 
-	    int  xindex2;
-		 int  yindex2;
-		  int  zindex2;
+        if(yindex<0){yindex=yindex+ngrid;}
+        if(yindex>ngrid-1){yindex=yindex-ngrid;}
+
+        if(zindex<0){zindex=zindex+ngrid;}
+        if(zindex>ngrid-1){zindex=zindex-ngrid;}
+*/
+
+	    long int  xindex2;
+		 long int  yindex2;
+		  long int  zindex2;
                   long int index;
 		  double sx;
 		  double sy;
