@@ -2423,6 +2423,7 @@ vector_pointerk1[i1]=l1;
     sprintf(type_cross,"XXX");
     bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_re, deltak_im, NULL, NULL, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0, 0,0,Power_spectrum_shot_noise,0,0,0,0,0, n_lines_parallel, binning_type, name_bs_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross,type_of_survey,bis_opt, Kuni, Nk, vector_pointerk1, vector_pointerk2, vector_pointerk3);
 
+    if(strcmp(type_of_code,"rusticoX") ==0 ){//can't enter here with do_bispectrum2==yes
     
     //BBB
     sprintf(type_cross,"XXX");
@@ -2464,8 +2465,15 @@ vector_pointerk1[i1]=l1;
     sprintf(type_cross,"XYY");
     bispectrum_calculator(K1eff, K2eff, K3eff, Nk1, Nk2, Nk3, deltak_reB, deltak_imB, deltak_re, deltak_im, NULL, NULL,Ninterlacing, kmin, kmax, L1, L2, ngrid_i, Deltakbis, 0,0,0,0,Power_spectrum_shot_noiseB,0,0,0,0,Power_spectrum_shot_noise, n_lines_parallel, binning_type, name_bsBAA_out,name_bs002_out,name_bs020_out,name_bs200_out,triangles_num, write_triangles, triangles_id, input_bin,do_bispectrum2,type_cross,type_of_survey,bis_opt, Kuni, Nk, vector_pointerk1, vector_pointerk2, vector_pointerk3);
 
+}//rusticox if
 
-
+if( strcmp(bis_opt,"himem") == 0 )
+{
+free(Kuni);
+free(vector_pointerk1);
+freeTokensInt(vector_pointerk2, Nk1);
+freeTokensInt2(vector_pointerk3, Nk1,Nk2);
+}
 
 free(K1eff);
 freeTokens(K2eff,Nk1);
@@ -2802,7 +2810,6 @@ vector_pointerk1[i1]=l1;
 }//if-himem
 
 
-//exit(0);
     if(reverse==0)
     {
         
