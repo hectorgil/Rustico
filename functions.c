@@ -52,10 +52,16 @@ return f;
 void z_to_r(unsigned ndim, const double *x, void *fdata, unsigned fdim, double *fval)
 {
      f_params params_function = *(f_params *) fdata;//cast from void to f_params
-     double omega= params_function.OMEGA_M;
+     double omega_m= params_function.OMEGA_M;
+     double omega_L= params_function.OMEGA_L;
+     double omega_k=1-omega_m-omega_L;
      double z=x[0];
-     double c=299792.458;//speed of light
-     fval[0]=c/(100.*sqrt(omega*pow(1+z,3)+1.-omega));
+//     double c=299792.458;//speed of light
+//     fval[0]=c/(100.*sqrt(omega_m*pow(1+z,3)+1.-omega_m));
+
+     fval[0]=1./(sqrt(omega_m*pow(1+z,3)+omega_L+omega_k*pow(1+z,2)));
+
+
 }
 
 void randstring(char *name,long int seed) {

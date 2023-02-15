@@ -15,15 +15,18 @@
 void window_mask_function_RRcount(char *name_wink_out,char *name_winkBB_out,char *name_winkAB_out,char *name_randoms_in,char *name_randomsB_in, int window_norm_bin,double deltaS_window,double percentage_randoms_window,char *yamamoto4window,double *parameter_value,double *parameter_valueB,char *header,double L,int nparallel, char *type_of_code,char *shuffle, double *posX, double *posY, double *posZ, double *posW, double *posXB, double *posYB, double *posZB, double *posWB)
 {
 double Omega_m=parameter_value[0];
+double Omega_L=parameter_value[29];
+double speed_c=parameter_value[30];
 double z_min=parameter_value[1];
 double z_max=parameter_value[2];
 
-double Omega_mB;
+double Omega_mB,Omega_LB;
 double z_minB;
 double z_maxB;
     double decision_rand;
     if(strcmp(type_of_code, "rusticoX") == 0){
 Omega_mB=parameter_valueB[0];
+Omega_LB=parameter_valueB[29];
 z_minB=parameter_valueB[1];
 z_maxB=parameter_valueB[2];
     }
@@ -32,9 +35,11 @@ z_maxB=parameter_valueB[2];
 f_params *function_parameters;
 function_parameters = (f_params *) malloc(sizeof(f_params));
 (*function_parameters).OMEGA_M=Omega_m;
+(*function_parameters).OMEGA_L=Omega_L;
     
     if(strcmp(type_of_code, "rusticoX") == 0){
-    if(Omega_m!=Omega_mB){printf("Warning Om different for both tracers. Exiting now...\n");exit(0);}}
+    if(Omega_m!=Omega_mB){printf("Warning Om different for both tracers. Exiting now...\n");exit(0);}
+    if(Omega_L!=Omega_LB){printf("Warning OL different for both tracers. Exiting now...\n");exit(0);}}
 
 double MIN[1];
 double MAX[1];
@@ -118,7 +123,12 @@ redshift_table[j]=(zhigh-(zlow))/N_z_table*1.*(j-0.5);//interpolation between z=
 MAX[0]=redshift_table[j];
 MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
-dist_table[j]=radial;
+//dist_table[j]=radial;
+
+if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
+if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
+if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+
 }
 
 //interpolate dist into z
@@ -147,6 +157,10 @@ if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when con
                   MAX[0]=redshift;
                   MIN[0]=0;
                   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
+
+if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
+if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
+if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
 
                    s_x_ran[npar_used]=radial*sin(theta)*cos(RA);
                    s_y_ran[npar_used]=radial*sin(theta)*sin(RA);
@@ -206,6 +220,10 @@ if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when con
                       MAX[0]=redshift;
                       MIN[0]=0;
                       adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
+
+if(Omega_mB+Omega_LB==1){radial=radial*speed_c/100.;}//flat
+if(1-Omega_mB-Omega_LB<0){radial=sin(radial*pow(fabs(1-Omega_mB-Omega_LB),0.5))*speed_c/100.*pow(fabs(1-Omega_mB-Omega_LB),-0.5);}//Ok<0
+if(1-Omega_mB-Omega_LB>0){radial=sinh(radial*pow(fabs(1-Omega_mB-Omega_LB),0.5))*speed_c/100.*pow(fabs(1-Omega_mB-Omega_LB),-0.5);}//Ok>0
 
                        s_x_ranB[npar_usedB]=radial*sin(theta)*cos(RA);
                        s_y_ranB[npar_usedB]=radial*sin(theta)*sin(RA);

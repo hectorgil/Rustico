@@ -1,5 +1,3 @@
-//You will need to modify certain line of this file to match your code structure. This operation must be done BEFORE compiling
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -28,29 +26,27 @@ double Pi=(4.*atan(1.));
 //Total weight which will be applied to each galaxy: wsys*veto*wfkp*wcol.
 //Note that for some surveys, such as BOSS DR12, the catalogues provide the close-pair weight (wcp) and the redshift failure weight (wnoz), and the total collision weight is formed out of these weight as: wcol=(wcp+wnoz-1). In these and similar cases you will need to build the collision weight from the individual pieces, just below the fscanf line. 
 
-if(type==0){//data. Skycut option
+if(type==0){//data
 
-//modify the line below accordingly to your file structure.
-/* for eg. */ fscanf(f,"%lf %lf %lf %*f\n",&RA,&dec,&redshift);// first column: Right Ascencion (in rad); second declination (in rad); third redshift; forth unsued. 
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz,&wsys,&n_z);wcol=wcp+wnoz-1;//For BOSS LRGs
 
-//uncoment for changing deg to rad. 
-//RA=RA*180./Pi;
-//dec=dec*180/Pi;
-//dec=dec-90.;//theta to dec
+fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %*s %s %*s %s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,iscmass,in_eboss_foot,wfkp_cmass_c,&wfkp);// For eBOSS LRG
+if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
+else{wcol=wcp*wnoz;}
 
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %*s\n",&RA,&dec,&redshift,&wfkp,&wsys,&wcp,&wnoz,&n_z);wcol=wcp*wnoz;//For eBOSS QSO
 
 }
 
-if(type==1){//random Skycut option
+if(type==1){//random
 
-//modify the line below accordingly to your file structure.
-fscanf(f,"%lf %lf %lf %*f\n",&RA,&dec,&redshift);
+//fscanf(f,"%lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&n_z);//For BOSS LRGs
 
-//uncoment for changing deg to rad.
-//RA=RA*180./Pi;
-//dec=dec*180/Pi;
-//dec=dec-90.;//theta to dec
+fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %s %s %*s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,in_eboss_foot,iscmass,wfkp_cmass_c,&wfkp);// For eBOSS LRG
+if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
+else{wcol=wcp*wnoz;}
 
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wsys,&wcp,&wnoz,&n_z);wcol=wcp*wnoz;//For eBOSS QSO
 
 }
 
@@ -65,7 +61,6 @@ params[7]=veto;
 params[8]=dist;
 }
 
-
 void get_line_periodic(FILE *f, double params[],int type)//for periodic box
 {
 double x,y,z,vx,vy,vz,weight;
@@ -73,32 +68,29 @@ double scale_factor;
 int veto;
 weight=1;
 veto=1;
-long int i;
 //strictly necessary only need to provide x,y,z;
 
 //data
 if(type==0){
-//modify the line below accordingly to your file structure.
-/* for eg. */ fscanf(f,"%lf %lf %lf %lf %lf %lf\n",&x,&y,&z,&vx,&vy,&vz);//x-position, y-position; z-position; x-velocity, y-velocity; z-velocity
+
+//fscanf(f,"%lf %lf %lf %*f %*f %*f %*f %*f %*f\n",&x,&y,&z);
+fscanf(f,"%lf %lf %lf %*f %*f %lf\n",&x,&y,&z,&vz);
+
 }
 
 //randoms
 if(type==1){
-//modify the line below accordingly to your file structure.
 fscanf(f,"%lf %lf %lf\n",&x,&y,&z);
 
 }
 
-
-//This is just an example of how to apply RSD along the line of sight. These formula are code-dependent! Make sure you input the right values and formula if you want to apply RSD. 
-/*
      scale_factor=0.66667;//z=0.5
-     z=z+vz*1.0/(100.*scale_factor*sqrt(0.286*pow(scale_factor,-3)+1.-0.286));//z-space distortion correction (assuming z direction)     
+     z=z+vz*1.0/(100.*scale_factor*sqrt(0.286*pow(scale_factor,-3)+1.-0.286));//z-space distortion correction (assuming z direction)          //z=z+vz/(100.*sqrt(0.286*pow(scale_factor,-3)+1.-0.286));
 
-	    //This ensures the particles re-enter the box. In this case of size 2600 (hardcoded value). 
+
         if(z>=2600.){z=z-2600.;}
         if(z<0){z=z+2600.;}
-*/      
+        
 
 params[0]=x;
 params[1]=y;

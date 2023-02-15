@@ -58,7 +58,7 @@ char RSD[10];//RSD distorsion on Gadget boxes?
 char RSDB[10];//RSD distorsion on Gadget boxes?
 double Rsmoothing;
 double I22delta,I33delta,Pnoisedelta,Bnoise1delta,Bnoise2delta;
-char output_density[200];//output density in a grid (only for FFT)
+char output_density[200];//output density in a grid (only for FFT). The output is delta(x) for a periodic box, and F(x) =  n(x)-alpha*n_ran(x), where n(x) and n_ran(x) are the number density of galaxies and randoms. Note that F is not normalized by I2^0.5 or I3^0.333. 
 
 //Bispectrum parameters
 char do_bispectrum[10];//Do Bispectrum at all?
@@ -142,6 +142,8 @@ char type_of_yamamoto[20];
 double z_min,z_max;//Minimum and maximum (excluding) redshift cuts
 double z_minB,z_maxB;//Minimum and maximum (excluding) redshift cuts
 double Omega_m;//Value of Omega matter;
+double Omega_L;
+double speed_of_light=299792.458;
 double Area_survey;//Value of Area of the survey in deg^2
 double Area_surveyB;//Value of Area of the survey in deg^2
 char Hexadecapole_type[20];//L4 or L2L2 or L1L3
@@ -241,10 +243,18 @@ fscanf(f,"%*s %*s %*s %*s %s\n",type_of_code);
 
 
 fscanf(f,"%*s %*s %*s %*s %s\n",type_of_survey);
-    if(strcmp(type_of_code, "rustico") == 0){fscanf(f,"%*s %*s %*s %*s %s\n",type_of_file);}
-    if(strcmp(type_of_code, "rusticoX") == 0){fscanf(f,"%*s %*s %*s %*s %s %s\n",type_of_file,type_of_fileB);}
+    if(strcmp(type_of_code, "rustico") == 0){fscanf(f,"%*s %*s %*s %*s %s\n",type_of_file); if( strcmp(type_of_file,"ascii") !=0 && strcmp(type_of_file,"gadget") !=0 ){printf("Error, type of file must be either ascii or gadget. Input read: %s. Exiting now...\n",type_of_file);exit(0);} }
+    if(strcmp(type_of_code, "rusticoX") == 0){fscanf(f,"%*s %*s %*s %*s %s %s\n",type_of_file,type_of_fileB);
+
+if( strcmp(type_of_file,"ascii") !=0 && strcmp(type_of_file,"gadget") !=0 ){printf("Error, type of file A must be either ascii or gadget. Input read: %s. Exiting now...\n",type_of_file);exit(0);}
+if( strcmp(type_of_fileB,"ascii") !=0 && strcmp(type_of_fileB,"gadget") !=0 ){printf("Error, type of file B must be either ascii or gadget. Input read: %s. Exiting now...\n",type_of_fileB);exit(0);}
+
+}
+
     fscanf(f,"%*s %*s %*s %*s %s\n",type_of_input);
     if(strcmp(type_of_input, "particles") != 0 && strcmp(type_of_input, "density") != 0){printf("Error, type of input has to be either 'particles' or 'density'. Input read: %s. Exiting now...\n",type_of_input);exit(0);}
+    if(strcmp(type_of_input, "density") == 0 && strcmp(type_of_file,"gadget") == 0 ){ printf("Error, a density type of input requires an ascii type of file. Exiting now...\n");exit(0); }
+    if(strcmp(type_of_input, "density") == 0 && strcmp(type_of_fileB,"gadget") == 0 && strcmp(type_of_code,"rusticoX") == 0 ){printf("Error, a density type of input requires an ascii type of file. Exiting now...\n");exit(0);}
     if(strcmp(type_of_code, "rustico") == 0){fscanf(f,"%*s %*s %*s %*s %d\n",&gadget_files);}
     if(strcmp(type_of_code, "rusticoX") == 0){fscanf(f,"%*s %*s %*s %*s %d %d\n",&gadget_files,&gadget_filesB);}
     if(strcmp(type_of_code, "rustico") == 0){fscanf(f,"%*s %*s %*s %*s %*s %*s %*s %s\n",RSD);}
@@ -314,9 +324,9 @@ fscanf(f,"%*s %*s %*s %s\n",name_path_out);
 printf("Output files at %s\n",name_path_out);
 fscanf(f,"%*s %*s %*s %s\n",name_id);
 printf("Output Id %s\n",name_id);
-fscanf(f,"%*s %*s %s\n",header);
+fscanf(f,"%*s %*s %*s %s\n",header);
 printf("Write header? %s\n",header);
-fscanf(f,"%*s %*s %s\n",output_density);
+fscanf(f,"%*s %*s %*s %s\n",output_density);
 printf("Write density? %s\n\n",output_density);
 fscanf(f,"%*s %*s\n");
 fscanf(f,"%*s %*s %*s %*s %*s %*s %d\n",&power_grid);
@@ -346,8 +356,8 @@ fscanf(f,"%*s %*s\n");
 if(strcmp(type_of_survey, "cutsky") == 0){printf("== Cutsky options ==\n");}
 if(strcmp(type_of_survey, "cutsky") == 0){printf("Redshift cuts: %lf < z < %lf\n",z_min,z_max);}
 if(strcmp(type_of_code, "rusticoX") == 0 && strcmp(type_of_survey, "cutsky") == 0){printf("Redshift cuts: %lf < z < %lf\n",z_minB,z_maxB);}
-fscanf(f,"%*s %*s %*s %*s %lf\n",&Omega_m);
-if(strcmp(type_of_survey, "cutsky") == 0){printf("Omega_m: %lf\n",Omega_m);}
+fscanf(f,"%*s %*s %*s %*s %lf %lf\n",&Omega_m,&Omega_L);
+if(strcmp(type_of_survey, "cutsky") == 0){printf("Omega_m: %lf; Omega_L: %lf; Omega_k=%lf\n",Omega_m,Omega_L,1-Omega_m-Omega_L);}
 if(strcmp(type_of_code, "rustico") == 0){fscanf(f,"%*s %*s %*s %*s %*s %*s %lf\n",&Area_survey);}
 if(strcmp(type_of_code, "rusticoX") == 0){fscanf(f,"%*s %*s %*s %*s %*s %*s %lf %lf\n",&Area_survey,&Area_surveyB);}
 if(strcmp(type_of_survey, "cutsky") == 0){printf("Area of the survey %lf deg2\n",Area_survey);}
@@ -588,10 +598,10 @@ if( strcmp(triangles_num, "FFT") != 0 && strcmp(triangles_num, "APR_SUM") !=0 &&
 if( strcmp(triangles_num, "EXA_SUM") == 0 &&  strcmp(triangle_shapes,"EQU") !=0){printf("Warning. 'EXA_SUM' triangle normalization option it is only available for equilateral triangles. Exiting now...\n");return 0;}//not available at the moment
 if( strcmp(triangles_num, "EXA_EFF") == 0 &&  strcmp(triangle_shapes,"EQU") !=0){printf("Warning. 'EXA_EFF' triangle normalization option it is only available for equilateral triangles. Exiting now...\n");return 0;}//not available at the moment
 if( strcmp(write_triangles, "yes") != 0 &&  strcmp(write_triangles, "no") !=0){printf("Error. write triangle entry must be either 'yes' or 'now'. Exiting now...\n");return 0;}
-if( strcmp(write_triangles, "yes") == 0 && strcmp(triangle_shapes,"SQU") !=0 && strcmp(type_of_code,"rusticoX") == 0){printf("Waring. Write triangle option 'yes' is only recomended for squeezed triangle shapes 'SQU' and in auto-bispectrum mode. Exiting now...\n");return 0;}
-if( strcmp(header, "yes") !=0 && strcmp(header, "no") !=0){printf("Waring. Write header option must be either 'yes' or 'no'. Entry read %s. Exiting now...\n",header);return 0;}
+if( strcmp(write_triangles, "yes") == 0 && strcmp(triangle_shapes,"SQU") !=0 && strcmp(type_of_code,"rusticoX") == 0){printf("Warning. Write triangle option 'yes' is only recomended for squeezed triangle shapes 'SQU' and in auto-bispectrum mode. Exiting now...\n");return 0;}
+if( strcmp(header, "yes") !=0 && strcmp(header, "no") !=0){printf("Warning. Write header option must be either 'yes' or 'no'. Entry read %s. Exiting now...\n",header);return 0;}
 
-if( strcmp(output_density, "yes") !=0 && strcmp(output_density, "no") !=0){printf("Waring. Write density option must be either 'yes' or 'no'. Entry read %s. Exiting now...\n",output_density);return 0;}
+if( strcmp(output_density, "corrected") !=0 && strcmp(output_density, "uncorrected") !=0 && strcmp(output_density, "no") !=0){printf("Warning. Write density option must be either 'corrected', 'uncorrected' or 'no'. Entry read %s. Exiting now...\n",output_density);return 0;}
 
 if(power_grid<4 || power_grid>15){printf("Warning: Unusual value for number of grid cells per side: 2^%d=%d. Exiting now...\n",power_grid,ngrid);return 0;}
 if(strcmp(type_of_mass_assigment,"NGC") !=0 && strcmp(type_of_mass_assigment,"CIC") !=0 && strcmp(type_of_mass_assigment,"TSC") !=0 && strcmp(type_of_mass_assigment,"PCS") !=0 && strcmp(type_of_mass_assigment,"P4S") !=0 &&  strcmp(type_of_mass_assigment,"P5S") !=0){printf("Error. Type of mass assigment must be either 'NGC', 'CIC', 'TSC', 'PCS', 'P4S' or 'P5S'. Entry read %s. Exiting now...\n",type_of_mass_assigment);return 0;}
@@ -599,9 +609,10 @@ if( strcmp(type_of_yamamoto, "GridCenter") != 0 && strcmp(type_of_yamamoto, "Gri
 if(Ninterlacing<=0){printf("Error: Number of interglacing steps has to be equal or larger than 1. %d\n",Ninterlacing);return 0;}
 if( strcmp(grid_correction_string, "yes") !=0 && strcmp(grid_correction_string, "no") !=0){printf("Grid correction input must be either 'yes' or 'no'. Entry read %s. Exiting now...\n",grid_correction_string);return 0;}
 
-if( strcmp(type_of_computation, "FFT") !=0 && strcmp(output_density, "yes") == 0){printf("Warning. In order to write out the densities the type of calculationn must be FFT. Exiting now...\n");exit(0);}
+if( strcmp(type_of_computation, "FFT") !=0 && strcmp(output_density, "corrected") == 0){printf("Warning. In order to write out the densities the type of calculation must be FFT. Exiting now...\n");exit(0);}
+if( strcmp(type_of_computation, "FFT") !=0 && strcmp(output_density, "uncorrected") == 0){printf("Warning. In order to write out the densities the type of calculation must be FFT. Exiting now...\n");exit(0);}
 
-if( Ninterlacing !=1 && strcmp(output_density, "yes") == 0){printf("Warning. In order to write out the densities the number of interlacing steps must be 1. Exiting now...\n");exit(0);}
+if( Ninterlacing !=1 && strcmp(output_density, "uncorrected") == 0){printf("Warning. In order to write out the densities (uncorrected) the number of interlacing steps must be 1. Exiting now...\n");exit(0);}
 
 
 //
@@ -613,6 +624,7 @@ if(Rsmoothing<0 || Rsmoothing>40){printf("Warning. Strange value for Rsmoothing:
 if(z_min>=z_max){printf("Error. Minimum value for redshift is larger than the maximum: z_min=%lf; z_max=%lf. Exiting now...\n",z_min,z_max);return 0;}
 if(strcmp(type_of_code, "rusticoX") == 0){if(z_minB>=z_maxB){printf("Error. Minimum value for redshift is larger than the maximum: z_min=%lf; z_max=%lf. Exiting now...\n",z_minB,z_maxB);return 0;}}
 if(Omega_m<=0 || Omega_m>1){printf("Warning. Unusual value for Omega_m, Omega_m=%lf. Exiting now...\n",Omega_m);return 0;}
+if(Omega_L<=0 || Omega_L>1){printf("Warning. Unusual value for Omega_L, Omega_L=%lf. Exiting now...\n",Omega_L);return 0;}
 if(Area_survey<=0){printf("Warning. Usual value for the Area of the survey: %lf. Exiting now...\n",Area_survey);return 0;}
 if(strcmp(type_of_code, "rusticoX") == 0){if(Area_surveyB<=0){printf("Warning. Usual value for the Area of the survey: %lf. Exiting now...\n",Area_surveyB);return 0;}}
 if( strcmp(Hexadecapole_type, "L0L4") !=0 && strcmp(Hexadecapole_type, "L2L2") !=0 && strcmp(Hexadecapole_type, "L1L3") !=0){printf("Hexadecapole option must be either 'L2L2' or 'L0L4' or 'L1L3'. Entry read %s. Exiting now...\n",Hexadecapole_type);return 0;}
@@ -679,9 +691,10 @@ if( strcmp(do_mu_bins, "yes") == 0 &&  strcmp(do_anisotropy, "no") == 0){printf(
 
 if( strcmp(type_of_computation, "DSE") ==0 && strcmp(do_anisotropy, "no") == 0){printf("Warning. There's no point of doing an DSE computation for an isotropic signal, as this is equivalent to a DSY or FFT calculation. Exiting now...\n");exit(0);}
 
-//if( strcmp(type_of_computation, "FFT") !=0 && strcmp(output_density, "yes") == 0){printf("Warning. In order to write out the densities the type of calculationn must be FFT. Exiting now...\n");exit(0);}
+//if( strcmp(type_of_computation, "FFT") !=0 && strcmp(output_density, "corrected") == 0){printf("Warning. In order to write out the densities the type of calculationn must be FFT. Exiting now...\n");exit(0);}
+//if( strcmp(type_of_computation, "FFT") !=0 && strcmp(output_density, "uncorrected") == 0){printf("Warning. In order to write out the densities the type of calculationn must be FFT. Exiting now...\n");exit(0);}
 
-//if( Ninterlacing !=1 && strcmp(output_density, "yes") == 0){printf("Warning. In order to write out the densities the number of interlacing steps must be 1. Exiting now...\n");exit(0);}
+//if( Ninterlacing !=1 && strcmp(output_density, "uncorrected) == 0){printf("Warning. In order to write out the densities the number of interlacing steps must be 1. Exiting now...\n");exit(0);}
 
 //}//old cutsky
 
@@ -705,7 +718,10 @@ if( strcmp(name_randoms_in,"none") !=0){printf("Error, For the density-input opt
 //Grid center option only
 
 //can't ouput density if density is the input
-if( strcmp(output_density, "yes") == 0){printf("Warning, printing density option enabled when density is also selected as an input. Exiting now...\n");exit(0);}
+if( strcmp(output_density, "corrected") == 0){printf("Warning, printing density option enabled when density is also selected as an input. Exiting now...\n");exit(0);}
+if( strcmp(output_density, "uncorrected") == 0){printf("Warning, printing density option enabled when density is also selected as an input. Exiting now...\n");exit(0);}
+
+if( strcmp(output_density, "corrected") == 0 && strcmp(grid_correction_string, "no") == 0){printf("Warning, can't produce a corrected-delta field if grid-correction option is off. Exiting now...\n");exit(0);}
 
 if( strcmp( type_of_yamamoto ,"GridAverage") ==0 ){printf("Error, density-input option requires GridCenter Yamamoto. Extiting now...\n");exit(0);}
 
@@ -732,11 +748,20 @@ if( strcmp(type_of_survey,"periodicFKP") == 0 &&  strcmp( shuffle,"no") !=0  ){p
         printf("Number of processors used: %d\n",n_lines_parallel);
 
 
-if( strcmp(output_density,"yes") == 0)
+if( strcmp(output_density,"no") != 0)//either corrected or uncorrected
 {
+
+if(strcmp(output_density,"corrected") == 0){
 if(strcmp(type_of_code, "rustico") == 0){sprintf(name_out_density,"%s/delta_%s_%s.txt",name_path_out,type_of_mass_assigment,name_id);}
 if(strcmp(type_of_code, "rusticoX") == 0){sprintf(name_out_density,"%s/deltaA_%s_%s.txt",name_path_out,type_of_mass_assigment,name_id);}
 if(strcmp(type_of_code, "rusticoX") == 0){sprintf(name_out_densityB,"%s/deltaB_%s_%s.txt",name_path_out,type_of_mass_assigment,name_id);}
+}
+if(strcmp(output_density,"uncorrected") == 0){
+if(strcmp(type_of_code, "rustico") == 0){sprintf(name_out_density,"%s/deltaraw_%s_%s.txt",name_path_out,type_of_mass_assigment,name_id);}
+if(strcmp(type_of_code, "rusticoX") == 0){sprintf(name_out_density,"%s/deltarawA_%s_%s.txt",name_path_out,type_of_mass_assigment,name_id);}
+if(strcmp(type_of_code, "rusticoX") == 0){sprintf(name_out_densityB,"%s/deltarawB_%s_%s.txt",name_path_out,type_of_mass_assigment,name_id);}
+}
+
 }
 else
 {
@@ -747,12 +772,14 @@ if(strcmp(type_of_code, "rusticoX") == 0){sprintf(name_out_densityB,"no");}
 
 
 //Reading files.
-double parameter_value[29];
-double parameter_valueB[29];
+double parameter_value[31];
+double parameter_valueB[31];
 
 if( strcmp(type_of_input,"particles") == 0){
 
         parameter_value[0]=Omega_m;
+        parameter_value[29]=Omega_L;
+        parameter_value[30]=speed_of_light;
         parameter_value[1]=z_min;
         parameter_value[2]=z_max;
         parameter_value[3]=Ndata;
@@ -760,6 +787,8 @@ if( strcmp(type_of_input,"particles") == 0){
 
     if(strcmp(type_of_code, "rusticoX") == 0){
         parameter_valueB[0]=Omega_m;
+        parameter_valueB[29]=Omega_L;
+        parameter_valueB[30]=speed_of_light;
          parameter_valueB[1]=z_minB;
          parameter_valueB[2]=z_maxB;
          parameter_valueB[3]=NdataB;  
@@ -900,6 +929,8 @@ get_skycuts_write_density_data(name_data_in, parameter_value,name_den_out);
 printf("Ok!\n");
 
 parameter_value[0]=Omega_m;
+parameter_value[29]=Omega_L;
+parameter_value[30]=speed_of_light;
 parameter_value[1]=z_min;
 parameter_value[2]=z_max;
 parameter_value[3]=Nrand;
@@ -1049,6 +1080,8 @@ parameter_valueB[3]=NdataB;
     printf("Ok!\n");
 
     parameter_valueB[0]=Omega_m;
+    parameter_valueB[29]=Omega_L;
+    parameter_valueB[30]=speed_of_light;
     parameter_valueB[1]=z_minB;
     parameter_valueB[2]=z_maxB;
     parameter_valueB[3]=NrandB;
@@ -1152,6 +1185,8 @@ parameter_valueB[3]=NdataB;
     if(strcmp(window_function, "yes") == 0){
 
         parameter_value[0]=Omega_m;
+        parameter_value[29]=Omega_L;
+        parameter_value[30]=speed_of_light;
         parameter_value[1]=z_min;
         parameter_value[2]=z_max;
         if(strcmp(shuffle, "no") == 0){parameter_value[3]=Nrand;}//total number of randoms
@@ -1160,6 +1195,8 @@ parameter_valueB[3]=NdataB;
 
     if(strcmp(type_of_code, "rusticoX") == 0){
         parameter_valueB[0]=Omega_m;
+        parameter_valueB[29]=Omega_L;
+        parameter_valueB[30]=speed_of_light;
          parameter_valueB[1]=z_minB;
          parameter_valueB[2]=z_maxB;
          if(strcmp(shuffle, "no") == 0){parameter_valueB[3]=NrandB;}//total number of randoms
@@ -1464,7 +1501,7 @@ if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: 
 if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
 if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSD); }
 if(strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_computation, "DSE") != 0 ){fprintf(f,"#Quadrupole as %s\n",Quadrupole_type);}
 if(strcmp(type_of_survey, "cutsky") == 0 && strcmp(do_odd_multipoles,"yes") == 0 && strcmp(type_of_computation, "DSE") != 0){fprintf(f,"#Octopole as %s\n",Octopole_type);}
@@ -1518,7 +1555,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSDB); }
         if(strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_computation, "DSE") != 0 ){fprintf(f,"#Quadrupole as %s\n",Quadrupole_type);}
         if(strcmp(type_of_survey, "cutsky") == 0 && strcmp(do_odd_multipoles,"yes") == 0 && strcmp(type_of_computation, "DSE") != 0){fprintf(f,"#Octopole as %s\n",Octopole_type);}
@@ -1563,14 +1600,14 @@ fclose(f);
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Normalization using %s\n", type_normalization_mode );}
         if(strcmp(type_of_survey, "cutsky") == 0 || strcmp(type_of_survey, "periodicFKP") == 0){fprintf(f,"#Normalization %e\n",sqrt(I22*I22B));}
         if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Shot noise factor %lf\n",Shot_noise_factor);}
-        fprintf(f,"#Shot noise value %lf\n",P_shot_noiseB);
+        fprintf(f,"#Shot noise value 0\n");
         fprintf(f,"#Type of Computation: %s\n",type_of_computation);
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of grid cells: %d\n",ngrid);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: %s\n",type_of_mass_assigment);}
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         if(strcmp(type_of_survey, "cutsky") == 0 && strcmp(type_of_computation, "DSE") != 0 ){fprintf(f,"#Quadrupole as %s\n",Quadrupole_type);}
         if(strcmp(type_of_survey, "cutsky") == 0 && strcmp(do_odd_multipoles,"yes") == 0 && strcmp(type_of_computation, "DSE") != 0){fprintf(f,"#Octopole as %s\n",Octopole_type);}
@@ -1618,7 +1655,7 @@ if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: 
 if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
 if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSD); }
 fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
 if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1654,7 +1691,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1689,7 +1726,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1724,7 +1761,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1759,7 +1796,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1794,7 +1831,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1829,7 +1866,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1864,7 +1901,7 @@ fclose(f);
         if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
         if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+        if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
         if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s %s\n",RSD,RSDB); }
         fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
         if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1906,7 +1943,7 @@ if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: 
 if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
 if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSD); }
 fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
 if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1939,7 +1976,7 @@ if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: 
 if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
 if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSD); }
 fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
 if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -1972,7 +2009,7 @@ if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Type of Mass Assigment: 
 if(strcmp(type_of_computation, "FFT") == 0 && strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Type of Yamamoto: %s\n",type_of_yamamoto);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Number of Interlacing steps: %d\n",Ninterlacing);}
 if(strcmp(type_of_computation, "FFT") == 0){fprintf(f,"#Grid Correction: %s\n",grid_correction_string);}
-if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf\n",Omega_m);}
+if(strcmp(type_of_survey, "cutsky") == 0){fprintf(f,"#Value of Om=%lf OL=%lf\n",Omega_m,Omega_L);}
 if(strcmp(type_of_file, "gadget") == 0){fprintf(f,"#RSD: %s\n",RSD); }
 fprintf(f,"#Computation using multigrid: %s\n",do_multigrid);
 if(strcmp(triangle_shapes, "EQU") == 0){fprintf(f,"#Shapes of the triangles: equilateral\n");}
@@ -2019,7 +2056,7 @@ if(strcmp(type_of_yamamoto, "GridCenter") == 0){
 
 if(strcmp(type_of_input,"density") == 0){strcpy (name_out_density,name_data_in);}
 
-loop_interlacing_skycut(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2,pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,name_out_density,name_out_densityB,type_of_input,type_of_survey,file_for_mu,mubin,write_kvectors, name_ps_kvectors);
+loop_interlacing_skycut(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2,pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,output_density,name_out_density,name_out_densityB,type_of_input,type_of_survey,file_for_mu,mubin,write_kvectors, name_ps_kvectors);
         
 
 }
@@ -2034,7 +2071,7 @@ if(strcmp(type_of_yamamoto, "GridAverage") == 0){
     //else{kny=kmax;}
     kf=kmin;kny=kmax;//overwrites previous cuts
 
-loop_interlacing_skycut2(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2, pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,name_out_density,name_out_densityB,type_of_survey,file_for_mu,mubin,write_kvectors, name_ps_kvectors);
+loop_interlacing_skycut2(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight,Ndata2, pos_x_rand, pos_y_rand, pos_z_rand, weight_rand,Nrand2, pos_xB, pos_yB, pos_zB, weightB,Ndata2B, pos_x_randB, pos_y_randB, pos_z_randB, weight_randB,Nrand2B, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, I22,I22B, alpha,alphaB, mode_correction, n_lines_parallel, binning_type, Quadrupole_type,Octopole_type,Hexadecapole_type,do_odd_multipoles,do_anisotropy, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_bispectrum,type_of_code,output_density,name_out_density,name_out_densityB,type_of_survey,file_for_mu,mubin,write_kvectors, name_ps_kvectors);
 
 
 }
@@ -2096,10 +2133,10 @@ if(strcmp(type_of_file, "ascii") == 0){
 
 if(strcmp(type_of_input,"density") == 0){strcpy (name_out_density,name_data_in);}
 
-        loop_interlacing_periodic(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight, Ndata,Ndata2w,NULL, NULL, NULL, NULL, 0,0, L1, L2, ngrid, P_shot_noise,0, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,NULL,NULL, type_of_mass_assigment,do_odd_multipoles,do_anisotropy,do_bispectrum,mubin,file_for_mu,type_of_code,name_out_density,name_out_densityB,type_of_input,write_kvectors, name_ps_kvectors);
+        loop_interlacing_periodic(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight, Ndata2,Ndata2w,NULL, NULL, NULL, NULL, 0,0, L1, L2, ngrid, P_shot_noise,0, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,NULL,NULL, type_of_mass_assigment,do_odd_multipoles,do_anisotropy,do_bispectrum,mubin,file_for_mu,type_of_code,output_density,name_out_density,name_out_densityB,type_of_input,write_kvectors, name_ps_kvectors);
 }
 if(strcmp(type_of_file, "gadget") == 0){
-        loop_interlacing_periodic_gadget(kf,kny,Ninterlacing, name_data_in,NULL ,gadget_files,0, L1, L2, ngrid, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,NULL,NULL,  type_of_mass_assigment,Shot_noise_factor,grid_correction_string,RSD,NULL,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,name_out_density,name_out_densityB,type_of_input,write_kvectors, name_ps_kvectors);
+        loop_interlacing_periodic_gadget(kf,kny,Ninterlacing, name_data_in,NULL ,gadget_files,0, L1, L2, ngrid, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,NULL,NULL,  type_of_mass_assigment,Shot_noise_factor,grid_correction_string,RSD,NULL,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,output_density,name_out_density,name_out_densityB,type_of_input,write_kvectors, name_ps_kvectors);
 }
 
 }
@@ -2109,23 +2146,23 @@ if(strcmp(type_of_code, "rusticoX") == 0){
 
     if(strcmp(type_of_file, "ascii") == 0 && strcmp(type_of_fileB, "ascii") == 0)
     {
-        loop_interlacing_periodic(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight, Ndata,Ndata2w,pos_xB, pos_yB, pos_zB, weightB, NdataB,Ndata2Bw, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_odd_multipoles,do_anisotropy,do_bispectrum,mubin,file_for_mu,type_of_code,name_out_density,name_out_densityB,type_of_input,write_kvectors, name_ps_kvectors);
+        loop_interlacing_periodic(kf,kny,Ninterlacing, pos_x, pos_y, pos_z, weight, Ndata2,Ndata2w,pos_xB, pos_yB, pos_zB, weightB, Ndata2B,Ndata2Bw, L1, L2, ngrid, P_shot_noise,P_shot_noiseB, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,do_odd_multipoles,do_anisotropy,do_bispectrum,mubin,file_for_mu,type_of_code,output_density,name_out_density,name_out_densityB,type_of_input,write_kvectors, name_ps_kvectors);
 
 
     }
     if(strcmp(type_of_file, "gadget") == 0 && strcmp(type_of_fileB, "gadget") == 0)
     {
-        loop_interlacing_periodic_gadget(kf,kny,Ninterlacing, name_data_in,name_dataB_in ,gadget_files,gadget_filesB, L1, L2, ngrid, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,name_psAB_out,name_psBB_out,  type_of_mass_assigment,Shot_noise_factor,grid_correction_string,RSD,RSDB,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,name_out_densityB,name_out_density,type_of_input,write_kvectors, name_ps_kvectors);
+        loop_interlacing_periodic_gadget(kf,kny,Ninterlacing, name_data_in,name_dataB_in ,gadget_files,gadget_filesB, L1, L2, ngrid, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,name_psAB_out,name_psBB_out,  type_of_mass_assigment,Shot_noise_factor,grid_correction_string,RSD,RSDB,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,output_density,name_out_densityB,name_out_density,type_of_input,write_kvectors, name_ps_kvectors);
 
     }
     if(strcmp(type_of_file, "gadget") == 0 && strcmp(type_of_fileB, "ascii") == 0)
     {
-        loop_interlacing_periodic_gadget_x_ascii(kf,kny,Ninterlacing, name_data_in, gadget_files, pos_xB, pos_yB, pos_zB, weightB, NdataB,Ndata2Bw, L1, L2, ngrid,P_shot_noiseB, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,Shot_noise_factor,do_bispectrum,RSD,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,name_out_densityB,name_out_density,write_kvectors, name_ps_kvectors);
+        loop_interlacing_periodic_gadget_x_ascii(kf,kny,Ninterlacing, name_data_in, gadget_files, pos_xB, pos_yB, pos_zB, weightB, Ndata2B,Ndata2Bw, L1, L2, ngrid,P_shot_noiseB, bin_ps, mode_correction, n_lines_parallel, binning_type, name_ps_out,name_psAB_out,name_psBB_out, type_of_mass_assigment,Shot_noise_factor,do_bispectrum,RSD,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,output_density,name_out_densityB,name_out_density,write_kvectors, name_ps_kvectors);
 
     }
     if(strcmp(type_of_file, "ascii") == 0 && strcmp(type_of_fileB, "gadget") == 0)
     {
-        loop_interlacing_periodic_gadget_x_ascii(kf,kny,Ninterlacing, name_dataB_in, gadget_filesB, pos_x, pos_y, pos_z, weight, Ndata,Ndata2w, L1, L2, ngrid,P_shot_noise, bin_ps, mode_correction, n_lines_parallel, binning_type, name_psBB_out,name_psAB_out,name_ps_out, type_of_mass_assigment,Shot_noise_factor,do_bispectrum,RSDB,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,name_out_densityB,name_out_density,write_kvectors, name_ps_kvectors);
+        loop_interlacing_periodic_gadget_x_ascii(kf,kny,Ninterlacing, name_dataB_in, gadget_filesB, pos_x, pos_y, pos_z, weight, Ndata2,Ndata2w, L1, L2, ngrid,P_shot_noise, bin_ps, mode_correction, n_lines_parallel, binning_type, name_psBB_out,name_psAB_out,name_ps_out, type_of_mass_assigment,Shot_noise_factor,do_bispectrum,RSDB,do_odd_multipoles,do_anisotropy,mubin,file_for_mu,type_of_code,output_density,name_out_densityB,name_out_density,write_kvectors, name_ps_kvectors);
 
     }
 
