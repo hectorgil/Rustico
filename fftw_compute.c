@@ -3818,10 +3818,9 @@ printf("Ok!\n");
 }
 
 
-
-void loop_interlacing_periodic_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata,double Ndataw, double L1, double L2, int ngrid, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re, double *deltak_im)
+void loop_interlacing_periodic_for_bispectrum(int Ninterlacing, double *pos_x, double *pos_y, double *pos_z, double *weight, long int Ndata,double Ndataw, double L1, double L2, int ngrid, int n_lines_parallel, char *type_of_mass_assigment, int mode_correction, double *deltak_re, double *deltak_im, char *name_density, char *type_of_input)
 {
-//  FILE *f;
+  FILE *f;
   long int i,j,k,i_inter;
   long int c;
   double phase_cos,phase_sin;
@@ -3835,6 +3834,7 @@ void loop_interlacing_periodic_for_bispectrum(int Ninterlacing, double *pos_x, d
   long int ngridtot=pow(ngrid,3);
   long int ngridtotr2c=pow(ngrid,3)/2+pow(ngrid,2);
   long int index2;
+  double d;
         kx=malloc(sizeof(double)*(ngrid));
         for(i=0;i<ngrid;i++)
         {
@@ -3854,6 +3854,9 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
      L1b=L1-(L2-L1)/ngrid*1.*1./Ninterlacing*1.*(i_inter-1);
 
      delta_data = (double*) calloc(ngridtot, sizeof(double));
+
+    if( strcmp(type_of_input,"particles") == 0){
+
      printf("Assigning particles to the grid (Iteration %ld) ...", i_inter);
      for(c=0; c<Ndata; c++)
      {
@@ -3874,7 +3877,17 @@ for(i_inter=1;i_inter<=Ninterlacing;i_inter++)
 
 
 
-
+}//particles
+else{//density
+     printf("Reading densities ...");
+f=fopen(name_density,"r");if(f==NULL){printf("Error reading density file %s. Exiting now...\n",name_density);exit(0);}
+     for(c=0;c<ngridtot;c++)
+     {
+        fscanf(f,"%lf\n",&d);
+        delta_data[c]=d/ngridtot*1.;
+     }
+fclose(f);
+}
 
      printf("Ok!\n");
      printf("Performing FFTs ...");
