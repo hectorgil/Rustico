@@ -115,9 +115,7 @@ MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 //dist_table[j]=radial;
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 
 }
 
@@ -201,9 +199,7 @@ MAX[0]=redshift_table[j];
 MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 }
 
 redshift=Interpol(distance, dist_table, redshift_table, N_z_table);
@@ -279,13 +275,9 @@ Area=parameter_value[13]*pow(Pi/180.,2);
   MAX[0]=z_max;
   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &r_max, &nuissance);
 
-if(Omega_m+Omega_L==1){r_min=r_min*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_min=sin(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_min=sinh(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_min=r_min*speed_c/100.;
 
-if(Omega_m+Omega_L==1){r_max=r_max*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_max=sin(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_max=sinh(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_max=r_max*speed_c/100.;
 
   n_bin_r=(long int)((r_max-r_min)/DeltaR);//printf("\n %lf %d\n",DeltaR,n_bin_r);
   radial_cell = (double*) calloc(n_bin_r, sizeof(double));
@@ -322,9 +314,7 @@ MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 //dist_table[j]=radial;
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 
 }
 
@@ -345,9 +335,9 @@ if(redshift>z_min && redshift<z_max && veto==1 && weight_col>0)
   MIN[0]=0;
   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+//printf("%e %e ",redshift,radial);
+
+radial=radial*speed_c/100.;
 
       index_radial=(long int)(n_bin_r*(radial-r_min)/(r_max-r_min));
       if( index_radial<0 || index_radial>n_bin_r-1){printf("\n Error bins data1 (radial) radial=%lf (z=%lf)  (%lf,%lf) (line=%ld) %ld %lf. Exiting now...\n",radial,redshift,r_min,r_max,i,n_bin_r,DeltaR);exit(0);}
@@ -356,6 +346,8 @@ if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*spe
       radial_weight_cell[index_radial]+=weight_col*weight_sys;
       radial_all_weight_cell[index_radial]+=weight_col*weight_sys*weight_fkp;
       z_cell[index_radial]+=redshift;
+
+  //    printf(" %e %e %e %e %.10lf\n",radial,Omega_m,Omega_L,1-Omega_m-Omega_L,speed_c);
 
 }
 
@@ -387,6 +379,7 @@ if(free_table_dist_z==1)
 free(redshift_table);
 free(dist_table);
 }
+//exit(0);
 }
 
 
@@ -461,13 +454,9 @@ IN2_min=0;
   MAX[0]=z_max;
   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &r_max, &nuissance);
 
-if(Omega_m+Omega_L==1){r_min=r_min*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_min=sin(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_min=sinh(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_min=r_min*speed_c/100.;
 
-if(Omega_m+Omega_L==1){r_max=r_max*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_max=sin(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_max=sinh(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_max=r_max*speed_c/100.;
 
 i_DeltaR=0;
 do
@@ -535,9 +524,7 @@ MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 //dist_table[j]=radial;
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 
 }
 
@@ -584,9 +571,7 @@ if(redshift>z_min && redshift<z_max  && veto==1 && weight_col>0)
   MIN[0]=0;
   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+radial=radial*speed_c/100.;
 
       index_radial=(long int)(n_bin_r*(radial-r_min)/(r_max-r_min));
       if( index_radial<0 || index_radial>n_bin_r-1){printf("\n Error bins data2 (radial) radial=%lf z=(%lf < %lf < %lf)  r=(%lf,%lf) (line=%ld) %ld %lf. Om=%lf. Exiting now...\n",radial,z_min,redshift,z_max,r_min,r_max,i,n_bin_r,DeltaR,Omega_m);exit(0);}   
@@ -804,13 +789,9 @@ npar=(long int)(parameter_value[3]);
   MAX[0]=z_max;
   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &r_max, &nuissance);
 
-if(Omega_m+Omega_L==1){r_min=r_min*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_min=sin(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_min=sinh(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_min=r_min*speed_c/100.;
 
-if(Omega_m+Omega_L==1){r_max=r_max*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_max=sin(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_max=sinh(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_max=r_max*speed_c/100.;
 
   n_bin_r=(long int)((r_max-r_min)/DeltaR);//printf("\n %d\n",n_bin_r);
   radial_cell = (double*) calloc(n_bin_r, sizeof(double));
@@ -854,9 +835,7 @@ MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 //dist_table[j]=radial;
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 
 }
 
@@ -883,9 +862,7 @@ MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 //dist_table[j]=radial;
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 
 }
 
@@ -905,9 +882,7 @@ if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when con
             MIN[0]=0;
             adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+radial=radial*speed_c/100.;
 
  index_radial=(long int)(n_bin_r*(radial-r_min)/(r_max-r_min));
       if( index_radial<0 || index_radial>n_bin_r-1){printf("error bins randoms1 (radial) radial=%lf (z=%lf)  (%lf,%lf) (line=%ld) %ld %lf\n",radial,redshift,r_min,r_max,i,n_bin_r,DeltaR);}
@@ -1036,9 +1011,7 @@ if(i==Ndata){i=0;j++;}
             MIN[0]=0;
             adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+radial=radial*speed_c/100.;
 
        index_radial=(long int)(n_bin_r*(radial-r_min)/(r_max-r_min));
       if( index_radial<0 || index_radial>n_bin_r-1){printf("error bins randoms1 (radial) radial=%lf (z=%lf)  (%lf,%lf) (line=%ld) %ld %lf\n",radial,redshift,r_min,r_max,i,n_bin_r,DeltaR);}
@@ -1175,13 +1148,9 @@ I33_w_randoms_min=0;
   MAX[0]=z_max;
   adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &r_max, &nuissance);
 
-if(Omega_m+Omega_L==1){r_min=r_min*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_min=sin(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_min=sinh(r_min*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_min=r_min*speed_c/100.;
 
-if(Omega_m+Omega_L==1){r_max=r_max*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){r_max=sin(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){r_max=sinh(r_max*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+r_max=r_max*speed_c/100.;
 
 i_DeltaR=0;
 do
@@ -1248,9 +1217,7 @@ MIN[0]=0;
 adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 //dist_table[j]=radial;
 
-if(Omega_m+Omega_L==1){dist_table[j]=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){dist_table[j]=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){dist_table[j]=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+dist_table[j]=radial*speed_c/100.;
 
 }
 
@@ -1288,9 +1255,7 @@ if(redshift<zlow || redshift>zhigh){printf("Warning, extrapolation made when con
             MIN[0]=0;
 	        adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+radial=radial*speed_c/100.;
 
            //From polar to cartesian coordinates
 		   pos_x[npar_used]=radial*sin(theta)*cos(RA);
@@ -1483,9 +1448,7 @@ if(strcmp(write_shuffled_randoms, "yes") == 0){fprintf(g,"%e %e %e %e %e %e %e\n
      MIN[0]=0;
      adapt_integrate(1, z_to_r , function_parameters, 1, MIN, MAX ,100000, 1e-6, 1e-6, &radial, &nuissance);
 
-if(Omega_m+Omega_L==1){radial=radial*speed_c/100.;}//flat
-if(1-Omega_m-Omega_L<0){radial=sin(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok<0
-if(1-Omega_m-Omega_L>0){radial=sinh(radial*pow(fabs(1-Omega_m-Omega_L),0.5))*speed_c/100.*pow(fabs(1-Omega_m-Omega_L),-0.5);}//Ok>0
+radial=radial*speed_c/100.;
 
                    pos_x[npar_used]=radial*sin(theta)*cos(RA);
                    pos_y[npar_used]=radial*sin(theta)*sin(RA);
