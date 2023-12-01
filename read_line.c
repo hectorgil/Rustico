@@ -28,25 +28,47 @@ double Pi=(4.*atan(1.));
 
 if(type==0){//data
 
-//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz,&wsys,&n_z);wcol=wcp+wnoz-1;//For BOSS LRGs
+//fscanf(f,"%lf %lf %lf %*f %lf %*f %d %d\n",&RA,&dec,&redshift, &n_z, &veto, &wcol_int);wsys=1.0;//For BOSS LRG patchy mocks
+//wfkp=1./(1+10000.*n_z);
+//wcol=wcol_int*1.;
 
-fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %*s %s %*s %s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,iscmass,in_eboss_foot,wfkp_cmass_c,&wfkp);// For eBOSS LRG
-if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
-else{wcol=wcp*wnoz;}
+fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz,&wsys,&n_z);wcol=wcp+wnoz-1;//For BOSS LRGs data
 
-//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %*s\n",&RA,&dec,&redshift,&wfkp,&wsys,&wcp,&wnoz,&n_z);wcol=wcp*wnoz;//For eBOSS QSO
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz,&n_z,&wsys);//for eBOSS LRG mocks
+//if(wnoz==1 || wnoz==2 || wnoz>2){wcol=wcp+wnoz-1;}
+//else{wcol=wcp*wnoz;}
+
+
+//fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %*s %s %*s %s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,iscmass,in_eboss_foot,wfkp_cmass_c,&wfkp);// For eBOSS LRG data
+//if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
+//else{wcol=wcp*wnoz;}
+
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf %*s\n",&RA,&dec,&redshift,&wfkp,&wsys,&wcp,&wnoz,&n_z);wcol=wcp*wnoz;//For eBOSS QSO data
+
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wnoz,&wcp,&n_z,&wsys);wcol=wcp*wnoz;//For eBOSS QSO mocks
 
 }
 
 if(type==1){//random
 
-//fscanf(f,"%lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&n_z);//For BOSS LRGs
+//  fscanf(f,"%lf %lf %lf %lf %*f %d %d\n",&RA, &dec, &redshift, &n_z,&veto,&wcol_int);//For BOSS LRG patchy mocks
+//  wfkp=wcol_int*1./(1.+10000*n_z);
+//  wcol=wcol_int*1.;
 
-fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %s %s %*s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,in_eboss_foot,iscmass,wfkp_cmass_c,&wfkp);// For eBOSS LRG
-if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
-else{wcol=wcp*wnoz;}
+fscanf(f,"%lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&n_z);//For BOSS LRGs data
 
-//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wsys,&wcp,&wnoz,&n_z);wcol=wcp*wnoz;//For eBOSS QSO
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wcp,&wnoz,&n_z,&wsys);//For eBOSS LRG mocks
+//if(wnoz==1 || wnoz==2 || wnoz>2){wcol=wcp+wnoz-1;}
+//else{wcol=wcp*wnoz;}
+
+
+//fscanf(f,"%lf %lf %lf %s %lf %lf %lf %lf %*s %s %s %s %*s %lf\n",&RA,&dec,&redshift,wfkp_eboss_c,&wsys,&wcp,&wnoz,&n_z,in_eboss_foot,iscmass,wfkp_cmass_c,&wfkp);// For eBOSS LRG data
+//if(strcmp(iscmass,"T") == 0){wcol=wcp+wnoz-1;}
+//else{wcol=wcp*wnoz;}
+
+//fscanf(f,"%lf %lf %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&redshift,&wfkp,&wsys,&wcp,&wnoz,&n_z);wcol=wcp*wnoz;//For eBOSS QSO data
+
+//fscanf(f,"%lf %lf %*s %*s %lf %lf %lf %lf %lf %lf\n",&RA,&dec,&wfkp,&wnoz,&wcp,&wsys,&n_z,&redshift);wcol=wcp*wnoz;//For eBOSS QSO mocks
 
 }
 
